@@ -6,7 +6,7 @@ import type { RecipeNode as RecipeNodeData } from '@/lib/types'
 
 const statusClassNames: Record<RecipeNodeData['status'], string> = {
   cooked: 'border-[#5C9E6E] bg-[#5C9E6E] text-white',
-  want: 'border-[#A8D5B5] bg-[#A8D5B5] text-[#333]',
+  want: 'border-[#A8D5B5] bg-[#EBF7EF] text-[#315E3D]',
   suggested: 'border-dashed border-[#D1D5DB] bg-[#F3F4F6] text-[#999]',
 }
 
@@ -15,6 +15,13 @@ export default function RecipeNode({ data, isConnectable }: NodeProps<RecipeNode
     event.stopPropagation()
     event.currentTarget.dispatchEvent(
       new CustomEvent('recipe-edit', { bubbles: true, detail: { nodeId: data.id } }),
+    )
+  }
+
+  function handleWantClick(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
+    event.currentTarget.dispatchEvent(
+      new CustomEvent('recipe-want', { bubbles: true, detail: { nodeId: data.id } }),
     )
   }
 
@@ -28,7 +35,7 @@ export default function RecipeNode({ data, isConnectable }: NodeProps<RecipeNode
 
   return (
     <div
-      className={`relative w-[180px] min-h-[60px] rounded-lg border px-3 py-2 shadow-sm ${statusClassNames[data.status]}`}
+      className={`relative min-h-[60px] w-[180px] rounded-lg border px-3 py-2 shadow-sm ${statusClassNames[data.status]}`}
     >
       <Handle
         type="target"
@@ -46,14 +53,32 @@ export default function RecipeNode({ data, isConnectable }: NodeProps<RecipeNode
       </button>
       <div className="pr-5 text-sm font-bold leading-5">{data.name}</div>
       <div className="mt-1 line-clamp-2 overflow-hidden text-xs leading-4">{data.reason}</div>
-      <div className="mt-2 flex items-center justify-between gap-2">
+      <div className="mt-2 flex items-center gap-1">
         {data.status === 'suggested' ? (
+          <>
+            <button
+              type="button"
+              className="rounded-full bg-white/80 px-2 py-1 text-xs font-semibold text-[#5C9E6E] shadow-sm transition hover:bg-white"
+              aria-label={`${data.name}を作った料理にする`}
+            >
+              ✓ 作った
+            </button>
+            <button
+              type="button"
+              onClick={handleWantClick}
+              className="rounded-full bg-white/80 px-2 py-1 text-xs font-semibold text-[#A8D5B5] shadow-sm transition hover:bg-white"
+              aria-label={`${data.name}を作りたいリストに追加`}
+            >
+              ♡ 作りたい
+            </button>
+          </>
+        ) : data.status === 'want' ? (
           <button
             type="button"
             className="rounded-full bg-white/80 px-2 py-1 text-xs font-semibold text-[#5C9E6E] shadow-sm transition hover:bg-white"
             aria-label={`${data.name}を作った料理にする`}
           >
-            + 作った
+            ✓ 作った
           </button>
         ) : (
           <span />
@@ -62,7 +87,7 @@ export default function RecipeNode({ data, isConnectable }: NodeProps<RecipeNode
           <button
             type="button"
             onClick={handleReferenceClick}
-            className="rounded-full bg-white/70 px-2 py-1 text-xs shadow-sm transition hover:bg-white"
+            className="ml-auto rounded-full bg-white/70 px-2 py-1 text-xs shadow-sm transition hover:bg-white"
             aria-label={`${data.name}の参考URLを開く`}
           >
             🔗

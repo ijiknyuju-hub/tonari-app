@@ -6,7 +6,7 @@ import AddDishPanel from '@/components/AddDishPanel'
 import RecipeEditModal from '@/components/RecipeEditModal'
 import RecipeFlow from '@/components/RecipeFlow'
 import { PRESET_DISHES } from '@/lib/presets'
-import { loadState, saveState } from '@/lib/storage'
+import { exportState, importStateFromFile, loadState, saveState } from '@/lib/storage'
 import type { AppState, RecipeEdge, RecipeNode } from '@/lib/types'
 
 type Suggestion = {
@@ -128,6 +128,11 @@ export default function Home() {
         .slice(0, 5)
         .map((node) => node.name),
     [cookedNodes],
+  )
+
+  const wantDishes = useMemo(
+    () => appState.nodes.filter((node) => node.status === 'want').map((node) => node.name),
+    [appState.nodes],
   )
 
   async function handleAddDish(dish: string) {
@@ -271,6 +276,25 @@ export default function Home() {
     }
   }
 
+  function handleNodeWant(nodeId: string) {
+    const targetNode = appState.nodes.find((node) => node.id === nodeId)
+
+    if (!targetNode || targetNode.status !== 'suggested') {
+      return
+    }
+
+    const nextState: AppState = {
+      ...appState,
+      nodes: appState.nodes.map((node) =>
+        node.id === nodeId ? { ...node, status: 'want' as const } : node,
+      ),
+      lastUpdated: new Date().toISOString(),
+    }
+
+    setAppState(nextState)
+    saveState(nextState)
+  }
+
   function handleEditNode(
     nodeId: string,
     updates: Pick<RecipeNode, 'ingredients' | 'steps' | 'referenceUrl'>,
@@ -286,6 +310,37 @@ export default function Home() {
     setEditingNodeId(null)
   }
 
+  function handleExport() {
+    exportState(appState)
+  }
+
+  async function handleImport(file: File) {
+    try {
+      const imported = await importStateFromFile(file)
+      setAppState(imported)
+      saveState(imported)
+      setError(null)
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : 'インポートに失敗しました。')
+    }
+  }
+
+  function handleShare() {
+    const count = cookedNodes.length
+    const dishNames = [...cookedNodes]
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+      .slice(0, 8)
+      .map((n) => n.name)
+    const params = new URLSearchParams({
+      count: String(count),
+      dishes: dishNames.join(','),
+    })
+    const appUrl = 'https://tonari-app-fawn.vercel.app'
+    const text = `私の料理スキルツリー、${count}品になりました🌿 #となりごはん`
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(`${appUrl}?${params.toString()}`)}`
+    window.open(twitterUrl, '_blank', 'noopener,noreferrer')
+  }
+
   const editingNode = editingNodeId
     ? appState.nodes.find((node) => node.id === editingNodeId)
     : undefined
@@ -295,8 +350,12 @@ export default function Home() {
       <AddDishPanel
         cookedCount={cookedNodes.length}
         recentDishes={recentDishes}
+        wantDishes={wantDishes}
         onAddDish={handleAddDish}
         onAddPreset={handleAddPreset}
+        onExport={handleExport}
+        onImport={handleImport}
+        onShare={handleShare}
         isLoading={isLoading}
       />
       <main className="relative flex-1">
@@ -311,6 +370,7 @@ export default function Home() {
             edges={appState.edges}
             onNodeCooked={handleNodeCooked}
             onNodeEdit={setEditingNodeId}
+            onNodeWant={handleNodeWant}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-center text-zinc-400">

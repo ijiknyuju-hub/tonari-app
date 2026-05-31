@@ -19,13 +19,20 @@ interface RecipeFlowProps {
   edges: RecipeEdge[]
   onNodeCooked: (nodeId: string) => void
   onNodeEdit: (nodeId: string) => void
+  onNodeWant: (nodeId: string) => void
 }
 
 const nodeTypes = {
   recipeNode: RecipeNode,
 }
 
-export default function RecipeFlow({ nodes, edges, onNodeCooked, onNodeEdit }: RecipeFlowProps) {
+export default function RecipeFlow({
+  nodes,
+  edges,
+  onNodeCooked,
+  onNodeEdit,
+  onNodeWant,
+}: RecipeFlowProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { nodes: flowNodes, edges: flowEdges } = useMemo(() => {
     const reactFlowNodes: Node<RecipeNodeData>[] = nodes.map((node) => ({
@@ -64,10 +71,22 @@ export default function RecipeFlow({ nodes, edges, onNodeCooked, onNodeEdit }: R
       }
     }
 
-    container.addEventListener('recipe-edit', handleRecipeEdit)
+    function handleRecipeWant(event: Event) {
+      const customEvent = event as CustomEvent<{ nodeId?: string }>
 
-    return () => container.removeEventListener('recipe-edit', handleRecipeEdit)
-  }, [onNodeEdit])
+      if (customEvent.detail?.nodeId) {
+        onNodeWant(customEvent.detail.nodeId)
+      }
+    }
+
+    container.addEventListener('recipe-edit', handleRecipeEdit)
+    container.addEventListener('recipe-want', handleRecipeWant)
+
+    return () => {
+      container.removeEventListener('recipe-edit', handleRecipeEdit)
+      container.removeEventListener('recipe-want', handleRecipeWant)
+    }
+  }, [onNodeEdit, onNodeWant])
 
   return (
     <div ref={containerRef} className="h-full w-full">
