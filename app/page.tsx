@@ -336,8 +336,9 @@ export default function Home() {
       dishes: dishNames.join(','),
     })
     const appUrl = 'https://tonari-app-fawn.vercel.app'
+    const shareUrl = `${appUrl}/share?${params.toString()}`
     const text = `私の料理スキルツリー、${count}品になりました🌿 #となりごはん`
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(`${appUrl}?${params.toString()}`)}`
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`
     window.open(twitterUrl, '_blank', 'noopener,noreferrer')
   }
 
