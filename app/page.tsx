@@ -3,13 +3,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import AddDishPanel from '@/components/AddDishPanel'
+import RecipeEditModal from '@/components/RecipeEditModal'
 import RecipeFlow from '@/components/RecipeFlow'
+import { PRESET_DISHES } from '@/lib/presets'
 import { loadState, saveState } from '@/lib/storage'
 import type { AppState, RecipeEdge, RecipeNode } from '@/lib/types'
 
 type Suggestion = {
   name: string
   reason: string
+  ingredients?: string
+  steps?: string
+  category?: string
 }
 
 type SuggestResponse = {
@@ -66,6 +71,7 @@ function buildSuggestionNodes(
       existingNames.add(name)
 
       const nodeId = uuidv4()
+      const createdAt = new Date().toISOString()
 
       result.nodes.push({
         id: nodeId,
@@ -75,7 +81,11 @@ function buildSuggestionNodes(
         parentId,
         reason: suggestion.reason,
         position: { x: 0, y: 0 },
-        createdAt: new Date().toISOString(),
+        createdAt,
+        category: suggestion.category,
+        ingredients: suggestion.ingredients,
+        steps: suggestion.steps,
+        isPreset: Boolean(suggestion.ingredients || suggestion.steps || suggestion.category),
       })
 
       result.edges.push({
@@ -96,6 +106,7 @@ export default function Home() {
   const [appState, setAppState] = useState<AppState>(initialState)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -166,6 +177,55 @@ export default function Home() {
     }
   }
 
+  function handleAddPreset(dishName: string) {
+    const presetDish = PRESET_DISHES.find((dish) => dish.name === dishName)
+
+    if (!presetDish) {
+      void handleAddDish(dishName)
+      return
+    }
+
+    const existingDishes = appState.nodes.map((node) => node.name)
+    const existingNames = new Set([...existingDishes, presetDish.name])
+    const dishNodeId = uuidv4()
+    const createdAt = new Date().toISOString()
+    const dishNode: RecipeNode = {
+      id: dishNodeId,
+      name: presetDish.name,
+      status: 'cooked',
+      type: 'base',
+      parentId: null,
+      reason: 'プリセットから追加した料理',
+      position: { x: 0, y: 0 },
+      createdAt,
+      category: presetDish.category,
+      ingredients: presetDish.ingredients,
+      steps: presetDish.steps,
+      isPreset: true,
+    }
+    const variation = buildSuggestionNodes(
+      dishNodeId,
+      presetDish.variations,
+      'variation',
+      existingNames,
+    )
+    const adjacent = buildSuggestionNodes(
+      dishNodeId,
+      presetDish.adjacent,
+      'adjacent',
+      existingNames,
+    )
+    const nextState: AppState = {
+      nodes: [dishNode, ...appState.nodes, ...variation.nodes, ...adjacent.nodes],
+      edges: [...appState.edges, ...variation.edges, ...adjacent.edges],
+      lastUpdated: createdAt,
+    }
+
+    setError(null)
+    setAppState(nextState)
+    saveState(nextState)
+  }
+
   async function handleNodeCooked(nodeId: string) {
     const targetNode = appState.nodes.find((node) => node.id === nodeId)
 
@@ -211,12 +271,32 @@ export default function Home() {
     }
   }
 
+  function handleEditNode(
+    nodeId: string,
+    updates: Pick<RecipeNode, 'ingredients' | 'steps' | 'referenceUrl'>,
+  ) {
+    const nextState: AppState = {
+      ...appState,
+      nodes: appState.nodes.map((node) => (node.id === nodeId ? { ...node, ...updates } : node)),
+      lastUpdated: new Date().toISOString(),
+    }
+
+    setAppState(nextState)
+    saveState(nextState)
+    setEditingNodeId(null)
+  }
+
+  const editingNode = editingNodeId
+    ? appState.nodes.find((node) => node.id === editingNodeId)
+    : undefined
+
   return (
     <div className="flex h-screen bg-[#F7F8F5] text-zinc-900">
       <AddDishPanel
         cookedCount={cookedNodes.length}
         recentDishes={recentDishes}
         onAddDish={handleAddDish}
+        onAddPreset={handleAddPreset}
         isLoading={isLoading}
       />
       <main className="relative flex-1">
@@ -226,13 +306,25 @@ export default function Home() {
           </div>
         ) : null}
         {appState.nodes.length > 0 ? (
-          <RecipeFlow nodes={appState.nodes} edges={appState.edges} onNodeCooked={handleNodeCooked} />
+          <RecipeFlow
+            nodes={appState.nodes}
+            edges={appState.edges}
+            onNodeCooked={handleNodeCooked}
+            onNodeEdit={setEditingNodeId}
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-center text-zinc-400">
-            <p className="text-sm">左の入力欄から、まず作れる料理を追加してください。</p>
+            <p className="text-sm">左の入力欄かプリセットから、まず作れる料理を追加してください。</p>
           </div>
         )}
       </main>
+      {editingNode ? (
+        <RecipeEditModal
+          node={editingNode}
+          onSave={handleEditNode}
+          onClose={() => setEditingNodeId(null)}
+        />
+      ) : null}
     </div>
   )
 }

@@ -10,6 +10,11 @@ export interface RecipeNode {
   reason: string
   position: { x: number; y: number }
   createdAt: string
+  category?: string
+  ingredients?: string
+  steps?: string
+  referenceUrl?: string
+  isPreset?: boolean
 }
 
 export interface RecipeEdge {

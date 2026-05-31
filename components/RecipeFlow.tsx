@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import ReactFlow, {
   Background,
   Controls,
@@ -18,13 +18,15 @@ interface RecipeFlowProps {
   nodes: RecipeNodeData[]
   edges: RecipeEdge[]
   onNodeCooked: (nodeId: string) => void
+  onNodeEdit: (nodeId: string) => void
 }
 
 const nodeTypes = {
   recipeNode: RecipeNode,
 }
 
-export default function RecipeFlow({ nodes, edges, onNodeCooked }: RecipeFlowProps) {
+export default function RecipeFlow({ nodes, edges, onNodeCooked, onNodeEdit }: RecipeFlowProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const { nodes: flowNodes, edges: flowEdges } = useMemo(() => {
     const reactFlowNodes: Node<RecipeNodeData>[] = nodes.map((node) => ({
       id: node.id,
@@ -47,27 +49,49 @@ export default function RecipeFlow({ nodes, edges, onNodeCooked }: RecipeFlowPro
     return getLayoutedElements(reactFlowNodes, reactFlowEdges)
   }, [edges, nodes])
 
-  return (
-    <ReactFlowProvider>
-      <ReactFlow
-        nodes={flowNodes}
-        edges={flowEdges}
-        nodeTypes={nodeTypes}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        fitView
-        onNodeClick={(_, node) => {
-          const data = node.data as RecipeNodeData
+  useEffect(() => {
+    const container = containerRef.current
 
-          if (data.status === 'suggested' || data.status === 'want') {
-            onNodeCooked(data.id)
-          }
-        }}
-      >
-        <Background color="#E5E7EB" gap={18} />
-        <Controls />
-        <MiniMap pannable zoomable nodeStrokeWidth={3} />
-      </ReactFlow>
-    </ReactFlowProvider>
+    if (!container) {
+      return
+    }
+
+    function handleRecipeEdit(event: Event) {
+      const customEvent = event as CustomEvent<{ nodeId?: string }>
+
+      if (customEvent.detail?.nodeId) {
+        onNodeEdit(customEvent.detail.nodeId)
+      }
+    }
+
+    container.addEventListener('recipe-edit', handleRecipeEdit)
+
+    return () => container.removeEventListener('recipe-edit', handleRecipeEdit)
+  }, [onNodeEdit])
+
+  return (
+    <div ref={containerRef} className="h-full w-full">
+      <ReactFlowProvider>
+        <ReactFlow
+          nodes={flowNodes}
+          edges={flowEdges}
+          nodeTypes={nodeTypes}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          fitView
+          onNodeClick={(_, node) => {
+            const data = node.data as RecipeNodeData
+
+            if (data.status === 'suggested' || data.status === 'want') {
+              onNodeCooked(data.id)
+            }
+          }}
+        >
+          <Background color="#E5E7EB" gap={18} />
+          <Controls />
+          <MiniMap pannable zoomable nodeStrokeWidth={3} />
+        </ReactFlow>
+      </ReactFlowProvider>
+    </div>
   )
 }
