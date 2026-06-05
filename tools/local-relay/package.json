@@ -1,0 +1,13 @@
+{
+  "name": "local-relay",
+  "version": "1.0.0",
+  "description": "Webhook relay: リモートのClaude CodeセッションからローカルのCodexを実行する",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "RELAY_TOKEN=devtoken node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
