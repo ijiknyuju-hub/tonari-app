@@ -23,6 +23,9 @@ jobs:
     runs-on: [self-hosted, local-codex]
     timeout-minutes: 20
 
+    env:
+      NPM_BIN: C:\Users\ito junki\AppData\Roaming\npm
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,30 +33,23 @@ jobs:
           ref: ${{ inputs.branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find codex path
+      - name: Add npm bin to PATH
         shell: powershell
         run: |
-          $codexPath = (Get-Command codex -ErrorAction SilentlyContinue).Source
-          if (-not $codexPath) {
-            $npmGlobal = npm root -g 2>$null
-            $npmBin = Split-Path $npmGlobal
-            $codexPath = Join-Path $npmBin 'codex.cmd'
-            if (Test-Path $codexPath) {
-              "$npmBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-              Write-Host "Added $npmBin to PATH"
-            } else {
-              Write-Host "Trying AppData npm path..."
-              $appDataNpm = "$env:APPDATA\npm"
-              "$appDataNpm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            }
+          $npmBin = "C:\Users\ito junki\AppData\Roaming\npm"
+          Write-Host "Adding to PATH: $npmBin"
+          "$npmBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $codexCmd = Join-Path $npmBin 'codex.cmd'
+          if (Test-Path $codexCmd) {
+            Write-Host "Found: $codexCmd"
           } else {
-            Write-Host "codex found at: $codexPath"
+            Write-Host "WARNING: codex.cmd not found at $codexCmd"
+            Get-ChildItem $npmBin | Select-Object Name
           }
 
       - name: Run Codex
         shell: powershell
         run: |
-          Write-Host "PATH: $env:PATH"
           codex exec -m ${{ inputs.model }} --sandbox workspace-write "${{ inputs.task }}"
 
       - name: Commit and push
@@ -67,7 +63,6 @@ jobs:
             Write-Host $diff
             git commit -m "feat(codex): ${{ inputs.task }}"
             git push origin ${{ inputs.branch }}
-            Write-Host "Changes pushed to ${{ inputs.branch }}"
           } else {
             Write-Host "No changes to commit"
           }
