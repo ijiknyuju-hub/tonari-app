@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { router } from 'expo-router';
 import { MapSession } from '../lib/types';
 import { loadAllSessions } from '../lib/storage';
-import { MAP_REGIONS } from '../constants/layers';
+import { MAP_REGION_LIST } from '../constants/layers';
 
 export default function HomeScreen() {
   const [sessions, setSessions] = useState<MapSession[]>([]);
@@ -12,9 +12,9 @@ export default function HomeScreen() {
     loadAllSessions().then(setSessions);
   }, []);
 
-  function handleNewSession(mapRegionId: string, unitId?: string) {
+  function handleNewSession(mapRegionId: string) {
     const id = Date.now().toString();
-    router.push({ pathname: '/map/[id]', params: { id, mapRegionId, unitId: unitId ?? '' } });
+    router.push({ pathname: '/map/[id]', params: { id, mapRegionId } });
   }
 
   return (
@@ -38,7 +38,7 @@ export default function HomeScreen() {
       <View style={styles.newSection}>
         <Text style={styles.sectionLabel}>新しい地図を作る</Text>
         <View style={styles.regionGrid}>
-          {MAP_REGIONS.map((region) => (
+          {MAP_REGION_LIST.map((region) => (
             <TouchableOpacity
               key={region.id}
               style={styles.regionBtn}

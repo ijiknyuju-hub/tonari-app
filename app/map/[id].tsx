@@ -8,14 +8,10 @@ import MapCanvas from '../../components/MapCanvas';
 import DrawingToolbar from '../../components/DrawingToolbar';
 import LayerPanel from '../../components/LayerPanel';
 
-// TODO: 単元テンプレートを動的にimportする
-// const templateMap = { orient, islam, mongol, exploration };
-
 export default function MapScreen() {
-  const { id, mapRegionId, unitId } = useLocalSearchParams<{
+  const { id, mapRegionId } = useLocalSearchParams<{
     id: string;
     mapRegionId?: string;
-    unitId?: string;
   }>();
 
   const [session, setSession] = useState<MapSession | null>(null);
@@ -35,7 +31,6 @@ export default function MapScreen() {
           id,
           title: '新しい地図',
           mapRegionId: mapRegionId ?? 'west-asia',
-          unitId: unitId || undefined,
           elements: [],
           layers: [...DEFAULT_LAYERS],
           createdAt: new Date().toISOString(),
@@ -53,6 +48,17 @@ export default function MapScreen() {
     const updated: MapSession = {
       ...session,
       elements: [...session.elements, el],
+      updatedAt: new Date().toISOString(),
+    };
+    setSession(updated);
+    await saveSession(updated);
+  }
+
+  async function handleElementRemoved(id: string) {
+    if (!session) return;
+    const updated: MapSession = {
+      ...session,
+      elements: session.elements.filter((e) => e.id !== id),
       updatedAt: new Date().toISOString(),
     };
     setSession(updated);
@@ -110,6 +116,7 @@ export default function MapScreen() {
           activeColor={activeColor}
           reviewMode={reviewMode}
           onElementAdded={handleElementAdded}
+          onElementRemoved={handleElementRemoved}
         />
         <View style={styles.rightPanel}>
           <LayerPanel
