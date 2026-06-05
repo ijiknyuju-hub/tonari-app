@@ -23,8 +23,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branch }}
-          # persist-credentials=false so the push step uses local git credentials
-          # (Windows Credential Manager) instead of the read-only GITHUB_TOKEN
           persist-credentials: false
 
       - name: Verify codex
@@ -43,19 +41,13 @@ jobs:
         env:
           CODEX_TASK: ${{ inputs.task }}
         run: |
-          # Continue on stderr — codex writes status to stderr which PowerShell
-          # would otherwise treat as a NativeCommandError and kill the pipeline.
           $ErrorActionPreference = 'Continue'
-
           $outFile = Join-Path $env:GITHUB_WORKSPACE "codex-output.txt"
           Write-Host "=== Task ==="
           Write-Host $env:CODEX_TASK
           Write-Host "============"
-
-          # Pass task as positional arg (avoids stdin pipe issues with .ps1 wrapper)
           & codex exec --sandbox workspace-write $env:CODEX_TASK 2>&1 |
             Tee-Object -FilePath $outFile
-
           $ec = $LASTEXITCODE
           Write-Host "codex exit code: $ec"
           if ($ec -ne 0) { exit $ec }
@@ -66,15 +58,15 @@ jobs:
         run: |
           $statusFile = Join-Path $env:GITHUB_WORKSPACE "git-status.txt"
           $diffFile   = Join-Path $env:GITHUB_WORKSPACE "git-diff.txt"
-
           Write-Host "=== git status ==="
           git status --short | Tee-Object -FilePath $statusFile
-
           Write-Host "=== git diff ==="
           git diff HEAD | Tee-Object -FilePath $diffFile
 
       - name: Commit and push
         shell: powershell
+        env:
+          COMMIT_BRANCH: ${{ inputs.branch }}
         run: |
           git config user.name "Codex Bot"
           git config user.email "codex@local"
@@ -83,9 +75,11 @@ jobs:
           if ($staged) {
             Write-Host "Changes:"
             Write-Host $staged
-            git commit -m "codex: ${{ inputs.task }}"
-            git push origin ${{ inputs.branch }}
-            Write-Host "Pushed to ${{ inputs.branch }}"
+            # Use run number in message to avoid special chars from task input
+            $msg = "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
+            git commit -m $msg
+            git push origin $env:COMMIT_BRANCH
+            Write-Host "Pushed to $env:COMMIT_BRANCH"
           } else {
             Write-Host "No changes to commit"
           }
