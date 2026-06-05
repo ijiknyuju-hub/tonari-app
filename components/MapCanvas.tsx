@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Svg, { Defs, Line, Path, Polygon, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, Path, Polygon, SvgXml, Text as SvgText } from 'react-native-svg';
 import {
   ArrowElement,
   DrawingElement,
@@ -28,6 +28,7 @@ interface Props {
 const ERASER_RADIUS = 30;
 
 export default function MapCanvas({
+  mapSvgContent,
   elements,
   visibleLayers,
   activeTool,
@@ -228,7 +229,14 @@ export default function MapCanvas({
     <View style={styles.container}>
       <GestureDetector gesture={composedGesture}>
         <View style={StyleSheet.absoluteFill}>
-          {/* TODO: <SvgXml xml={mapSvgContent} width="100%" height="100%" /> */}
+          {mapSvgContent ? (
+            <SvgXml
+              xml={mapSvgContent}
+              width="100%"
+              height="100%"
+              style={StyleSheet.absoluteFill}
+            />
+          ) : null}
           <Svg style={StyleSheet.absoluteFill}>
             <Defs />
             {visibleElements.map(renderElement)}

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { DrawingElement, DrawingToolType, LayerId, MapSession } from '../../lib/types';
+import { DrawingElement, DrawingToolType, LayerId, MapSession, UnitTemplate } from '../../lib/types';
 import { DEFAULT_LAYERS } from '../../constants/layers';
 import { loadAllSessions, saveSession } from '../../lib/storage';
+import { getMapSvgPath } from '../../lib/mapLoader';
 import MapCanvas from '../../components/MapCanvas';
 import DrawingToolbar from '../../components/DrawingToolbar';
 import LayerPanel from '../../components/LayerPanel';
+import TemplateChecklist from '../../components/TemplateChecklist';
 
 export default function MapScreen() {
   const { id, mapRegionId } = useLocalSearchParams<{
@@ -14,11 +16,19 @@ export default function MapScreen() {
     mapRegionId?: string;
   }>();
 
+  const TEMPLATE_MAP: Record<string, UnitTemplate> = {
+    orient: require('../../data/templates/orient.json'),
+    islam: require('../../data/templates/islam.json'),
+    mongol: require('../../data/templates/mongol.json'),
+    exploration: require('../../data/templates/exploration.json'),
+  };
+
   const [session, setSession] = useState<MapSession | null>(null);
   const [activeTool, setActiveTool] = useState<DrawingToolType>('pen');
   const [activeLayer, setActiveLayer] = useState<LayerId>('cities');
   const [activeColor, setActiveColor] = useState('#E53E3E');
   const [reviewMode, setReviewMode] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   useEffect(() => {
     async function init() {
@@ -108,7 +118,7 @@ export default function MapScreen() {
           onColorChange={setActiveColor}
         />
         <MapCanvas
-          mapSvgContent=""
+          mapSvgContent={getMapSvgPath(session.mapRegionId)}
           elements={session.elements}
           visibleLayers={visibleLayers}
           activeTool={activeTool}
@@ -125,6 +135,17 @@ export default function MapScreen() {
             onToggleLayer={handleToggleLayer}
             onSetActiveLayer={setActiveLayer}
           />
+          {session.unitId && TEMPLATE_MAP[session.unitId] && (
+            <TemplateChecklist
+              template={TEMPLATE_MAP[session.unitId]}
+              checkedItems={checkedItems}
+              onToggleItem={(id) =>
+                setCheckedItems((prev) =>
+                  prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+                )
+              }
+            />
+          )}
         </View>
       </View>
     </View>

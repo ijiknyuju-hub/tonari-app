@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DrawingToolType, LayerId } from '../lib/types';
 
 const TOOL_COLORS = ['#E53E3E', '#3182CE', '#38A169', '#805AD5', '#DD6B20', '#1A202C'];
@@ -27,12 +27,12 @@ export default function DrawingToolbar({
   onToolChange,
   onColorChange,
 }: Props) {
-  const tools: { id: DrawingToolType }[] = [
-    { id: 'pen' },
-    { id: 'highlighter' },
-    { id: 'arrow' },
-    { id: 'label' },
-    { id: 'eraser' },
+  const tools: { id: DrawingToolType; emoji: string }[] = [
+    { id: 'pen', emoji: '✏️' },
+    { id: 'highlighter', emoji: '🖌️' },
+    { id: 'arrow', emoji: '➡️' },
+    { id: 'label', emoji: '🏷️' },
+    { id: 'eraser', emoji: '⌫' },
   ];
 
   return (
@@ -42,7 +42,17 @@ export default function DrawingToolbar({
           key={t.id}
           style={[styles.toolBtn, activeTool === t.id && styles.toolBtnActive]}
           onPress={() => onToolChange(t.id)}
-        />
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              textAlign: 'center',
+              color: activeTool === t.id ? 'white' : '#2D3748',
+            }}
+          >
+            {t.emoji}
+          </Text>
+        </TouchableOpacity>
       ))}
       <View style={styles.divider} />
       {TOOL_COLORS.map((color) => (
