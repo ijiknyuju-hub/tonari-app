@@ -7,11 +7,6 @@ on:
         description: 'Task description for Codex'
         required: true
         type: string
-      model:
-        description: 'Codex model (o4-mini / gpt-4o)'
-        required: false
-        default: 'o4-mini'
-        type: string
       branch:
         description: 'Branch to work on'
         required: false
@@ -21,10 +16,7 @@ on:
 jobs:
   codex:
     runs-on: [self-hosted, local-codex]
-    timeout-minutes: 20
-
-    env:
-      NPM_BIN: C:\Users\ito junki\AppData\Roaming\npm
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -33,24 +25,42 @@ jobs:
           ref: ${{ inputs.branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add npm bin to PATH
+      - name: Verify codex
         shell: powershell
         run: |
-          $npmBin = "C:\Users\ito junki\AppData\Roaming\npm"
-          Write-Host "Adding to PATH: $npmBin"
-          "$npmBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          $codexCmd = Join-Path $npmBin 'codex.cmd'
-          if (Test-Path $codexCmd) {
-            Write-Host "Found: $codexCmd"
-          } else {
-            Write-Host "WARNING: codex.cmd not found at $codexCmd"
-            Get-ChildItem $npmBin | Select-Object Name
+          $codexPath = (where.exe codex 2>$null) | Select-Object -First 1
+          if (-not $codexPath) {
+            Write-Error "codex not found in PATH. Run: npm install -g @openai/codex"
+            exit 1
           }
+          Write-Host "codex found: $codexPath"
+          codex --version
 
       - name: Run Codex
         shell: powershell
+        env:
+          CODEX_TASK: ${{ inputs.task }}
         run: |
-          codex exec -m ${{ inputs.model }} --sandbox workspace-write "${{ inputs.task }}"
+          Write-Host "=== Task ==="
+          Write-Host $env:CODEX_TASK
+          Write-Host "============"
+
+          # Pipe task via stdin to avoid shell injection
+          # ChatGPT subscription auth is read automatically from ~/.codex/auth.json
+          $env:CODEX_TASK | codex exec --sandbox workspace-write - 2>&1 |
+            Tee-Object -FilePath codex-output.txt
+
+          Write-Host "codex exit code: $LASTEXITCODE"
+
+      - name: Capture git status and diff
+        shell: powershell
+        if: always()
+        run: |
+          Write-Host "=== git status ==="
+          git status --short | Tee-Object -FilePath git-status.txt
+
+          Write-Host "=== git diff ==="
+          git diff HEAD | Tee-Object -FilePath git-diff.txt
 
       - name: Commit and push
         shell: powershell
@@ -58,11 +68,23 @@ jobs:
           git config user.name "Codex Bot"
           git config user.email "codex@local"
           git add -A
-          $diff = git diff --staged --stat
-          if ($diff) {
-            Write-Host $diff
-            git commit -m "feat(codex): ${{ inputs.task }}"
+          $staged = git diff --staged --stat
+          if ($staged) {
+            Write-Host "Changes:"
+            Write-Host $staged
+            git commit -m "codex: ${{ inputs.task }}"
             git push origin ${{ inputs.branch }}
+            Write-Host "Pushed to ${{ inputs.branch }}"
           } else {
             Write-Host "No changes to commit"
           }
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codex-results-${{ github.run_number }}
+          path: |
+            codex-output.txt
+            git-status.txt
+            git-diff.txt
