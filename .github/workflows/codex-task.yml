@@ -41,26 +41,35 @@ jobs:
         env:
           CODEX_TASK: ${{ inputs.task }}
         run: |
+          # Continue on stderr — codex writes status to stderr which PowerShell
+          # would otherwise treat as a NativeCommandError and kill the pipeline.
+          $ErrorActionPreference = 'Continue'
+
+          $outFile = Join-Path $env:GITHUB_WORKSPACE "codex-output.txt"
           Write-Host "=== Task ==="
           Write-Host $env:CODEX_TASK
           Write-Host "============"
 
-          # Pipe task via stdin to avoid shell injection
-          # ChatGPT subscription auth is read automatically from ~/.codex/auth.json
-          $env:CODEX_TASK | codex exec --sandbox workspace-write - 2>&1 |
-            Tee-Object -FilePath codex-output.txt
+          # Pass task as positional arg (avoids stdin pipe issues with .ps1 wrapper)
+          & codex exec --sandbox workspace-write $env:CODEX_TASK 2>&1 |
+            Tee-Object -FilePath $outFile
 
-          Write-Host "codex exit code: $LASTEXITCODE"
+          $ec = $LASTEXITCODE
+          Write-Host "codex exit code: $ec"
+          if ($ec -ne 0) { exit $ec }
 
       - name: Capture git status and diff
         shell: powershell
         if: always()
         run: |
+          $statusFile = Join-Path $env:GITHUB_WORKSPACE "git-status.txt"
+          $diffFile   = Join-Path $env:GITHUB_WORKSPACE "git-diff.txt"
+
           Write-Host "=== git status ==="
-          git status --short | Tee-Object -FilePath git-status.txt
+          git status --short | Tee-Object -FilePath $statusFile
 
           Write-Host "=== git diff ==="
-          git diff HEAD | Tee-Object -FilePath git-diff.txt
+          git diff HEAD | Tee-Object -FilePath $diffFile
 
       - name: Commit and push
         shell: powershell
@@ -85,6 +94,6 @@ jobs:
         with:
           name: codex-results-${{ github.run_number }}
           path: |
-            codex-output.txt
-            git-status.txt
-            git-diff.txt
+            ${{ github.workspace }}/codex-output.txt
+            ${{ github.workspace }}/git-status.txt
+            ${{ github.workspace }}/git-diff.txt
