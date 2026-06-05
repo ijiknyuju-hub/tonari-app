@@ -31,14 +31,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Codex
-        shell: pwsh
+        shell: powershell
         run: |
           Write-Host "Running Codex task..."
           Write-Host "Task: ${{ inputs.task }}"
           codex exec -m ${{ inputs.model }} --sandbox workspace-write "${{ inputs.task }}"
 
       - name: Commit and push
-        shell: pwsh
+        shell: powershell
         run: |
           git config user.name "Codex Bot"
           git config user.email "codex@local"
