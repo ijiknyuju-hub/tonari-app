@@ -7,11 +7,15 @@ on:
         description: 'Task description for Codex'
         required: true
         type: string
-      branch:
-        description: 'Branch to work on'
+      base_branch:
+        description: 'Base branch to branch from and PR target'
         required: false
         default: 'sekaishi-chizu'
         type: string
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   codex:
@@ -19,21 +23,29 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout
+      - name: Checkout base
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
-          persist-credentials: false
+          ref: ${{ inputs.base_branch }}
+          persist-credentials: true
+
+      - name: Create codex branch
+        shell: powershell
+        run: |
+          $branch = "codex/run-$env:GITHUB_RUN_NUMBER"
+          git checkout -b $branch
+          Write-Host "CODEX_BRANCH=$branch" >> $env:GITHUB_ENV
+          Write-Host "Created branch: $branch"
 
       - name: Verify codex
         shell: powershell
         run: |
           $codexPath = (where.exe codex 2>$null) | Select-Object -First 1
           if (-not $codexPath) {
-            Write-Error "codex not found in PATH. Run: npm install -g @openai/codex"
+            Write-Error "codex not found. Run: npm install -g @openai/codex"
             exit 1
           }
-          Write-Host "codex found: $codexPath"
+          Write-Host "codex: $codexPath"
           codex --version
 
       - name: Run Codex
@@ -43,11 +55,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Continue'
           $outFile = Join-Path $env:GITHUB_WORKSPACE "codex-output.txt"
-          Write-Host "=== Task ==="
-          Write-Host $env:CODEX_TASK
-          Write-Host "============"
-          & codex exec --sandbox workspace-write $env:CODEX_TASK 2>&1 |
-            Tee-Object -FilePath $outFile
+          Write-Host "=== Task ===" ; Write-Host $env:CODEX_TASK ; Write-Host "============"
+          & codex exec --sandbox workspace-write $env:CODEX_TASK 2>&1 | Tee-Object -FilePath $outFile
           $ec = $LASTEXITCODE
           Write-Host "codex exit code: $ec"
           if ($ec -ne 0) { exit $ec }
@@ -56,33 +65,56 @@ jobs:
         shell: powershell
         if: always()
         run: |
-          $statusFile = Join-Path $env:GITHUB_WORKSPACE "git-status.txt"
-          $diffFile   = Join-Path $env:GITHUB_WORKSPACE "git-diff.txt"
-          Write-Host "=== git status ==="
-          git status --short | Tee-Object -FilePath $statusFile
-          Write-Host "=== git diff ==="
-          git diff HEAD | Tee-Object -FilePath $diffFile
+          git status --short | Tee-Object -FilePath (Join-Path $env:GITHUB_WORKSPACE "git-status.txt")
+          git diff HEAD   | Tee-Object -FilePath (Join-Path $env:GITHUB_WORKSPACE "git-diff.txt")
 
-      - name: Commit and push
+      - name: Commit and push codex branch
         shell: powershell
-        env:
-          COMMIT_BRANCH: ${{ inputs.branch }}
         run: |
           git config user.name "Codex Bot"
           git config user.email "codex@local"
           git add -A
           $staged = git diff --staged --stat
           if ($staged) {
-            Write-Host "Changes:"
             Write-Host $staged
-            # Use run number in message to avoid special chars from task input
-            $msg = "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
-            git commit -m $msg
-            git push origin $env:COMMIT_BRANCH
-            Write-Host "Pushed to $env:COMMIT_BRANCH"
+            git commit -m "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
+            git push origin $env:CODEX_BRANCH
+            Write-Host "Pushed: $env:CODEX_BRANCH"
           } else {
             Write-Host "No changes to commit"
           }
+
+      - name: Open PR for Claude review
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ inputs.base_branch }}
+        run: |
+          # Check if there are commits on this branch vs base
+          $ahead = git rev-list --count "origin/$env:BASE..$env:CODEX_BRANCH" 2>$null
+          if (-not $ahead -or $ahead -eq "0") {
+            Write-Host "No new commits — skipping PR creation"
+            exit 0
+          }
+
+          $prBody = @{
+            title = "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
+            head  = $env:CODEX_BRANCH
+            base  = $env:BASE
+            body  = "Automated implementation by Codex CLI on local runner DESKTOP-74GPCLK.`n`nRun: $env:GITHUB_RUN_NUMBER`nTask dispatched by Claude Code review loop."
+          } | ConvertTo-Json -Depth 3
+
+          $resp = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/ijiknyuju-hub/tonari-app/pulls" `
+            -Method POST `
+            -Headers @{ Authorization="Bearer $env:GITHUB_TOKEN"; Accept="application/vnd.github+json" } `
+            -Body $prBody `
+            -ContentType "application/json"
+
+          Write-Host "PR_NUMBER=$($resp.number)"
+          Write-Host "PR_URL=$($resp.html_url)"
+          "PR_NUMBER=$($resp.number)"    | Out-File -Append $env:GITHUB_ENV
+          "PR_URL=$($resp.html_url)"     | Out-File -Append $env:GITHUB_ENV
 
       - name: Upload results
         uses: actions/upload-artifact@v4
