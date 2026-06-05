@@ -32,8 +32,6 @@ jobs:
 
       - name: Run Codex
         shell: pwsh
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           Write-Host "Running Codex task..."
           Write-Host "Task: ${{ inputs.task }}"
