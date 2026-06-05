@@ -23,7 +23,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # persist-credentials=false so the push step uses local git credentials
+          # (Windows Credential Manager) instead of the read-only GITHUB_TOKEN
+          persist-credentials: false
 
       - name: Verify codex
         shell: powershell
