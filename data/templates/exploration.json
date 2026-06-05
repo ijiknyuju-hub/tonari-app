@@ -1,0 +1,17 @@
+{
+  "id": "exploration",
+  "title": "大航海時代",
+  "description": "ポルトガル・スペインによる大航海時代（15〜16世紀）",
+  "recommendedMapId": "world",
+  "items": [
+    { "id": "portugal",    "text": "ポルトガル",              "category": "cities",    "hint": "東回り航路を開拓" },
+    { "id": "spain",       "text": "スペイン",               "category": "cities",    "hint": "西回り航路・アメリカ大陸征服" },
+    { "id": "cape",        "text": "喜望峰",                 "category": "trade",     "hint": "バルトロメウ＝ディアス到達（1488）" },
+    { "id": "india-route", "text": "インド航路",             "category": "trade",     "hint": "ヴァスコ＝ダ＝ガマ（1498）→矢印で示す" },
+    { "id": "americas",    "text": "アメリカ大陸",           "category": "dynasties", "hint": "コロンブス発見（1492）" },
+    { "id": "manila",      "text": "マニラ",                 "category": "cities",    "hint": "スペイン統治・太平洋交易の結節点" },
+    { "id": "atlantic",    "text": "大西洋交易（三角貿易）",  "category": "trade",     "hint": "欧州・アフリカ・アメリカを結ぶ" },
+    { "id": "silver",      "text": "銀の流れ",               "category": "trade",     "hint": "ポトシ銀山→マニラ→中国→矢印で示す" },
+    { "id": "goa",         "text": "ゴア",                   "category": "cities",    "hint": "ポルトガルのインド拠点" }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "orient",
+  "title": "古代オリエント",
+  "description": "古代オリエント文明と帝国（前3000〜前4世紀）",
+  "recommendedMapId": "west-asia",
+  "items": [
+    { "id": "tigris",      "text": "チグリス川",            "category": "notes",     "hint": "メソポタミア東側の大河" },
+    { "id": "euphrates",   "text": "ユーフラテス川",        "category": "notes",     "hint": "メソポタミア西側の大河" },
+    { "id": "nile",        "text": "ナイル川",              "category": "notes",     "hint": "エジプト文明の母体" },
+    { "id": "mesopotamia", "text": "メソポタミア",          "category": "dynasties", "hint": "両河川間の川の間の地" },
+    { "id": "egypt",       "text": "エジプト",              "category": "dynasties", "hint": "ナイル川流域・ファラオ王朝" },
+    { "id": "assyria",     "text": "アッシリア",            "category": "dynasties", "hint": "初めて全オリエントを統一" },
+    { "id": "achaemenid",  "text": "アケメネス朝ペルシア",  "category": "dynasties", "hint": "最大の版図・寛容な統治" },
+    { "id": "kings-road",  "text": "王の道",               "category": "trade",     "hint": "スサ〜サルデス（約2700km）" },
+    { "id": "phoenicia",   "text": "フェニキア",            "category": "trade",     "hint": "地中海交易の担い手・アルファベットの原型" }
+  ]
+}

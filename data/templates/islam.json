@@ -1,0 +1,17 @@
+{
+  "id": "islam",
+  "title": "イスラーム世界",
+  "description": "イスラームの成立から拡大（7〜10世紀）",
+  "recommendedMapId": "west-asia",
+  "items": [
+    { "id": "mecca",        "text": "メッカ",               "category": "cities",    "hint": "ムハンマド生誕地・カーバ神殿" },
+    { "id": "medina",       "text": "メディナ",             "category": "cities",    "hint": "ヒジュラ先・初期イスラーム政権" },
+    { "id": "damascus",     "text": "ダマスクス",           "category": "cities",    "hint": "ウマイヤ朝の都" },
+    { "id": "baghdad",      "text": "バグダード",           "category": "cities",    "hint": "アッバース朝の都・丸い都市" },
+    { "id": "arabia",       "text": "アラビア半島",         "category": "dynasties", "hint": "イスラームの出発点" },
+    { "id": "umayyad",      "text": "ウマイヤ朝の拡大方向", "category": "trade",     "hint": "東西に急速拡大→矢印で示す" },
+    { "id": "abbasid",      "text": "アッバース朝の領域",   "category": "dynasties", "hint": "ウマイヤ朝より東寄り" },
+    { "id": "indian-ocean", "text": "インド洋交易",         "category": "trade",     "hint": "ムスリム商人が主導" },
+    { "id": "silk-road",    "text": "シルクロード（陸路）", "category": "trade",     "hint": "中央アジア経由で東西をつなぐ" }
+  ]
+}

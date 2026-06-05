@@ -1,0 +1,17 @@
+{
+  "id": "mongol",
+  "title": "モンゴル帝国",
+  "description": "モンゴル帝国の成立と分裂（13〜14世紀）",
+  "recommendedMapId": "eurasia",
+  "items": [
+    { "id": "mongolia",    "text": "モンゴル高原",           "category": "dynasties", "hint": "チンギス＝ハンの出発点" },
+    { "id": "karakorum",   "text": "カラコルム",             "category": "cities",    "hint": "モンゴル帝国の首都" },
+    { "id": "dadu",        "text": "大都（ダードゥー）",     "category": "cities",    "hint": "元の首都（現在の北京）" },
+    { "id": "yuan",        "text": "元",                    "category": "dynasties", "hint": "フビライ建国・中国支配" },
+    { "id": "ilkhanate",   "text": "イル＝ハン国",           "category": "dynasties", "hint": "西アジア・イラン支配" },
+    { "id": "kipchak",     "text": "キプチャク＝ハン国",     "category": "dynasties", "hint": "南ロシア草原・タタールのくびき" },
+    { "id": "chagatai",    "text": "チャガタイ＝ハン国",     "category": "dynasties", "hint": "中央アジア支配" },
+    { "id": "trade-routes","text": "東西交易路（パクス・モンゴリカ）", "category": "trade", "hint": "帝国内の安全な東西交通" },
+    { "id": "nan-song",    "text": "南宋（征服される）",     "category": "dynasties", "hint": "1279年に元に滅ぼされる" }
+  ]
+}

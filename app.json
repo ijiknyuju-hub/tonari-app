@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "世界史地図ノート",
+    "slug": "sekaishi-chizu",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "sekaishi",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sekaishi.chizu"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
