@@ -1,0 +1,56 @@
+name: Codex Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task description for Codex'
+        required: true
+        type: string
+      model:
+        description: 'Codex model (o4-mini / gpt-4o)'
+        required: false
+        default: 'o4-mini'
+        type: string
+      branch:
+        description: 'Branch to work on'
+        required: false
+        default: 'sekaishi-chizu'
+        type: string
+
+jobs:
+  codex:
+    runs-on: [self-hosted, local-codex]
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Codex
+        shell: pwsh
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          Write-Host "Running Codex task..."
+          Write-Host "Task: ${{ inputs.task }}"
+          codex exec -m ${{ inputs.model }} --sandbox workspace-write "${{ inputs.task }}"
+
+      - name: Commit and push
+        shell: pwsh
+        run: |
+          git config user.name "Codex Bot"
+          git config user.email "codex@local"
+          git add -A
+          $diff = git diff --staged --stat
+          if ($diff) {
+            Write-Host $diff
+            git commit -m "feat(codex): ${{ inputs.task }}"
+            git push origin ${{ inputs.branch }}
+            Write-Host "Changes pushed to ${{ inputs.branch }}"
+          } else {
+            Write-Host "No changes to commit"
+          }
