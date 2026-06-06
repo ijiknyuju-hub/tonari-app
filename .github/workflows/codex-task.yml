@@ -34,8 +34,9 @@ jobs:
         run: |
           $branch = "codex/run-$env:GITHUB_RUN_NUMBER"
           git checkout -b $branch
-          Write-Host "CODEX_BRANCH=$branch" >> $env:GITHUB_ENV
+          "CODEX_BRANCH=$branch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Created branch: $branch"
+          Write-Host "CODEX_BRANCH=$branch"
 
       - name: Verify codex
         shell: powershell
@@ -71,6 +72,8 @@ jobs:
       - name: Commit and push codex branch
         shell: powershell
         run: |
+          $currentBranch = git rev-parse --abbrev-ref HEAD
+          Write-Host "Current branch: $currentBranch (CODEX_BRANCH env: $env:CODEX_BRANCH)"
           git config user.name "Codex Bot"
           git config user.email "codex@local"
           git add -A
@@ -78,8 +81,8 @@ jobs:
           if ($staged) {
             Write-Host $staged
             git commit -m "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
-            git push -u origin $env:CODEX_BRANCH
-            Write-Host "Pushed: $env:CODEX_BRANCH"
+            git push -u origin $currentBranch
+            Write-Host "Pushed: $currentBranch"
           } else {
             Write-Host "No changes to commit"
           }
@@ -90,8 +93,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE: ${{ inputs.base_branch }}
         run: |
+          $currentBranch = git rev-parse --abbrev-ref HEAD
+          Write-Host "Opening PR: $currentBranch -> $env:BASE"
+
           # Check if there are commits on this branch vs base
-          $ahead = git rev-list --count "origin/$env:BASE..$env:CODEX_BRANCH" 2>$null
+          $ahead = (git rev-list --count "origin/$env:BASE..$currentBranch" 2>$null)
+          Write-Host "Commits ahead of base: $ahead"
           if (-not $ahead -or $ahead -eq "0") {
             Write-Host "No new commits — skipping PR creation"
             exit 0
@@ -99,7 +106,7 @@ jobs:
 
           $prBody = @{
             title = "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
-            head  = $env:CODEX_BRANCH
+            head  = $currentBranch
             base  = $env:BASE
             body  = "Automated implementation by Codex CLI on local runner DESKTOP-74GPCLK.`n`nRun: $env:GITHUB_RUN_NUMBER`nTask dispatched by Claude Code review loop."
           } | ConvertTo-Json -Depth 3
@@ -111,10 +118,9 @@ jobs:
             -Body $prBody `
             -ContentType "application/json"
 
-          Write-Host "PR_NUMBER=$($resp.number)"
-          Write-Host "PR_URL=$($resp.html_url)"
-          "PR_NUMBER=$($resp.number)"    | Out-File -Append $env:GITHUB_ENV
-          "PR_URL=$($resp.html_url)"     | Out-File -Append $env:GITHUB_ENV
+          Write-Host "PR created: #$($resp.number) $($resp.html_url)"
+          "PR_NUMBER=$($resp.number)"    | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PR_URL=$($resp.html_url)"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Upload results
         uses: actions/upload-artifact@v4
