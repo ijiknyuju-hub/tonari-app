@@ -10,25 +10,25 @@ import DrawingToolbar from '../../components/DrawingToolbar';
 import LayerPanel from '../../components/LayerPanel';
 import TemplateChecklist from '../../components/TemplateChecklist';
 
+const TEMPLATE_MAP: Record<string, UnitTemplate> = {
+  orient: require('../../data/templates/orient.json'),
+  islam: require('../../data/templates/islam.json'),
+  mongol: require('../../data/templates/mongol.json'),
+  exploration: require('../../data/templates/exploration.json'),
+};
+
 export default function MapScreen() {
-  const { id, mapRegionId } = useLocalSearchParams<{
+  const { id, mapRegionId, unitId } = useLocalSearchParams<{
     id: string;
     mapRegionId?: string;
+    unitId?: string;
   }>();
-
-  const TEMPLATE_MAP: Record<string, UnitTemplate> = {
-    orient: require('../../data/templates/orient.json'),
-    islam: require('../../data/templates/islam.json'),
-    mongol: require('../../data/templates/mongol.json'),
-    exploration: require('../../data/templates/exploration.json'),
-  };
 
   const [session, setSession] = useState<MapSession | null>(null);
   const [activeTool, setActiveTool] = useState<DrawingToolType>('pen');
   const [activeLayer, setActiveLayer] = useState<LayerId>('cities');
   const [activeColor, setActiveColor] = useState('#E53E3E');
   const [reviewMode, setReviewMode] = useState(false);
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   useEffect(() => {
     async function init() {
@@ -41,6 +41,8 @@ export default function MapScreen() {
           id,
           title: '新しい地図',
           mapRegionId: mapRegionId ?? 'west-asia',
+          unitId,
+          checkedItems: [],
           elements: [],
           layers: [...DEFAULT_LAYERS],
           createdAt: new Date().toISOString(),
@@ -82,6 +84,20 @@ export default function MapScreen() {
       layers: session.layers.map((l) =>
         l.id === layerId ? { ...l, visible: !l.visible } : l
       ),
+      updatedAt: new Date().toISOString(),
+    };
+    setSession(updated);
+    await saveSession(updated);
+  }
+
+  async function handleToggleItem(itemId: string) {
+    if (!session) return;
+    const checkedItems = session.checkedItems ?? [];
+    const updated: MapSession = {
+      ...session,
+      checkedItems: checkedItems.includes(itemId)
+        ? checkedItems.filter((id) => id !== itemId)
+        : [...checkedItems, itemId],
       updatedAt: new Date().toISOString(),
     };
     setSession(updated);
@@ -138,12 +154,8 @@ export default function MapScreen() {
           {session.unitId && TEMPLATE_MAP[session.unitId] && (
             <TemplateChecklist
               template={TEMPLATE_MAP[session.unitId]}
-              checkedItems={checkedItems}
-              onToggleItem={(id) =>
-                setCheckedItems((prev) =>
-                  prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-                )
-              }
+              checkedItems={session.checkedItems ?? []}
+              onToggleItem={handleToggleItem}
             />
           )}
         </View>
