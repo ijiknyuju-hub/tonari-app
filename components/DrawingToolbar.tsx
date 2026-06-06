@@ -1,14 +1,6 @@
-/**
- * DrawingToolbar
- *
- * TODO（Codexへ）:
- * - 各ツールボタンを@expo/vector-icons の Ionicons アイコンで実装
- * - カラーパレット（6色）をボタン形式で表示
- * - 選択中ツール・色をハイライト
- */
-
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { DrawingToolType, LayerId } from '../lib/types';
 
 const TOOL_COLORS = ['#E53E3E', '#3182CE', '#38A169', '#805AD5', '#DD6B20', '#1A202C'];
@@ -27,12 +19,15 @@ export default function DrawingToolbar({
   onToolChange,
   onColorChange,
 }: Props) {
-  const tools: { id: DrawingToolType; emoji: string }[] = [
-    { id: 'pen', emoji: '✏️' },
-    { id: 'highlighter', emoji: '🖍️' },
-    { id: 'arrow', emoji: '➡️' },
-    { id: 'label', emoji: '🏷️' },
-    { id: 'eraser', emoji: '🧽' },
+  const tools: {
+    id: DrawingToolType;
+    iconName: React.ComponentProps<typeof Ionicons>['name'];
+  }[] = [
+    { id: 'pen', iconName: 'pencil' },
+    { id: 'highlighter', iconName: 'brush' },
+    { id: 'arrow', iconName: 'arrow-forward' },
+    { id: 'label', iconName: 'pricetag' },
+    { id: 'eraser', iconName: 'backspace' },
   ];
 
   return (
@@ -43,15 +38,11 @@ export default function DrawingToolbar({
           style={[styles.toolBtn, activeTool === t.id && styles.toolBtnActive]}
           onPress={() => onToolChange(t.id)}
         >
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: 'center',
-              color: activeTool === t.id ? 'white' : '#2D3748',
-            }}
-          >
-            {t.emoji}
-          </Text>
+          <Ionicons
+            name={t.iconName}
+            size={22}
+            color={activeTool === t.id ? '#FFF' : '#4A5568'}
+          />
         </TouchableOpacity>
       ))}
       <View style={styles.divider} />
