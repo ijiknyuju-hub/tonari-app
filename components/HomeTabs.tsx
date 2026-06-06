@@ -1,3 +1,4 @@
+import IngredientsScreen from '@/components/IngredientsScreen'
 import RecommendScreen from '@/components/RecommendScreen'
 import RepertoireList from '@/components/RepertoireList'
 import type { AppState } from '@/lib/types'
@@ -13,10 +14,17 @@ type HomeTabsProps = {
 }
 
 const tabs: { id: HomeTab; label: string; icon: string }[] = [
-  { id: 'recommend', label: '今日のおすすめ', icon: '✦' },
-  { id: 'ingredients', label: '食材から', icon: '🥬' },
+  { id: 'recommend', label: 'ホーム', icon: '🏠' },
+  { id: 'ingredients', label: '食材から', icon: '🔍' },
   { id: 'repertoire', label: 'レパートリー', icon: '📋' },
 ]
+
+function getGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 11) return 'おはようございます'
+  if (hour < 17) return 'こんにちは'
+  return 'こんばんは'
+}
 
 export default function HomeTabs({
   activeTab,
@@ -28,8 +36,18 @@ export default function HomeTabs({
   return (
     <>
       <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto max-w-md px-4 py-4">
-          <h1 className="text-lg font-bold text-zinc-900">となりごはん</h1>
+        <div className="mx-auto flex max-w-md items-center justify-between px-4 py-4">
+          <div>
+            <h1 className="text-xl font-bold text-zinc-900">となりごはん</h1>
+            <p className="mt-1 text-sm text-zinc-500">{getGreeting()}</p>
+          </div>
+          <button
+            type="button"
+            aria-label="通知"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFF0DC] text-lg"
+          >
+            🔔
+          </button>
         </div>
       </header>
       <main className="mx-auto max-w-md px-4 pb-20 pt-4">
@@ -42,9 +60,7 @@ export default function HomeTabs({
           />
         ) : null}
         {activeTab === 'ingredients' ? (
-          <div className="rounded-xl border border-zinc-200 bg-white p-5 text-sm text-zinc-500">
-            食材から探す機能は準備中です
-          </div>
+          <IngredientsScreen dishes={appState.dishes} onOpenDish={onOpenDish} />
         ) : null}
         {activeTab === 'repertoire' ? (
           <RepertoireList dishes={appState.dishes} onOpenDish={onOpenDish} />

@@ -1,18 +1,10 @@
 import { useState } from 'react'
 import { PRESET_DISHES } from '@/lib/presets'
+import { getCategoryColor, getDishPhotoUrl } from '@/lib/photos'
 import type { Dish } from '@/lib/types'
 
 type OnboardingPresetsProps = {
   onComplete: (selected: Dish[]) => void
-}
-
-function getCategoryColor(category: string): string {
-  if (category === '炒め物') return '#FFE8D0'
-  if (category === '煮物') return '#E8F0E0'
-  if (category === '揚げ物') return '#FFF5D0'
-  if (category === '焼き物') return '#FFF0E8'
-  if (category === 'ご飯もの') return '#E8F5FF'
-  return '#F0F0F0'
 }
 
 const presets = PRESET_DISHES.filter((dish) => dish.status === 'cooked' && dish.axes.seasoning !== '')
@@ -49,6 +41,11 @@ export default function OnboardingPresets({ onComplete }: OnboardingPresetsProps
   return (
     <main className="mx-auto min-h-screen max-w-md px-4 pb-24 pt-6">
       <div className="mb-5">
+        <div className="mb-5 flex justify-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[#E8611A]" />
+          <span className="h-2 w-2 rounded-full bg-zinc-200" />
+          <span className="h-2 w-2 rounded-full bg-zinc-200" />
+        </div>
         <h1 className="text-xl font-bold text-zinc-900">作ったことがある料理を選んでね</h1>
         <p className="mt-2 text-sm text-zinc-500">近い料理を出すために、まずは3品から始めます。</p>
       </div>
@@ -61,16 +58,14 @@ export default function OnboardingPresets({ onComplete }: OnboardingPresetsProps
               key={dish.id}
               type="button"
               onClick={() => toggleDish(dish.id)}
-              className={`rounded-xl border bg-white p-3 text-left ${
-                isSelected ? 'border-[#E8611A] ring-2 ring-[#E8611A]/20' : 'border-zinc-200'
+              className={`overflow-hidden rounded-xl border bg-white text-left transition ${
+                isSelected ? 'border-[#E8611A] ring-2 ring-[#E8611A] ring-offset-2' : 'border-zinc-200'
               }`}
             >
-              <div
-                className="mb-3 h-16 rounded-lg"
-                style={{ backgroundColor: getCategoryColor(dish.category) }}
-              />
-              <p className="text-sm font-semibold text-zinc-900">{dish.name}</p>
-              <p className="mt-1 text-xs text-zinc-500">{dish.category}</p>
+              <div className="h-24" style={{ backgroundColor: getCategoryColor(dish.category) }}>
+                <img src={getDishPhotoUrl(dish)} alt="" className="h-full w-full object-cover" />
+              </div>
+              <p className="p-3 text-sm font-semibold text-zinc-900">{dish.name}</p>
             </button>
           )
         })}
