@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 8,
     backgroundColor: '#F7FAFC',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   toolBtnActive: {
     backgroundColor: '#4A90D9',
