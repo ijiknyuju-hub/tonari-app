@@ -1,14 +1,8 @@
 import { MapRegion } from './types';
-
-const SVG_MAP: Record<string, string> = {
-  'west-asia': require('../assets/maps/west-asia.svg'),
-  'east-asia': require('../assets/maps/east-asia.svg'),
-  'eurasia':   require('../assets/maps/eurasia.svg'),
-  'world':     require('../assets/maps/world.svg'),
-};
+import { MAP_SVG_STRINGS } from './mapSvgStrings';
 
 export function getMapSvgPath(regionId: string): string {
-  return SVG_MAP[regionId] ?? '';
+  return MAP_SVG_STRINGS[regionId] ?? '';
 }
 
 export const MAP_REGION_DEFS: Omit<MapRegion, 'svgAsset'>[] = [
