@@ -58,6 +58,7 @@ export interface MapSession {
   title: string;
   mapRegionId: string;
   unitId?: string;
+  checkedItems?: string[];
   elements: DrawingElement[];
   layers: Layer[];
   era?: string;
