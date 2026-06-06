@@ -10,7 +10,7 @@ on:
       base_branch:
         description: 'Base branch to branch from and PR target'
         required: false
-        default: 'sekaishi-chizu'
+        default: 'main'
         type: string
 
 permissions:

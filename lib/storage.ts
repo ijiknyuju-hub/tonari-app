@@ -1,26 +1,35 @@
 import type { AppState } from './types'
 
-export const KEY = 'tonari-app-state'
+export const KEY = 'tonari-app-v4'
 
 const emptyState = (): AppState => ({
-  nodes: [],
-  edges: [],
+  dishes: [],
   lastUpdated: new Date().toISOString(),
 })
+
+function isAppState(value: unknown): value is AppState {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Array.isArray((value as AppState).dishes) &&
+    typeof (value as AppState).lastUpdated === 'string'
+  )
+}
 
 export function loadState(): AppState {
   if (typeof window === 'undefined') {
     return emptyState()
   }
 
-  const rawState = window.localStorage.getItem(KEY)
-
-  if (!rawState) {
-    return emptyState()
-  }
-
   try {
-    return JSON.parse(rawState) as AppState
+    const rawState = window.localStorage.getItem(KEY)
+
+    if (!rawState) {
+      return emptyState()
+    }
+
+    const parsed: unknown = JSON.parse(rawState)
+    return isAppState(parsed) ? parsed : emptyState()
   } catch {
     return emptyState()
   }
@@ -31,18 +40,24 @@ export function saveState(state: AppState): void {
     return
   }
 
-  window.localStorage.setItem(KEY, JSON.stringify(state))
+  try {
+    window.localStorage.setItem(KEY, JSON.stringify(state))
+  } catch {
+  }
 }
 
 export function exportState(state: AppState): void {
-  const json = JSON.stringify(state, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = `tonari-gohan-${new Date().toISOString().slice(0, 10)}.json`
-  anchor.click()
-  URL.revokeObjectURL(url)
+  try {
+    const json = JSON.stringify(state, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `tonari-gohan-${new Date().toISOString().slice(0, 10)}.json`
+    anchor.click()
+    URL.revokeObjectURL(url)
+  } catch {
+  }
 }
 
 export function importStateFromFile(file: File): Promise<AppState> {
@@ -51,20 +66,20 @@ export function importStateFromFile(file: File): Promise<AppState> {
 
     reader.onload = (event) => {
       try {
-        const parsed = JSON.parse(event.target?.result as string) as AppState
+        const parsed: unknown = JSON.parse(String(event.target?.result ?? ''))
 
-        if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
-          reject(new Error('データの形式が正しくありません。'))
+        if (!isAppState(parsed)) {
+          reject(new Error('Invalid app state format.'))
           return
         }
 
         resolve(parsed)
       } catch {
-        reject(new Error('ファイルの形式が正しくありません。'))
+        reject(new Error('Invalid JSON file format.'))
       }
     }
 
-    reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました。'))
+    reader.onerror = () => reject(new Error('Failed to read file.'))
     reader.readAsText(file)
   })
 }

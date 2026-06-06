@@ -1,32 +1,42 @@
-export type NodeStatus = 'cooked' | 'want' | 'suggested'
-export type NodeType = 'base' | 'variation' | 'adjacent'
+export type Effort = 1 | 2 | 3
 
-export interface RecipeNode {
+export interface DishAxes {
+  seasoning: string
+  ingredient: string
+  method: string
+}
+
+export interface Arrangement {
   id: string
   name: string
-  status: NodeStatus
-  type: NodeType
-  parentId: string | null
   reason: string
-  position: { x: number; y: number }
-  createdAt: string
-  category?: string
+  type: 'generic' | 'specific'
+}
+
+export type DishStatus = 'cooked' | 'want'
+
+export interface Dish {
+  id: string
+  name: string
+  category: string
+  axes: DishAxes
+  effort: Effort
+  summary?: string
+  fromDishId?: string | null
+  changePoint?: string
+  newIngredients?: string
   ingredients?: string
   steps?: string
   referenceUrl?: string
-  isPreset?: boolean
-}
-
-export interface RecipeEdge {
-  id: string
-  source: string
-  target: string
-  label: string
-  edgeType: 'variation' | 'adjacent'
+  note?: string
+  photoUri?: string
+  arrangements: Arrangement[]
+  status: DishStatus
+  cookedAt?: string
+  createdAt: string
 }
 
 export interface AppState {
-  nodes: RecipeNode[]
-  edges: RecipeEdge[]
+  dishes: Dish[]
   lastUpdated: string
 }
