@@ -29,8 +29,5 @@ export function getCategoryColor(category: string): string {
 export function getDishPhotoUrl(dish: Dish): string {
   if (dish.photoUri) return dish.photoUri
 
-  const query = CATEGORY_PHOTOS[dish.category] ?? `${dish.name} food`
-  const encodedQuery = encodeURIComponent(query)
-
-  return `https://source.unsplash.com/800x600/?${encodedQuery}`
+  return `/images/dishes/${dish.id}.png`
 }
