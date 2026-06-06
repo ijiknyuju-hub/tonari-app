@@ -1,389 +1,83 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import AddDishPanel from '@/components/AddDishPanel'
-import RecipeEditModal from '@/components/RecipeEditModal'
-import RecipeFlow from '@/components/RecipeFlow'
-import { PRESET_DISHES } from '@/lib/presets'
-import { exportState, importStateFromFile, loadState, saveState } from '@/lib/storage'
-import type { AppState, RecipeEdge, RecipeNode } from '@/lib/types'
+import { useEffect, useState } from 'react'
+import DishCard from '@/components/DishCard'
+import HomeTabs from '@/components/HomeTabs'
+import OnboardingPresets from '@/components/OnboardingPresets'
+import { loadState, saveState } from '@/lib/storage'
+import type { AppState, Dish } from '@/lib/types'
 
-type Suggestion = {
-  name: string
-  reason: string
-  ingredients?: string
-  steps?: string
-  category?: string
-}
-
-type SuggestResponse = {
-  variations: Suggestion[]
-  adjacent: Suggestion[]
-}
-
-function isSuggestResponse(value: SuggestResponse | { error?: string }): value is SuggestResponse {
-  return 'variations' in value && 'adjacent' in value
-}
-
-const initialState = (): AppState => ({
-  nodes: [],
-  edges: [],
-  lastUpdated: new Date().toISOString(),
-})
-
-async function fetchSuggestions(dish: string, existingDishes: string[]): Promise<SuggestResponse> {
-  const response = await fetch('/api/suggest', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ dish, existingDishes }),
-  })
-
-  const data = (await response.json()) as SuggestResponse | { error?: string }
-
-  if (!response.ok) {
-    const message = 'error' in data ? data.error : undefined
-
-    throw new Error(message ?? '提案の取得に失敗しました。')
-  }
-
-  if (!isSuggestResponse(data)) {
-    throw new Error('提案の形式が正しくありません。')
-  }
-
-  return data
-}
-
-function buildSuggestionNodes(
-  parentId: string,
-  suggestions: Suggestion[],
-  type: 'variation' | 'adjacent',
-  existingNames: Set<string>,
-): { nodes: RecipeNode[]; edges: RecipeEdge[] } {
-  return suggestions.reduce<{ nodes: RecipeNode[]; edges: RecipeEdge[] }>(
-    (result, suggestion) => {
-      const name = suggestion.name.trim()
-
-      if (!name || existingNames.has(name)) {
-        return result
-      }
-
-      existingNames.add(name)
-
-      const nodeId = uuidv4()
-      const createdAt = new Date().toISOString()
-
-      result.nodes.push({
-        id: nodeId,
-        name,
-        status: 'suggested',
-        type,
-        parentId,
-        reason: suggestion.reason,
-        position: { x: 0, y: 0 },
-        createdAt,
-        category: suggestion.category,
-        ingredients: suggestion.ingredients,
-        steps: suggestion.steps,
-        isPreset: Boolean(suggestion.ingredients || suggestion.steps || suggestion.category),
-      })
-
-      result.edges.push({
-        id: uuidv4(),
-        source: parentId,
-        target: nodeId,
-        label: suggestion.reason,
-        edgeType: type,
-      })
-
-      return result
-    },
-    { nodes: [], edges: [] },
-  )
+const initialState: AppState = {
+  dishes: [],
+  lastUpdated: '',
 }
 
 export default function Home() {
   const [appState, setAppState] = useState<AppState>(initialState)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'recommend' | 'ingredients' | 'repertoire'>('recommend')
+  const [openDishId, setOpenDishId] = useState<string | null>(null)
+  const [isOnboarding, setIsOnboarding] = useState(false)
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setAppState(loadState())
-    }, 0)
+    const loadedState = loadState()
+    const cookedDishes = loadedState.dishes.filter((dish) => dish.status === 'cooked')
 
-    return () => window.clearTimeout(timeoutId)
+    setAppState(loadedState)
+    setIsOnboarding(loadedState.dishes.length === 0 || cookedDishes.length === 0)
   }, [])
 
-  const cookedNodes = useMemo(
-    () => appState.nodes.filter((node) => node.status === 'cooked'),
-    [appState.nodes],
-  )
-
-  const recentDishes = useMemo(
-    () =>
-      [...cookedNodes]
-        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-        .slice(0, 5)
-        .map((node) => node.name),
-    [cookedNodes],
-  )
-
-  const wantDishes = useMemo(
-    () => appState.nodes.filter((node) => node.status === 'want').map((node) => node.name),
-    [appState.nodes],
-  )
-
-  async function handleAddDish(dish: string) {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const existingDishes = appState.nodes.map((node) => node.name)
-      const suggestions = await fetchSuggestions(dish, existingDishes)
-      const dishNodeId = uuidv4()
-      const createdAt = new Date().toISOString()
-      const dishNode: RecipeNode = {
-        id: dishNodeId,
-        name: dish,
-        status: 'cooked',
-        type: 'base',
-        parentId: null,
-        reason: '最初に追加した料理',
-        position: { x: 0, y: 0 },
-        createdAt,
-      }
-      const existingNames = new Set([...existingDishes, dish])
-      const variation = buildSuggestionNodes(
-        dishNodeId,
-        suggestions.variations,
-        'variation',
-        existingNames,
-      )
-      const adjacent = buildSuggestionNodes(
-        dishNodeId,
-        suggestions.adjacent,
-        'adjacent',
-        existingNames,
-      )
-      const nextState: AppState = {
-        nodes: [dishNode, ...appState.nodes, ...variation.nodes, ...adjacent.nodes],
-        edges: [...appState.edges, ...variation.edges, ...adjacent.edges],
-        lastUpdated: createdAt,
-      }
-
-      setAppState(nextState)
-      saveState(nextState)
-    } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : '料理の追加に失敗しました。')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  function handleAddPreset(dishName: string) {
-    const presetDish = PRESET_DISHES.find((dish) => dish.name === dishName)
-
-    if (!presetDish) {
-      void handleAddDish(dishName)
-      return
-    }
-
-    const existingDishes = appState.nodes.map((node) => node.name)
-    const existingNames = new Set([...existingDishes, presetDish.name])
-    const dishNodeId = uuidv4()
-    const createdAt = new Date().toISOString()
-    const dishNode: RecipeNode = {
-      id: dishNodeId,
-      name: presetDish.name,
-      status: 'cooked',
-      type: 'base',
-      parentId: null,
-      reason: 'プリセットから追加した料理',
-      position: { x: 0, y: 0 },
-      createdAt,
-      category: presetDish.category,
-      ingredients: presetDish.ingredients,
-      steps: presetDish.steps,
-      isPreset: true,
-    }
-    const variation = buildSuggestionNodes(
-      dishNodeId,
-      presetDish.variations,
-      'variation',
-      existingNames,
-    )
-    const adjacent = buildSuggestionNodes(
-      dishNodeId,
-      presetDish.adjacent,
-      'adjacent',
-      existingNames,
-    )
+  function handleOnboardingComplete(selectedDishes: Dish[]) {
+    const cookedAt = new Date().toISOString()
     const nextState: AppState = {
-      nodes: [dishNode, ...appState.nodes, ...variation.nodes, ...adjacent.nodes],
-      edges: [...appState.edges, ...variation.edges, ...adjacent.edges],
-      lastUpdated: createdAt,
+      dishes: selectedDishes.map((dish) => ({
+        ...dish,
+        status: 'cooked' as const,
+        cookedAt,
+      })),
+      lastUpdated: cookedAt,
     }
 
-    setError(null)
     setAppState(nextState)
     saveState(nextState)
+    setIsOnboarding(false)
   }
 
-  async function handleNodeCooked(nodeId: string) {
-    const targetNode = appState.nodes.find((node) => node.id === nodeId)
-
-    if (!targetNode || targetNode.status === 'cooked' || isLoading) {
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const existingDishes = appState.nodes.map((node) => node.name)
-      const suggestions = await fetchSuggestions(targetNode.name, existingDishes)
-      const updatedAt = new Date().toISOString()
-      const updatedNodes = appState.nodes.map((node) =>
-        node.id === nodeId ? { ...node, status: 'cooked' as const } : node,
-      )
-      const existingNames = new Set(existingDishes)
-      const variation = buildSuggestionNodes(
-        nodeId,
-        suggestions.variations,
-        'variation',
-        existingNames,
-      )
-      const adjacent = buildSuggestionNodes(
-        nodeId,
-        suggestions.adjacent,
-        'adjacent',
-        existingNames,
-      )
-      const nextState: AppState = {
-        nodes: [...updatedNodes, ...variation.nodes, ...adjacent.nodes],
-        edges: [...appState.edges, ...variation.edges, ...adjacent.edges],
-        lastUpdated: updatedAt,
-      }
-
-      setAppState(nextState)
-      saveState(nextState)
-    } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : '候補の追加に失敗しました。')
-    } finally {
-      setIsLoading(false)
-    }
+  function handleStateChange(next: AppState) {
+    setAppState(next)
+    saveState(next)
   }
 
-  function handleNodeWant(nodeId: string) {
-    const targetNode = appState.nodes.find((node) => node.id === nodeId)
-
-    if (!targetNode || targetNode.status !== 'suggested') {
-      return
-    }
-
+  function handleDishUpdate(updated: Dish) {
     const nextState: AppState = {
-      ...appState,
-      nodes: appState.nodes.map((node) =>
-        node.id === nodeId ? { ...node, status: 'want' as const } : node,
-      ),
+      dishes: appState.dishes.map((dish) => (dish.id === updated.id ? updated : dish)),
       lastUpdated: new Date().toISOString(),
     }
 
-    setAppState(nextState)
-    saveState(nextState)
+    handleStateChange(nextState)
   }
 
-  function handleEditNode(
-    nodeId: string,
-    updates: Pick<RecipeNode, 'ingredients' | 'steps' | 'referenceUrl'>,
-  ) {
-    const nextState: AppState = {
-      ...appState,
-      nodes: appState.nodes.map((node) => (node.id === nodeId ? { ...node, ...updates } : node)),
-      lastUpdated: new Date().toISOString(),
-    }
-
-    setAppState(nextState)
-    saveState(nextState)
-    setEditingNodeId(null)
-  }
-
-  function handleExport() {
-    exportState(appState)
-  }
-
-  async function handleImport(file: File) {
-    try {
-      const imported = await importStateFromFile(file)
-      setAppState(imported)
-      saveState(imported)
-      setError(null)
-    } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'インポートに失敗しました。')
-    }
-  }
-
-  function handleShare() {
-    const count = cookedNodes.length
-    const dishNames = [...cookedNodes]
-      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-      .slice(0, 8)
-      .map((n) => n.name)
-    const params = new URLSearchParams({
-      count: String(count),
-      dishes: dishNames.join(','),
-    })
-    const appUrl = 'https://tonari-app-fawn.vercel.app'
-    const shareUrl = `${appUrl}/share?${params.toString()}`
-    const text = `私の料理スキルツリー、${count}品になりました🌿 #となりごはん`
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`
-    window.open(twitterUrl, '_blank', 'noopener,noreferrer')
-  }
-
-  const editingNode = editingNodeId
-    ? appState.nodes.find((node) => node.id === editingNodeId)
-    : undefined
+  const openDish = openDishId ? appState.dishes.find((dish) => dish.id === openDishId) : undefined
 
   return (
-    <div className="flex h-screen bg-[#F7F8F5] text-zinc-900">
-      <AddDishPanel
-        cookedCount={cookedNodes.length}
-        recentDishes={recentDishes}
-        wantDishes={wantDishes}
-        onAddDish={handleAddDish}
-        onAddPreset={handleAddPreset}
-        onExport={handleExport}
-        onImport={handleImport}
-        onShare={handleShare}
-        isLoading={isLoading}
-      />
-      <main className="relative flex-1">
-        {error ? (
-          <div className="absolute left-6 top-6 z-10 max-w-md rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
-            {error}
-          </div>
-        ) : null}
-        {appState.nodes.length > 0 ? (
-          <RecipeFlow
-            nodes={appState.nodes}
-            edges={appState.edges}
-            onNodeCooked={handleNodeCooked}
-            onNodeEdit={setEditingNodeId}
-            onNodeWant={handleNodeWant}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-center text-zinc-400">
-            <p className="text-sm">左の入力欄かプリセットから、まず作れる料理を追加してください。</p>
-          </div>
-        )}
-      </main>
-      {editingNode ? (
-        <RecipeEditModal
-          node={editingNode}
-          onSave={handleEditNode}
-          onClose={() => setEditingNodeId(null)}
+    <div className="min-h-screen bg-[#F7F8F5] text-zinc-900">
+      {isOnboarding ? (
+        <OnboardingPresets onComplete={handleOnboardingComplete} />
+      ) : (
+        <HomeTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          appState={appState}
+          onOpenDish={setOpenDishId}
+          onStateChange={handleStateChange}
+        />
+      )}
+      {openDish ? (
+        <DishCard
+          dish={openDish}
+          allDishes={appState.dishes}
+          onClose={() => setOpenDishId(null)}
+          onUpdate={handleDishUpdate}
+          onOpenDish={setOpenDishId}
         />
       ) : null}
     </div>

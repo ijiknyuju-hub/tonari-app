@@ -40,3 +40,33 @@ export interface AppState {
   dishes: Dish[]
   lastUpdated: string
 }
+
+export interface RecipeNode {
+  id: string
+  name: string
+  status: 'cooked' | 'want' | 'suggested'
+  type: 'base' | 'variation' | 'adjacent'
+  parentId: string | null
+  reason: string
+  position: { x: number; y: number }
+  createdAt: string
+  category?: string
+  ingredients?: string
+  steps?: string
+  referenceUrl?: string
+  isPreset?: boolean
+}
+
+export interface RecipeEdge {
+  id: string
+  source: string
+  target: string
+  label?: string
+  edgeType?: string
+}
+
+export interface AppStateLegacy {
+  nodes: RecipeNode[]
+  edges: RecipeEdge[]
+  lastUpdated: string
+}

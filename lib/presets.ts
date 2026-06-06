@@ -3214,3 +3214,6 @@ export const PRESET_DISHES: Dish[] = [
     createdAt: "2026-06-06T00:00:00.000Z",
   }
 ]
+
+export type Category = string
+export const CATEGORIES: Category[] = [...new Set(PRESET_DISHES.map(d => d.category))]
