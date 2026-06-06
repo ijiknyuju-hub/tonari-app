@@ -1,0 +1,279 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA1100000000000000000001 /* SekaishiChizuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000002 /* SekaishiChizuApp.swift */; };
+		AA1100000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000004 /* ContentView.swift */; };
+		AA1100000000000000000005 /* MapEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000006 /* MapEditorView.swift */; };
+		AA1100000000000000000007 /* PencilKitCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000008 /* PencilKitCanvas.swift */; };
+		AA1100000000000000000009 /* EditorToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA110000000000000000000A /* EditorToolbar.swift */; };
+		AA110000000000000000000B /* LabelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA110000000000000000000C /* LabelItem.swift */; };
+		AA110000000000000000000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA110000000000000000000E /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA1100000000000000000002 /* SekaishiChizuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SekaishiChizuApp.swift; sourceTree = "<group>"; };
+		AA1100000000000000000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA1100000000000000000006 /* MapEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEditorView.swift; sourceTree = "<group>"; };
+		AA1100000000000000000008 /* PencilKitCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitCanvas.swift; sourceTree = "<group>"; };
+		AA110000000000000000000A /* EditorToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorToolbar.swift; sourceTree = "<group>"; };
+		AA110000000000000000000C /* LabelItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelItem.swift; sourceTree = "<group>"; };
+		AA110000000000000000000E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA110000000000000000000F /* SekaishiChizu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SekaishiChizu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA1100000000000000000010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA1100000000000000000011 = {
+			isa = PBXGroup;
+			children = (
+				AA1100000000000000000012 /* SekaishiChizu */,
+				AA1100000000000000000013 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA1100000000000000000013 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA110000000000000000000F /* SekaishiChizu.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA1100000000000000000012 /* SekaishiChizu */ = {
+			isa = PBXGroup;
+			children = (
+				AA1100000000000000000002 /* SekaishiChizuApp.swift */,
+				AA1100000000000000000004 /* ContentView.swift */,
+				AA1100000000000000000014 /* Views */,
+				AA1100000000000000000015 /* Models */,
+				AA110000000000000000000E /* Assets.xcassets */,
+			);
+			path = SekaishiChizu;
+			sourceTree = "<group>";
+		};
+		AA1100000000000000000014 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA1100000000000000000006 /* MapEditorView.swift */,
+				AA1100000000000000000008 /* PencilKitCanvas.swift */,
+				AA110000000000000000000A /* EditorToolbar.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AA1100000000000000000015 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA110000000000000000000C /* LabelItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA1100000000000000000016 /* SekaishiChizu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA1100000000000000000017 /* Build configuration list for PBXNativeTarget "SekaishiChizu" */;
+			buildPhases = (
+				AA1100000000000000000018 /* Sources */,
+				AA1100000000000000000010 /* Frameworks */,
+				AA1100000000000000000019 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SekaishiChizu;
+			productName = SekaishiChizu;
+			productReference = AA110000000000000000000F /* SekaishiChizu.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA110000000000000000001A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA1100000000000000000016 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA110000000000000000001B /* Build configuration list for PBXProject "SekaishiChizu" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA1100000000000000000011;
+			productRefGroup = AA1100000000000000000013 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA1100000000000000000016 /* SekaishiChizu */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA1100000000000000000019 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA110000000000000000000D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA1100000000000000000018 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA1100000000000000000001 /* SekaishiChizuApp.swift in Sources */,
+				AA1100000000000000000003 /* ContentView.swift in Sources */,
+				AA1100000000000000000005 /* MapEditorView.swift in Sources */,
+				AA1100000000000000000007 /* PencilKitCanvas.swift in Sources */,
+				AA1100000000000000000009 /* EditorToolbar.swift in Sources */,
+				AA110000000000000000000B /* LabelItem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA110000000000000000001C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA110000000000000000001D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA110000000000000000001E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sekaishi.chizu;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA110000000000000000001F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sekaishi.chizu;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA110000000000000000001B /* Build configuration list for PBXProject "SekaishiChizu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA110000000000000000001C /* Debug */,
+				AA110000000000000000001D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA1100000000000000000017 /* Build configuration list for PBXNativeTarget "SekaishiChizu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA110000000000000000001E /* Debug */,
+				AA110000000000000000001F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AA110000000000000000001A /* Project object */;
+}
