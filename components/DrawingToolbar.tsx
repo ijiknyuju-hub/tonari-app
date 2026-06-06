@@ -29,10 +29,10 @@ export default function DrawingToolbar({
 }: Props) {
   const tools: { id: DrawingToolType; emoji: string }[] = [
     { id: 'pen', emoji: '✏️' },
-    { id: 'highlighter', emoji: '🖌️' },
+    { id: 'highlighter', emoji: '🖍️' },
     { id: 'arrow', emoji: '➡️' },
     { id: 'label', emoji: '🏷️' },
-    { id: 'eraser', emoji: '⌫' },
+    { id: 'eraser', emoji: '🧽' },
   ];
 
   return (
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7FAFC',
   },
   toolBtnActive: {
-    backgroundColor: '#2B6CB0',
+    backgroundColor: '#4A90D9',
   },
   divider: {
     height: 1,
