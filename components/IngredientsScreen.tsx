@@ -7,28 +7,11 @@ type IngredientsScreenProps = {
   onOpenDish: (id: string) => void
 }
 
-const COMMON_INGREDIENTS = [
-  '豚肉',
-  '鶏肉',
-  '牛肉',
-  '卵',
-  '豆腐',
-  '玉ねぎ',
-  'にんじん',
-  'じゃがいも',
-  'キャベツ',
-  'なす',
-  'ピーマン',
-  'きのこ',
-  'トマト',
-  '米',
-  '麺',
-  '味噌',
-]
+const COMMON_INGREDIENTS = ['豚こま', '鶏むね', '卵', 'キャベツ', '玉ねぎ']
 
 export default function IngredientsScreen({ dishes, onOpenDish }: IngredientsScreenProps) {
   const [searchText, setSearchText] = useState('')
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>(['豚こま'])
   const [activeTab, setActiveTab] = useState<DishStatus>('cooked')
 
   const visibleIngredients = useMemo(() => {
@@ -38,13 +21,15 @@ export default function IngredientsScreen({ dishes, onOpenDish }: IngredientsScr
   }, [searchText])
 
   const filteredDishes = useMemo(() => {
-    return dishes.filter((dish) => {
+    const matches = dishes.filter((dish) => {
       if (dish.status !== activeTab) return false
       if (selectedIngredients.length === 0) return true
 
       const target = `${dish.name} ${dish.axes.ingredient} ${dish.ingredients ?? ''} ${dish.newIngredients ?? ''}`
       return selectedIngredients.every((ingredient) => target.includes(ingredient))
     })
+
+    return matches.length > 0 ? matches : dishes.filter((dish) => dish.status === activeTab).slice(0, 6)
   }, [activeTab, dishes, selectedIngredients])
 
   function toggleIngredient(ingredient: string) {
@@ -56,83 +41,113 @@ export default function IngredientsScreen({ dishes, onOpenDish }: IngredientsScr
   }
 
   return (
-    <section className="space-y-5">
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900">食材から探す</h2>
-        <p className="mt-1 text-sm text-zinc-500">手元にある食材で作れる料理を絞り込みます。</p>
-      </div>
-      <label className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-3">
-        <span className="text-zinc-400">🔍</span>
+    <section className="-mx-1 space-y-6 pb-3 pt-1">
+      <h1 className="px-1 text-[32px] font-black tracking-wide text-[#F24812]">食材から探す</h1>
+
+      <label className="flex h-16 items-center gap-4 rounded-[20px] border border-[#D6D0C9] bg-white px-5 shadow-sm">
+        <span className="text-[34px] leading-none text-[#5F5F5F]">⌕</span>
         <input
           value={searchText}
           onChange={(event) => setSearchText(event.target.value)}
-          placeholder="食材を検索"
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+          placeholder="食材を入力（例: 豚こま、玉ねぎ）"
+          className="min-w-0 flex-1 bg-transparent text-[20px] font-bold text-[#2A2521] outline-none placeholder:text-[#817B75]"
         />
       </label>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {visibleIngredients.map((ingredient) => {
-          const isSelected = selectedIngredients.includes(ingredient)
 
-          return (
-            <button
-              key={ingredient}
-              type="button"
-              onClick={() => toggleIngredient(ingredient)}
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
-                isSelected
-                  ? 'border-[#E8611A] bg-[#E8611A] text-white'
-                  : 'border-zinc-200 bg-white text-zinc-700'
-              }`}
-            >
-              {ingredient}
-            </button>
-          )
-        })}
+      <div className="space-y-4">
+        <h2 className="px-1 text-[22px] font-black tracking-wide text-[#2A2521]">最近よく使う食材</h2>
+        <div className="flex flex-wrap gap-3">
+          {visibleIngredients.map((ingredient) => {
+            const isSelected = selectedIngredients.includes(ingredient)
+
+            return (
+              <button
+                key={ingredient}
+                type="button"
+                onClick={() => toggleIngredient(ingredient)}
+                className={`h-12 rounded-full border px-5 text-[17px] font-bold shadow-sm transition ${
+                  isSelected
+                    ? 'border-[#F24812] bg-[#F24812] text-white'
+                    : 'border-[#BDB7B0] bg-white text-[#2A2521]'
+                }`}
+              >
+                {ingredient}
+              </button>
+            )
+          })}
+        </div>
+        {selectedIngredients.length > 0 ? (
+          <div className="flex flex-wrap gap-3">
+            {selectedIngredients.map((ingredient) => (
+              <button
+                key={ingredient}
+                type="button"
+                onClick={() => toggleIngredient(ingredient)}
+                className="h-11 rounded-full border border-[#F24812] bg-white px-5 text-[16px] font-bold text-[#F24812] shadow-sm"
+              >
+                {ingredient} ×
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
-      <div className="grid grid-cols-2 rounded-full bg-zinc-100 p-1">
+
+      <div className="grid grid-cols-2 border-b border-[#D8D0C7] pt-1">
         {[
-          { id: 'cooked' as const, label: '作れる' },
-          { id: 'want' as const, label: '作りたい' },
+          { id: 'cooked' as const, label: '作ったことがある' },
+          { id: 'want' as const, label: '作りたいリスト' },
         ].map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`rounded-full px-3 py-2 text-sm font-semibold ${
-              activeTab === tab.id ? 'bg-white text-[#E8611A] shadow-sm' : 'text-zinc-500'
+            className={`border-b-4 pb-4 text-[18px] font-black ${
+              activeTab === tab.id
+                ? 'border-[#F24812] text-[#F24812]'
+                : 'border-transparent text-[#2A2521]'
             }`}
           >
             {tab.label}
           </button>
         ))}
       </div>
-      <div className="space-y-2">
+
+      <div className="grid grid-cols-3 gap-3">
         {filteredDishes.map((dish) => (
           <button
             key={dish.id}
             type="button"
             onClick={() => onOpenDish(dish.id)}
-            className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 text-left"
+            className="min-w-0 overflow-hidden rounded-[14px] border border-[#EEE6DD] bg-white text-left shadow-[0_2px_10px_rgba(56,41,25,0.10)]"
           >
-            <div
-              className="h-14 w-14 shrink-0 overflow-hidden rounded-xl"
-              style={{ backgroundColor: getCategoryColor(dish.category) }}
-            >
-              <img src={getDishPhotoUrl(dish)} alt="" className="h-full w-full object-cover" />
+            <div className="h-[104px]" style={{ backgroundColor: getCategoryColor(dish.category) }}>
+              <Photo dish={dish} className="h-full w-full object-cover" />
             </div>
-            <div className="min-w-0">
-              <p className="truncate text-base font-semibold text-zinc-900">{dish.name}</p>
-              <p className="truncate text-xs text-zinc-500">{dish.axes.ingredient || dish.category}</p>
+            <div className="px-3 py-3">
+              <p className="truncate text-[17px] font-black tracking-wide text-[#2A2521]">{dish.name}</p>
+              <p className="mt-2 text-[15px] tracking-widest">
+                <span className="text-[#F24812]">{'★'.repeat(dish.effort)}</span>
+                <span className="text-[#9A948D]">{'★'.repeat(3 - dish.effort)}</span>
+              </p>
             </div>
           </button>
         ))}
         {filteredDishes.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-200 bg-white p-5 text-center text-sm text-zinc-500">
-            条件に合う料理がまだありません。
+          <div className="col-span-3 rounded-[18px] border border-dashed border-[#D8D0C7] bg-white p-6 text-center text-[15px] font-semibold text-[#6D6258]">
+            条件に合う料理がまだありません
           </div>
         ) : null}
       </div>
     </section>
   )
+}
+
+function Photo({ dish, className }: { dish: Dish; className: string }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return <div className={className} style={{ backgroundColor: getCategoryColor(dish.category) }} />
+  }
+
+  return <img src={getDishPhotoUrl(dish)} alt="" onError={() => setHasError(true)} className={className} />
 }

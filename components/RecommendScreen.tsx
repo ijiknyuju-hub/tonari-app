@@ -10,10 +10,12 @@ type RecommendScreenProps = {
   appState: AppState
 }
 
+type Candidate = Dish | { id: string; name: string; reason: string; baseDish: Dish }
+
 const filters: { id: RecommendFilter; label: string }[] = [
-  { id: 'easy', label: 'すぐできる' },
+  { id: 'easy', label: 'かんたん' },
   { id: 'expand', label: '少し広げる' },
-  { id: 'challenge', label: '挑戦する' },
+  { id: 'challenge', label: 'しっかり作る' },
 ]
 
 export default function RecommendScreen({
@@ -23,20 +25,18 @@ export default function RecommendScreen({
   appState,
 }: RecommendScreenProps) {
   const [filter, setFilter] = useState<RecommendFilter>('expand')
-  const [baseIndex, setBaseIndex] = useState(0)
   const cookedDishes = dishes.filter((dish) => dish.status === 'cooked' && dish.axes.seasoning !== '')
-  const safeBaseIndex = cookedDishes[baseIndex] ? baseIndex : 0
-  const baseDish = cookedDishes[safeBaseIndex]
+  const baseDish = cookedDishes[0]
 
   if (!baseDish) {
     return (
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 text-center text-sm text-zinc-500">
-        レパートリーを追加すると、おすすめが表示されます。
-      </div>
+      <section className="rounded-[22px] border border-[#E7DED2] bg-white px-5 py-10 text-center text-[15px] font-semibold text-[#6D6258] shadow-sm">
+        作ったことがある料理を選ぶと、おすすめが表示されます。
+      </section>
     )
   }
 
-  const candidates =
+  const candidates: Candidate[] =
     filter === 'easy'
       ? baseDish.arrangements.map((arrangement) => ({
           id: arrangement.id,
@@ -44,11 +44,19 @@ export default function RecommendScreen({
           reason: arrangement.reason,
           baseDish,
         }))
-      : dishes
-          .filter((dish) => filterMatches(baseDish, dish, filter) && dish.id !== baseDish.id)
-          .map((dish) => ({ ...dish, baseDish }))
-  const heroCandidate = candidates[0]
-  const remainingCandidates = candidates.slice(1, 5)
+      : dishes.filter((dish) => filterMatches(baseDish, dish, filter) && dish.id !== baseDish.id)
+
+  const visibleCandidates =
+    candidates.length > 0
+      ? candidates
+      : baseDish.arrangements.map((arrangement) => ({
+          id: arrangement.id,
+          name: arrangement.name,
+          reason: arrangement.reason,
+          baseDish,
+        }))
+  const heroCandidate = visibleCandidates[0]
+  const tileCandidates = visibleCandidates.slice(1, 5)
 
   function handleWant(id: string) {
     const nextState: AppState = {
@@ -63,30 +71,15 @@ export default function RecommendScreen({
   }
 
   return (
-    <section className="space-y-5">
-      <div className="overflow-x-auto">
-        <div className="flex gap-2 pb-1">
-          {cookedDishes.map((dish, index) => {
-            const isSelected = safeBaseIndex === index
-
-            return (
-              <button
-                key={dish.id}
-                type="button"
-                onClick={() => setBaseIndex(index)}
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
-                  isSelected
-                    ? 'border-[#E8611A] bg-[#E8611A] text-white'
-                    : 'border-zinc-200 bg-white text-zinc-700'
-                }`}
-              >
-                {dish.name}
-              </button>
-            )
-          })}
-        </div>
+    <section className="-mx-1 space-y-5 pb-3">
+      <div className="px-1 pt-1">
+        <p className="text-[24px] font-black leading-tight tracking-wide text-[#2A2521]">おはようございます！</p>
+        <p className="mt-1 text-[24px] font-black leading-tight tracking-wide text-[#2A2521]">
+          今日のおすすめはこちら
+        </p>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
+
+      <div className="grid grid-cols-3 gap-3 px-1">
         {filters.map((item) => {
           const isSelected = filter === item.id
 
@@ -95,8 +88,10 @@ export default function RecommendScreen({
               key={item.id}
               type="button"
               onClick={() => setFilter(item.id)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
-                isSelected ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-600'
+              className={`h-12 rounded-full border text-[15px] font-bold shadow-sm transition ${
+                isSelected
+                  ? 'border-[#F24812] bg-[#F24812] text-white'
+                  : 'border-[#DED8D0] bg-white text-[#3D3833]'
               }`}
             >
               {item.label}
@@ -104,10 +99,14 @@ export default function RecommendScreen({
           )
         })}
       </div>
-      <div>
-        <p className="text-sm font-semibold text-[#E8611A]">今日のとなりごはん</p>
-        <h2 className="mt-1 text-xl font-bold text-zinc-900">{baseDish.name}から広げる</h2>
+
+      <div className="flex items-center justify-between px-1 pt-1">
+        <h2 className="text-[21px] font-black tracking-wide text-[#2A2521]">{baseDish.name}から広げる</h2>
+        <button type="button" className="text-[15px] font-bold text-[#F24812]">
+          すべて見る 〉
+        </button>
       </div>
+
       {heroCandidate ? (
         <CandidateHero
           candidate={heroCandidate}
@@ -116,24 +115,18 @@ export default function RecommendScreen({
           onOpenDish={onOpenDish}
           onWant={handleWant}
         />
-      ) : (
-        <div className="rounded-xl border border-dashed border-zinc-200 bg-white p-5 text-center text-sm text-zinc-500">
-          この条件のおすすめはまだありません。
-        </div>
-      )}
-      {remainingCandidates.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3">
-          {remainingCandidates.map((candidate) => (
-            <CandidateTile
-              key={candidate.id}
-              candidate={candidate}
-              baseDish={baseDish}
-              filter={filter}
-              onOpenDish={onOpenDish}
-            />
-          ))}
-        </div>
       ) : null}
+
+      <div className="grid grid-cols-2 gap-3">
+        {tileCandidates.map((candidate) => (
+          <CandidateTile
+            key={candidate.id}
+            candidate={candidate}
+            baseDish={baseDish}
+            onOpenDish={onOpenDish}
+          />
+        ))}
+      </div>
     </section>
   )
 }
@@ -145,7 +138,7 @@ function CandidateHero({
   onOpenDish,
   onWant,
 }: {
-  candidate: Dish | { id: string; name: string; reason: string; baseDish: Dish }
+  candidate: Candidate
   baseDish: Dish
   filter: RecommendFilter
   onOpenDish: (id: string) => void
@@ -155,30 +148,39 @@ function CandidateHero({
   const targetDish = isDish ? candidate : baseDish
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-      <button type="button" onClick={() => onOpenDish(targetDish.id)} className="block w-full text-left">
-        <div className="relative h-44" style={{ backgroundColor: getCategoryColor(targetDish.category) }}>
-          <img src={getDishPhotoUrl(targetDish)} alt="" className="h-full w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-[#E8611A] px-3 py-1 text-xs font-bold text-white">
-            {filter === 'easy' ? 'アレンジ' : 'おすすめ'}
-          </span>
-        </div>
-        <div className="p-4">
-          <h3 className="text-lg font-bold text-zinc-900">{candidate.name}</h3>
-          <p className="mt-1 text-sm text-zinc-500">
-            {isDish ? candidate.changePoint ?? candidate.summary ?? candidate.category : candidate.reason}
-          </p>
-        </div>
+    <article className="grid grid-cols-[1.08fr_0.92fr] overflow-hidden rounded-[18px] border border-[#E9DED3] bg-white shadow-[0_3px_14px_rgba(56,41,25,0.16)]">
+      <button
+        type="button"
+        onClick={() => onOpenDish(targetDish.id)}
+        className="min-h-[176px] text-left"
+        style={{ backgroundColor: getCategoryColor(targetDish.category) }}
+      >
+        <Photo dish={targetDish} className="h-full min-h-[176px] w-full object-cover" />
       </button>
-      {isDish && candidate.status !== 'want' ? (
-        <button
-          type="button"
-          onClick={() => onWant(candidate.id)}
-          className="mx-4 mb-4 rounded-full border border-[#E8611A] px-4 py-2 text-sm font-bold text-[#E8611A]"
-        >
-          作りたいに追加
+      <div className="flex min-w-0 flex-col px-3 py-4">
+        <span className="mb-2 w-fit rounded-full bg-[#F24812] px-3 py-1 text-[12px] font-bold text-white">
+          {filter === 'easy' ? 'アレンジ' : 'おすすめ'}
+        </span>
+        <button type="button" onClick={() => onOpenDish(targetDish.id)} className="text-left">
+          <h3 className="text-[24px] font-black leading-tight tracking-wide text-[#2A2521]">{candidate.name}</h3>
+          <p className="mt-2 line-clamp-2 text-[15px] font-medium leading-6 text-[#4B443E]">
+            {getCandidateSummary(candidate, baseDish, targetDish)}
+          </p>
         </button>
-      ) : null}
+        <p className="mt-3 text-[15px] font-medium text-[#5C554F]">
+          難易度 <Stars effort={isDish ? candidate.effort : baseDish.effort} />
+        </p>
+        <div className="mt-auto grid grid-cols-3 border-t border-[#E7DED2] pt-3 text-center text-[11px] font-semibold leading-5 text-[#5C554F]">
+          <span>⏱<br />約20分</span>
+          <span className="border-x border-[#E7DED2]">♨<br />{targetDish.category || '和食'}</span>
+          <span>◆<br />少し広げる</span>
+        </div>
+        {isDish && candidate.status !== 'want' ? (
+          <button type="button" onClick={() => onWant(candidate.id)} className="sr-only">
+            作りたいに追加
+          </button>
+        ) : null}
+      </div>
     </article>
   )
 }
@@ -186,12 +188,10 @@ function CandidateHero({
 function CandidateTile({
   candidate,
   baseDish,
-  filter,
   onOpenDish,
 }: {
-  candidate: Dish | { id: string; name: string; reason: string; baseDish: Dish }
+  candidate: Candidate
   baseDish: Dish
-  filter: RecommendFilter
   onOpenDish: (id: string) => void
 }) {
   const isDish = 'status' in candidate
@@ -201,20 +201,51 @@ function CandidateTile({
     <button
       type="button"
       onClick={() => onOpenDish(targetDish.id)}
-      className="overflow-hidden rounded-xl border border-zinc-200 bg-white text-left"
+      className="overflow-hidden rounded-[16px] border border-[#E9DED3] bg-white text-left shadow-[0_3px_12px_rgba(56,41,25,0.14)]"
     >
-      <div className="relative h-24" style={{ backgroundColor: getCategoryColor(targetDish.category) }}>
-        <img src={getDishPhotoUrl(targetDish)} alt="" className="h-full w-full object-cover" />
-        <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-[#E8611A]">
-          {filter === 'easy' ? 'アレンジ' : targetDish.category}
-        </span>
+      <div className="h-28" style={{ backgroundColor: getCategoryColor(targetDish.category) }}>
+        <Photo dish={targetDish} className="h-full w-full object-cover" />
       </div>
-      <div className="p-3">
-        <p className="line-clamp-2 text-sm font-bold text-zinc-900">{candidate.name}</p>
-        <p className="mt-1 line-clamp-2 text-xs text-zinc-500">
-          {isDish ? candidate.changePoint ?? candidate.summary ?? candidate.axes.method : candidate.reason}
+      <div className="px-3 py-3">
+        <p className="truncate text-[20px] font-black tracking-wide text-[#2A2521]">{candidate.name}</p>
+        <p className="mt-1 line-clamp-2 min-h-[40px] text-[14px] font-medium leading-5 text-[#5C554F]">
+          {getCandidateSummary(candidate, baseDish, targetDish)}
         </p>
+        <p className="mt-2 text-[14px] font-medium text-[#5C554F]">
+          難易度 <Stars effort={isDish ? candidate.effort : baseDish.effort} />
+        </p>
+        <div className="mt-2 flex justify-between border-t border-[#E7DED2] pt-2 text-[12px] font-semibold text-[#5C554F]">
+          <span>⏱ 約20分</span>
+          <span>♨ {targetDish.category || '和食'}</span>
+        </div>
       </div>
     </button>
   )
+}
+
+function getCandidateSummary(candidate: Candidate, baseDish: Dish, targetDish: Dish) {
+  if ('status' in candidate) {
+    return candidate.changePoint ?? candidate.summary ?? `${baseDish.name}を少し広げる`
+  }
+
+  return candidate.reason || `${targetDish.name}の近くから試せます`
+}
+
+function Stars({ effort }: { effort: Dish['effort'] }) {
+  return (
+    <span aria-label={`難易度${effort}`} className="ml-2 tracking-widest">
+      <span className="text-[#F24812]">{'★'.repeat(effort)}</span>
+      <span className="text-[#A8A29E]">{'★'.repeat(3 - effort)}</span>
+    </span>
+  )
+}
+
+function Photo({ dish, className }: { dish: Dish; className: string }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return <div className={className} style={{ backgroundColor: getCategoryColor(dish.category) }} />
+  }
+
+  return <img src={getDishPhotoUrl(dish)} alt="" onError={() => setHasError(true)} className={className} />
 }
