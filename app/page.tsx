@@ -1,30 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import DishCard from '@/components/DishCard'
 import HomeTabs from '@/components/HomeTabs'
 import OnboardingPresets from '@/components/OnboardingPresets'
 import { loadState, saveState } from '@/lib/storage'
 import type { AppState, Dish } from '@/lib/types'
 
-const initialState: AppState = {
-  dishes: [],
-  lastUpdated: '',
-}
-
 export default function Home() {
-  const [appState, setAppState] = useState<AppState>(initialState)
+  const [appState, setAppState] = useState<AppState>(() => loadState())
   const [activeTab, setActiveTab] = useState<'recommend' | 'ingredients' | 'repertoire'>('recommend')
   const [openDishId, setOpenDishId] = useState<string | null>(null)
-  const [isOnboarding, setIsOnboarding] = useState(false)
-
-  useEffect(() => {
-    const loadedState = loadState()
-    const cookedDishes = loadedState.dishes.filter((dish) => dish.status === 'cooked')
-
-    setAppState(loadedState)
-    setIsOnboarding(loadedState.dishes.length === 0 || cookedDishes.length === 0)
-  }, [])
+  const [isOnboarding, setIsOnboarding] = useState(() => shouldShowOnboarding(loadState()))
 
   function handleOnboardingComplete(selectedDishes: Dish[]) {
     const cookedAt = new Date().toISOString()
@@ -82,4 +69,8 @@ export default function Home() {
       ) : null}
     </div>
   )
+}
+
+function shouldShowOnboarding(state: AppState): boolean {
+  return state.dishes.length === 0 || state.dishes.every((dish) => dish.status !== 'cooked')
 }

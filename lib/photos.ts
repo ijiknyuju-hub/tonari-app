@@ -11,17 +11,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   サラダ: '#DCFCE7',
 }
 
-const CATEGORY_PHOTOS: Record<string, string> = {
-  炒め物: 'stir-fry',
-  煮物: 'japanese-soup',
-  揚げ物: 'tempura',
-  焼き物: 'grilled-food',
-  ご飯もの: 'japanese-rice-bowl',
-  麺: 'noodles',
-  汁物: 'miso-soup',
-  サラダ: 'salad',
-}
-
 export function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? '#F4F4F5'
 }
