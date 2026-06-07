@@ -1,17 +1,10 @@
+import { useState } from 'react'
+import { getCategoryColor, getDishPhotoUrl } from '@/lib/photos'
 import type { Dish } from '@/lib/types'
 
 type RepertoireListProps = {
   dishes: Dish[]
   onOpenDish: (id: string) => void
-}
-
-function getCategoryColor(category: string): string {
-  if (category === '炒め物') return '#FFE8D0'
-  if (category === '煮物') return '#E8F0E0'
-  if (category === '揚げ物') return '#FFF5D0'
-  if (category === '焼き物') return '#FFF0E8'
-  if (category === 'ご飯もの') return '#E8F5FF'
-  return '#F0F0F0'
 }
 
 export default function RepertoireList({ dishes, onOpenDish }: RepertoireListProps) {
@@ -48,15 +41,14 @@ function DishSection({
             key={dish.id}
             type="button"
             onClick={() => onOpenDish(dish.id)}
-            className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 text-left"
+            className="flex w-full items-center gap-4 rounded-[18px] border border-[#EEE6DD] bg-white p-3 text-left shadow-[0_2px_10px_rgba(56,41,25,0.08)]"
           >
-            <div
-              className="h-10 w-10 shrink-0 rounded"
-              style={{ backgroundColor: getCategoryColor(dish.category) }}
-            />
+            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-[10px]" style={{ backgroundColor: getCategoryColor(dish.category) }}>
+              <Photo dish={dish} />
+            </div>
             <div className="min-w-0">
-              <p className="truncate text-base font-semibold text-zinc-900">{dish.name}</p>
-              <p className="text-xs text-zinc-500">
+              <p className="truncate text-[22px] font-black tracking-wide text-[#2A2521]">{dish.name}</p>
+              <p className="mt-1 text-[15px] font-semibold text-[#5F5953]">
                 {dish.category}・{'★'.repeat(dish.effort)}
               </p>
             </div>
@@ -64,5 +56,22 @@ function DishSection({
         ))}
       </div>
     </section>
+  )
+}
+
+function Photo({ dish }: { dish: Dish }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return <div className="h-full w-full" style={{ backgroundColor: getCategoryColor(dish.category) }} />
+  }
+
+  return (
+    <img
+      src={getDishPhotoUrl(dish)}
+      alt=""
+      onError={() => setHasError(true)}
+      className="h-full w-full object-cover"
+    />
   )
 }

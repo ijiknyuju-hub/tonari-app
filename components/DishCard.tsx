@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { getCategoryColor, getDishPhotoUrl } from '@/lib/photos'
 import type { Dish } from '@/lib/types'
 
@@ -11,167 +11,119 @@ type DishCardProps = {
 }
 
 export default function DishCard({ dish, allDishes, onClose, onUpdate, onOpenDish }: DishCardProps) {
-  const [isEditing, setIsEditing] = useState(false)
   const [note, setNote] = useState(dish.note ?? '')
   const parentDish = dish.fromDishId ? allDishes.find((item) => item.id === dish.fromDishId) : undefined
-  const steps = useMemo(
-    () => dish.steps?.split(/\r?\n/).map((step) => step.trim()).filter(Boolean) ?? [],
-    [dish.steps],
-  )
-
-  function handleSaveNote() {
-    onUpdate({ ...dish, note })
-    setIsEditing(false)
-  }
+  const ingredients = useMemo(() => splitLines(dish.ingredients), [dish.ingredients])
+  const steps = useMemo(() => splitLines(dish.steps), [dish.steps])
+  const notes = useMemo(() => splitLines(note || dish.note), [dish.note, note])
 
   function handleCooked() {
-    onUpdate({ ...dish, status: 'cooked', cookedAt: new Date().toISOString() })
+    onUpdate({ ...dish, note, status: 'cooked', cookedAt: new Date().toISOString() })
   }
 
   return (
     <>
       <button type="button" aria-label="閉じる" className="fixed inset-0 z-[49] bg-black/40" onClick={onClose} />
-      <aside className="fixed inset-x-0 bottom-0 z-50 max-h-[92vh] overflow-y-auto rounded-t-3xl bg-white">
-        <div className="relative h-48" style={{ backgroundColor: getCategoryColor(dish.category) }}>
-          <img src={getDishPhotoUrl(dish)} alt="" className="h-full w-full object-cover" />
+      <aside className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-screen max-w-md overflow-y-auto bg-[#FFFDF8] text-[#171412] shadow-2xl">
+        <div className="relative h-[280px]" style={{ backgroundColor: getCategoryColor(dish.category) }}>
+          <Photo dish={dish} className="h-full w-full object-cover" />
           <button
             type="button"
-            aria-label="戻る"
+            aria-label="閉じる"
             onClick={onClose}
-            className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg font-bold text-zinc-800 shadow-sm"
+            className="absolute left-6 top-6 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[48px] font-light leading-none text-[#F24812] shadow-sm"
           >
-            ←
+            ‹
           </button>
         </div>
-        <div className="space-y-5 px-4 pb-8 pt-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[#FFF0DC] px-3 py-1 text-xs font-bold text-[#E8611A]">
-                {dish.category}
-              </span>
-              <span className="text-xs font-semibold text-zinc-500">{'★'.repeat(dish.effort)}</span>
+
+        <div className="space-y-6 px-6 pb-6 pt-7">
+          <header>
+            <div className="flex items-start justify-between gap-5">
+              <h2 className="text-[36px] font-black leading-tight tracking-wide">{dish.name}</h2>
+              <p className="shrink-0 pt-2 text-[34px] tracking-widest text-[#F24812]">
+                {'★'.repeat(dish.effort)}
+              </p>
             </div>
-            <h2 className="mt-3 text-2xl font-bold text-zinc-900">{dish.name}</h2>
-            {dish.summary ? <p className="mt-2 text-sm leading-6 text-zinc-500">{dish.summary}</p> : null}
-          </div>
-          {parentDish ? (
-            <button
-              type="button"
-              onClick={() => onOpenDish(parentDish.id)}
-              className="rounded-full bg-[#FFF7ED] px-4 py-2 text-sm font-semibold text-[#E8611A]"
-            >
-              {parentDish.name}から広がった料理
-            </button>
-          ) : null}
-          <div className="grid grid-cols-3 gap-2">
-            <InfoChip label="味" value={dish.axes.seasoning} />
-            <InfoChip label="食材" value={dish.axes.ingredient} />
-            <InfoChip label="調理" value={dish.axes.method} />
-          </div>
+            {parentDish ? (
+              <button
+                type="button"
+                onClick={() => onOpenDish(parentDish.id)}
+                className="mt-6 text-[20px] font-black text-[#F24812]"
+              >
+                ← {parentDish.name}から広げた料理
+              </button>
+            ) : null}
+          </header>
+
           {dish.changePoint ? (
-            <section className="rounded-xl bg-[#FFF0DC] p-4">
-              <h3 className="text-sm font-bold text-zinc-900">✨ 変化ポイント</h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-700">{dish.changePoint}</p>
-            </section>
+            <Callout tone="orange">変えるところ: {dish.changePoint}</Callout>
           ) : null}
           {dish.newIngredients ? (
-            <IconSection title="🛒 新しく使う食材">
-              <p className="whitespace-pre-line text-sm leading-6 text-zinc-700">{dish.newIngredients}</p>
-            </IconSection>
+            <Callout>新しく必要なもの: {dish.newIngredients}</Callout>
           ) : null}
-          {dish.ingredients ? (
-            <IconSection title="🥕 材料">
-              <p className="whitespace-pre-line text-sm leading-6 text-zinc-700">{dish.ingredients}</p>
-            </IconSection>
-          ) : null}
-          {steps.length > 0 ? (
-            <IconSection title="🍳 作り方">
-              <ol className="space-y-3">
-                {steps.map((step, index) => (
-                  <li key={`${step}-${index}`} className="flex gap-3 text-sm leading-6 text-zinc-700">
-                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#E8611A] text-xs font-bold text-white">
-                      {index + 1}
-                    </span>
-                    <span>{step.replace(/^\d+[.)、\s-]*/, '')}</span>
+
+          <Divider />
+
+          {ingredients.length > 0 ? (
+            <Section icon="♨" title="材料（2〜3人分）">
+              <ul className="space-y-3 text-[20px] font-medium leading-8">
+                {ingredients.map((ingredient, index) => (
+                  <li key={`${ingredient}-${index}`} className="flex items-baseline justify-between gap-4">
+                    <span>・ {ingredientName(ingredient)}</span>
+                    {ingredientAmount(ingredient) ? (
+                      <span className="shrink-0 tracking-widest text-[#5F5953]">{ingredientAmount(ingredient)}</span>
+                    ) : null}
                   </li>
                 ))}
-              </ol>
-            </IconSection>
+              </ul>
+            </Section>
           ) : null}
-          {dish.arrangements.length > 0 ? (
-            <IconSection title="💡 近いアレンジ">
-              <div className="space-y-2">
-                {dish.arrangements.map((arrangement) => (
-                  <div key={arrangement.id} className="rounded-xl bg-[#F4F4F5] p-3">
-                    <div className="flex items-center gap-2">
-                      <span>{arrangement.type === 'specific' ? '🎯' : '✨'}</span>
-                      <p className="text-sm font-semibold text-zinc-900">{arrangement.name}</p>
-                    </div>
-                    <p className="mt-1 text-xs leading-5 text-zinc-600">{arrangement.reason}</p>
-                  </div>
+
+          {steps.length > 0 ? (
+            <>
+              <Divider />
+              <Section icon="▢" title="作り方">
+                <ol className="space-y-5">
+                  {steps.map((step, index) => (
+                    <li key={`${step}-${index}`} className="flex gap-4 text-[20px] font-medium leading-8">
+                      <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F24812] text-[13px] font-black text-white">
+                        {index + 1}
+                      </span>
+                      <span>{step.replace(/^\d+[.)、\s-]*/, '')}</span>
+                    </li>
+                  ))}
+                </ol>
+              </Section>
+            </>
+          ) : null}
+
+          <Divider />
+
+          <Section icon="▤" title="メモ">
+            {notes.length > 0 ? (
+              <ul className="space-y-2 text-[18px] font-medium leading-7">
+                {notes.map((item, index) => (
+                  <li key={`${item}-${index}`}>・ {item.replace(/^[-・\s]*/, '')}</li>
                 ))}
-              </div>
-            </IconSection>
-          ) : null}
-          <section>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-zinc-900">📝 メモ</h3>
-              {!isEditing ? (
-                <button type="button" onClick={() => setIsEditing(true)} className="text-sm font-semibold text-[#E8611A]">
-                  編集
-                </button>
-              ) : null}
-            </div>
-            {isEditing ? (
-              <div className="mt-2 space-y-2">
-                <textarea
-                  value={note}
-                  onChange={(event) => setNote(event.target.value)}
-                  className="min-h-28 w-full rounded-xl border border-zinc-200 p-3 text-sm outline-none focus:border-[#E8611A]"
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSaveNote}
-                    className="rounded-full bg-[#E8611A] px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    保存
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setNote(dish.note ?? '')
-                      setIsEditing(false)
-                    }}
-                    className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-600"
-                  >
-                    キャンセル
-                  </button>
-                </div>
-              </div>
+              </ul>
             ) : (
-              <p className="mt-2 whitespace-pre-line text-sm leading-6 text-zinc-500">
-                {dish.note || 'メモはまだありません'}
-              </p>
+              <textarea
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="メモを追加"
+                className="min-h-24 w-full rounded-[14px] border border-[#DED8D0] bg-white p-3 text-[16px] outline-none focus:border-[#F24812]"
+              />
             )}
-          </section>
-          {dish.referenceUrl ? (
-            <a
-              href={dish.referenceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex text-sm font-semibold text-[#E8611A]"
-            >
-              参考リンクを開く
-            </a>
-          ) : null}
+          </Section>
+
           {dish.status === 'want' ? (
             <button
               type="button"
               onClick={handleCooked}
-              className="w-full rounded-full bg-[#E8611A] px-4 py-3 text-sm font-bold text-white"
+              className="w-full rounded-[14px] bg-[#F24812] px-4 py-5 text-[22px] font-black text-white shadow-[0_4px_12px_rgba(242,72,18,0.25)]"
             >
-              作ったのでレパートリーに追加
+              作った！ レパートリーに追加
             </button>
           ) : null}
         </div>
@@ -180,20 +132,53 @@ export default function DishCard({ dish, allDishes, onClose, onUpdate, onOpenDis
   )
 }
 
-function InfoChip({ label, value }: { label: string; value: string }) {
+function splitLines(value: string | undefined) {
+  return value?.split(/\r?\n|、/).map((item) => item.trim()).filter(Boolean) ?? []
+}
+
+function ingredientName(value: string) {
+  return value.split(/\s{2,}|[:：]/)[0] ?? value
+}
+
+function ingredientAmount(value: string) {
+  const parts = value.split(/\s{2,}|[:：]/)
+  return parts[1] ?? ''
+}
+
+function Callout({ children, tone = 'cream' }: { children: ReactNode; tone?: 'orange' | 'cream' }) {
   return (
-    <div className="rounded-xl bg-zinc-50 p-3">
-      <p className="text-[11px] font-bold text-zinc-400">{label}</p>
-      <p className="mt-1 truncate text-sm font-semibold text-zinc-800">{value || '-'}</p>
+    <div
+      className={`rounded-[14px] px-5 py-4 text-[20px] font-black leading-8 ${
+        tone === 'orange' ? 'bg-[#FFB169]' : 'bg-[#F6F1E8]'
+      }`}
+    >
+      {children}
     </div>
   )
 }
 
-function IconSection({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ icon, title, children }: { icon: string; title: string; children: ReactNode }) {
   return (
     <section>
-      <h3 className="text-sm font-bold text-zinc-900">{title}</h3>
-      <div className="mt-2">{children}</div>
+      <h3 className="mb-5 flex items-center gap-4 text-[25px] font-black">
+        <span className="text-[32px] font-normal text-[#F24812]">{icon}</span>
+        {title}
+      </h3>
+      {children}
     </section>
   )
+}
+
+function Divider() {
+  return <hr className="border-[#DDD3C8]" />
+}
+
+function Photo({ dish, className }: { dish: Dish; className: string }) {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return <div className={className} style={{ backgroundColor: getCategoryColor(dish.category) }} />
+  }
+
+  return <img src={getDishPhotoUrl(dish)} alt="" onError={() => setHasError(true)} className={className} />
 }
