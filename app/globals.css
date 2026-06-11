@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  html {
+    background: #f7f8f5;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .phase0-screen {
+    min-height: 100svh;
+    background:
+      radial-gradient(circle at top left, rgba(232, 97, 26, 0.1), transparent 34rem),
+      #f7f8f5;
+    color: #09090b;
+  }
+
+  .phase0-container {
+    width: 100%;
+    max-width: 28rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .phase0-bottom-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 5.75rem);
+  }
+
+  .phase0-card {
+    border: 1px solid rgba(228, 228, 231, 0.95);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 14px 34px rgba(24, 24, 27, 0.08);
+  }
+
+  .phase0-primary-button {
+    min-height: 3.75rem;
+    border-radius: 1rem;
+    background: #e8611a;
+    color: white;
+    box-shadow: 0 16px 34px rgba(232, 97, 26, 0.28);
+  }
+}

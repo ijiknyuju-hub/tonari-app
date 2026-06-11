@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import DishCard from '@/components/phase0/DishCard'
 import DishDetailModal from '@/components/phase0/DishDetailModal'
+import Phase0BottomNav from '@/components/phase0/Phase0BottomNav'
 import { trackEvent } from '@/lib/phase0/analytics'
 import type { RecommendedDish } from '@/lib/phase0/recommendDishes'
 import { useSavedDishes } from '@/lib/phase0/useSavedDishes'
@@ -48,8 +49,8 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F8F5] text-zinc-950">
-      <section className="mx-auto w-full max-w-md px-5 pb-8 pt-6">
+    <main className="phase0-screen">
+      <section className="phase0-container phase0-bottom-safe pt-5">
         <header className="space-y-5">
           <Link href="/select" className="inline-flex text-sm font-bold text-zinc-500 transition hover:text-[#E8611A]">
             選び直す
@@ -65,16 +66,6 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
             </p>
           </div>
 
-          <Link
-            href="/saved"
-            className="flex min-h-12 items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 text-sm font-black text-zinc-800 shadow-sm"
-          >
-            <span>作ってみたいリスト</span>
-            <span className="rounded-full bg-[#E8611A]/10 px-3 py-1 text-xs text-[#B9470F]">
-              {savedDishes.length}件
-            </span>
-          </Link>
-
           {feedbackDishTitle ? (
             <div className="rounded-2xl border border-[#E8611A]/20 bg-[#E8611A]/10 p-4">
               <p className="text-sm font-bold leading-6 text-[#B9470F]">
@@ -86,7 +77,7 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+          <div className="phase0-card rounded-2xl p-4">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-black text-zinc-950">起点になる料理</h2>
               <p className="text-xs font-bold text-zinc-500">{selectedDishes.length}個</p>
@@ -118,7 +109,7 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="phase0-card mt-5 rounded-2xl p-5">
             <h2 className="text-xl font-black text-zinc-950">近い料理がまだ見つかりませんでした</h2>
             <p className="mt-3 text-sm leading-7 text-zinc-700">
               別の作れる料理を選ぶと、候補が出てくるかもしれません。
@@ -142,6 +133,7 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
           onToggleSave={toggleSave}
         />
       ) : null}
+      <Phase0BottomNav savedCount={savedDishes.length} />
     </main>
   )
 }

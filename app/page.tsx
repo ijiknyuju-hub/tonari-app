@@ -1,34 +1,40 @@
 import StartSelectDishesLink from '@/components/phase0/StartSelectDishesLink'
+import Phase0BottomNav from '@/components/phase0/Phase0BottomNav'
 import { dishCards } from '@/data/dishCards'
 
 const sampleCards = dishCards.slice(0, 3)
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F7F8F5] text-zinc-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 pb-10 pt-6">
-        <header className="flex items-center justify-between">
-          <p className="text-sm font-bold tracking-normal text-[#E8611A]">となりごはん</p>
-          <p className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-bold text-zinc-600 shadow-sm">
-            試作版です
-          </p>
-        </header>
-
-        <div className="flex flex-1 flex-col justify-center gap-8 py-8">
-          <div className="space-y-5">
-            <h1 className="text-4xl font-black leading-tight tracking-normal text-zinc-950">
-              いつもの料理から、
-              <br />
-              次の一品へ。
-            </h1>
-            <p className="text-base leading-8 text-zinc-700">
-              作れる料理を選ぶだけ。
-              <br />
-              少し変えれば作れそうな料理を、となりごはんが提案します。
+    <main className="phase0-screen">
+      <section className="phase0-container phase0-bottom-safe">
+        <div className="flex min-h-[100svh] flex-col pb-8 pt-5">
+          <header className="flex items-center justify-between">
+            <p className="text-sm font-bold tracking-normal text-[#E8611A]">となりごはん</p>
+            <p className="rounded-full border border-zinc-200 bg-white/90 px-3 py-1 text-xs font-bold text-zinc-600 shadow-sm">
+              試作版です
             </p>
-          </div>
+          </header>
 
-          <StartSelectDishesLink />
+          <div className="flex flex-1 flex-col justify-center gap-6 py-6">
+            <div className="space-y-4">
+              <p className="w-fit rounded-full bg-[#E8611A]/10 px-3 py-1 text-xs font-black text-[#B9470F]">
+                作れる料理から広げるアプリ
+              </p>
+              <h1 className="text-[2.4rem] font-black leading-[1.08] tracking-normal text-zinc-950">
+                いつもの料理から、
+                <br />
+                次の一品へ。
+              </h1>
+              <p className="text-[1.02rem] font-bold leading-7 text-zinc-700">
+                作れる料理を選ぶだけ。
+                <br />
+                少し変えれば作れそうな料理を、となりごはんが提案します。
+              </p>
+            </div>
+
+            <StartSelectDishesLink />
+          </div>
         </div>
 
         <div id="sample-cards" className="space-y-3 scroll-mt-6">
@@ -39,16 +45,16 @@ export default function Home() {
 
           <div className="grid gap-3">
             {sampleCards.map((card) => (
-              <article key={card.id} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="text-lg font-black text-zinc-950">{card.title}</h3>
-                    <p className="mt-1 text-sm font-bold text-[#E8611A]">{card.shortCopy}</p>
+              <article key={card.id} className="phase0-card rounded-2xl p-4">
+                <div className="rounded-2xl bg-[#FFF3EC] p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-base font-black leading-6 text-[#B9470F]">{card.shortCopy}</p>
+                    <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-black text-[#B9470F]">
+                      {card.timeMinutes}分
+                    </span>
                   </div>
-                  <span className="shrink-0 rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-600">
-                    {card.timeMinutes}分
-                  </span>
                 </div>
+                <h3 className="mt-3 text-lg font-black text-zinc-950">{card.title}</h3>
 
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-zinc-700">
                   {card.reusableSkills.slice(0, 2).map((reason) => (
@@ -63,6 +69,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Phase0BottomNav />
     </main>
   )
 }

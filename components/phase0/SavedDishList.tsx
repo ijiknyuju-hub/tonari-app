@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { baseDishes } from '@/data/baseDishes'
 import DishDetailModal from '@/components/phase0/DishDetailModal'
+import Phase0BottomNav from '@/components/phase0/Phase0BottomNav'
 import { trackEvent } from '@/lib/phase0/analytics'
 import { recommendDishes, type RecommendedDish } from '@/lib/phase0/recommendDishes'
 import { useSavedDishes } from '@/lib/phase0/useSavedDishes'
@@ -52,8 +53,8 @@ export default function SavedDishList() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F8F5] text-zinc-950">
-      <section className="mx-auto w-full max-w-md px-5 pb-8 pt-6">
+    <main className="phase0-screen">
+      <section className="phase0-container phase0-bottom-safe pt-5">
         <header className="space-y-5">
           <Link href="/select" className="inline-flex text-sm font-bold text-zinc-500 transition hover:text-[#E8611A]">
             料理を選ぶ
@@ -73,37 +74,37 @@ export default function SavedDishList() {
             {savedRecommendations.map((recommendation) => (
               <article
                 key={recommendation.card.id}
-                className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
+                className="phase0-card rounded-3xl p-4"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-black text-[#E8611A]">
-                      {recommendation.closestBaseDishTitle}が作れるなら近い
-                    </p>
-                    <h2 className="mt-1 text-xl font-black leading-tight tracking-normal">
-                      {recommendation.card.title}
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-zinc-600">
-                      保存日: {formatSavedAt(savedDishes.find((dish) => dish.dishId === recommendation.card.id)?.savedAt)}
-                    </p>
-                  </div>
+                <div className="flex items-center justify-between gap-3">
                   <span className="shrink-0 rounded-full bg-[#E8611A]/10 px-3 py-2 text-xs font-black text-[#B9470F]">
                     {recommendation.label}
                   </span>
+                  <p className="text-sm leading-6 text-zinc-600">
+                    保存日: {formatSavedAt(savedDishes.find((dish) => dish.dishId === recommendation.card.id)?.savedAt)}
+                  </p>
                 </div>
+                <div className="mt-3 rounded-2xl bg-[#FFF3EC] p-4">
+                  <p className="text-lg font-black leading-7 text-[#B9470F]">
+                    {recommendation.closestBaseDishTitle}が作れるなら近い
+                  </p>
+                </div>
+                <h2 className="mt-3 text-xl font-black leading-tight tracking-normal">
+                  {recommendation.card.title}
+                </h2>
 
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => openDetail(recommendation)}
-                    className="min-h-12 rounded-2xl bg-[#E8611A] px-3 text-sm font-black text-white shadow-[0_10px_22px_rgba(232,97,26,0.22)]"
+                    className="min-h-14 rounded-2xl bg-[#E8611A] px-3 text-base font-black text-white shadow-[0_10px_22px_rgba(232,97,26,0.22)]"
                   >
                     詳しく見る
                   </button>
                   <button
                     type="button"
                     onClick={() => unsave(recommendation.card.id)}
-                    className="min-h-12 rounded-2xl border border-zinc-200 bg-white px-3 text-sm font-black text-zinc-800"
+                    className="min-h-14 rounded-2xl border border-zinc-200 bg-white px-3 text-sm font-black text-zinc-800"
                   >
                     保存を外す
                   </button>
@@ -112,14 +113,14 @@ export default function SavedDishList() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="phase0-card mt-5 rounded-2xl p-5">
             <h2 className="text-xl font-black text-zinc-950">まだ保存した料理はありません。</h2>
             <p className="mt-3 text-sm leading-7 text-zinc-700">
               気になる料理カードで「作ってみたい」を押してみてください。
             </p>
             <Link
               href="/select"
-              className="mt-5 flex min-h-12 items-center justify-center rounded-2xl bg-[#E8611A] px-4 text-sm font-black text-white"
+              className="phase0-primary-button mt-5 flex items-center justify-center px-4 text-base font-black"
             >
               料理を選ぶ
             </Link>
@@ -135,6 +136,7 @@ export default function SavedDishList() {
           onToggleSave={toggleSave}
         />
       ) : null}
+      <Phase0BottomNav savedCount={savedDishes.length} />
     </main>
   )
 }

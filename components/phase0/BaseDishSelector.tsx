@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Phase0BottomNav from '@/components/phase0/Phase0BottomNav'
 import { trackEvent } from '@/lib/phase0/analytics'
 import type { BaseDish } from '@/types/dish'
 
@@ -40,8 +41,8 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F8F5] text-zinc-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 pb-8 pt-6">
+    <main className="phase0-screen">
+      <section className="phase0-container phase0-bottom-safe flex min-h-screen flex-col pt-5">
         <header className="space-y-4">
           <Link href="/" className="inline-flex text-sm font-bold text-zinc-500 transition hover:text-[#E8611A]">
             トップへ戻る
@@ -59,7 +60,7 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
           </div>
         </header>
 
-        <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="phase0-card mt-6 rounded-2xl p-4">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-black text-zinc-950">選んだ料理</h2>
             <p className="text-xs font-bold text-zinc-500">{selectedIds.length}個選択中</p>
@@ -72,7 +73,7 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
                   key={dish.id}
                   type="button"
                   onClick={() => toggleDish(dish.id)}
-                  className="min-h-10 rounded-full bg-[#E8611A] px-4 text-sm font-black text-white shadow-sm"
+                  className="min-h-11 rounded-full bg-[#E8611A] px-4 text-sm font-black text-white shadow-sm"
                   aria-label={`${dish.title}を選択から外す`}
                 >
                   {dish.title}
@@ -99,7 +100,7 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
                 onClick={() => toggleDish(dish.id)}
                 aria-pressed={selected}
                 className={[
-                  'min-h-14 rounded-2xl border px-3 text-center text-sm font-black shadow-sm transition focus:outline-none focus:ring-4 focus:ring-[#E8611A]/20',
+                  'min-h-16 rounded-2xl border px-3 text-center text-sm font-black shadow-sm transition focus:outline-none focus:ring-4 focus:ring-[#E8611A]/20',
                   selected
                     ? 'border-[#E8611A] bg-[#E8611A] text-white'
                     : 'border-zinc-200 bg-white text-zinc-800 hover:border-[#E8611A]/50',
@@ -111,17 +112,18 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
           })}
         </div>
 
-        <div className="sticky bottom-0 mt-auto bg-[#F7F8F5] pb-2 pt-5">
+        <div className="sticky bottom-[4.25rem] mt-auto bg-[#F7F8F5]/95 pb-3 pt-5 backdrop-blur">
           <button
             type="button"
             onClick={proceed}
             disabled={selectedIds.length === 0}
-            className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-[#E8611A] px-5 text-center text-base font-black text-white shadow-[0_14px_30px_rgba(232,97,26,0.25)] transition enabled:hover:bg-[#d95512] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
+            className="phase0-primary-button flex w-full items-center justify-center px-5 text-center text-base font-black transition enabled:hover:bg-[#d95512] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
           >
             あなたのとなりごはんを探す
           </button>
         </div>
       </section>
+      <Phase0BottomNav />
     </main>
   )
 }
