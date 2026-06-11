@@ -27,11 +27,11 @@ Run relevant checks when possible:
 
 ```bash
 npm run lint
-npm run typecheck
+npm run typecheck  # if this script exists
 npm run build
 ```
 
-If a check is unavailable or fails for an existing reason, report that clearly.
+If a script is unavailable, report `skipped: script missing`. If a check fails for an existing reason, report that clearly. In this Next.js app, `npm run build` may also run TypeScript checks as part of the production build.
 
 ## PR Notes
 

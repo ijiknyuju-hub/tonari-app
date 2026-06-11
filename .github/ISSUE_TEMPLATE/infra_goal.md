@@ -26,6 +26,13 @@ What existing workflow, docs, or CI state matters?
 
 - 
 
+## Files to Read First
+
+- `AGENTS.md`
+- related spec:
+- related goal:
+- related files:
+
 ## Verification
 
 - [ ] `git status`

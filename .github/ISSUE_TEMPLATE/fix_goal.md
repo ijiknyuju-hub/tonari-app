@@ -26,10 +26,17 @@ What is happening now, and what should happen instead?
 
 - 
 
+## Files to Read First
+
+- `AGENTS.md`
+- related spec:
+- related goal:
+- related files:
+
 ## Verification
 
 - [ ] `npm run lint`
-- [ ] `npm run typecheck`
+- [ ] `npm run typecheck` if available, otherwise report `skipped: script missing`
 - [ ] `npm run build`
 
 ## Stop and Ask Conditions

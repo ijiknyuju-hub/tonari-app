@@ -6,6 +6,12 @@
 
 ## Verification
 
+| Command | Result | Notes |
+| --- | --- | --- |
+| `npm run lint` |  |  |
+| `npm run typecheck` |  | if available |
+| `npm run build` |  |  |
+
 ## Screenshots
 
 ## Out of Scope

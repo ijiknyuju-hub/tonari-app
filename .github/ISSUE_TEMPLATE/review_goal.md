@@ -26,6 +26,13 @@ What changed, and what risks should reviewers focus on?
 
 - 
 
+## Files to Read First
+
+- `AGENTS.md`
+- related spec:
+- related goal:
+- related files:
+
 ## Verification
 
 - [ ] Review findings are prioritized.

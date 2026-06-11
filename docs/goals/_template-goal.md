@@ -33,9 +33,11 @@ List required checks, for example:
 
 ```bash
 npm run lint
-npm run typecheck
+npm run typecheck  # if this script exists
 npm run build
 ```
+
+If `npm run typecheck` is not defined, report `skipped: script missing`. In this Next.js app, `npm run build` may also run TypeScript checks as part of the production build.
 
 # Stop and Ask Conditions
 

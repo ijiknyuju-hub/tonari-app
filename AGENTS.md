@@ -62,11 +62,11 @@ Run relevant checks when possible:
 
 ```bash
 npm run lint
-npm run typecheck
+npm run typecheck  # if this script exists
 npm run build
 ```
 
-If a script does not exist or a check fails because of the existing codebase or environment, report the exact command and result.
+If a script does not exist, report `skipped: script missing`. If a check fails because of the existing codebase or environment, report the exact command and result. In this Next.js app, `npm run build` may also run TypeScript checks as part of the production build.
 
 ## Rules
 
