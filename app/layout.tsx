@@ -4,10 +4,10 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'となりごはん',
-  description: '作れる料理が増える、パーソナル料理スキルツリー',
+  description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
   openGraph: {
     title: 'となりごはん',
-    description: '作れる料理が増える、パーソナル料理スキルツリー',
+    description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
     url: 'https://tonari-app-fawn.vercel.app',
     siteName: 'となりごはん',
     type: 'website',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'となりごはん',
-    description: '作れる料理が増える、パーソナル料理スキルツリー',
+    description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
   },
 }
 
