@@ -1,3 +1,8 @@
+> **SUPERSEDED (2026-06-11):** Spec v2.7 replaced the LP+LINE validation plan with an
+> ad-driven web-app-style MVP. Do not implement this goal. The LP itself was implemented
+> in PR #9 (`feature/phase0-lp`) and is converted into the app entry by goal 003.
+> See `docs/specs/tonari-gohan-spec-v2.7.md` and goals 002-011.
+
 # Objective
 
 Implement the Phase 0 entry-validation landing page (LP) for Tonari Gohan as a single static page. The LP communicates the concept and routes visitors to LINE registration. Nothing else.
