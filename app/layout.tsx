@@ -3,19 +3,19 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '縲後→縺ｪ繧翫＃縺ｯ繧・窶・縺・▽繧ゅ・譁咏炊縺九ｉ縲∵ｬ｡縺ｮ荳蜩√∈縲・',
-  description: '菴懊ｌ繧区侭逅・ｒ逋ｻ骭ｲ縺吶ｋ縺ｨ縲∵ｬ｡縺ｮ荳蜩√ｒ謠先｡医＠縺ｾ縺吶・',
+  title: 'となりごはん — いつもの料理から、次の一品へ。',
+  description: '作れる料理を登録すると、少し変えれば作れそうな次の一品を提案します。',
   openGraph: {
-    title: '縲後→縺ｪ繧翫＃縺ｯ繧・窶・縺・▽繧ゅ・譁咏炊縺九ｉ縲∵ｬ｡縺ｮ荳蜩√∈縲・',
-    description: '菴懊ｌ繧区侭逅・ｒ逋ｻ骭ｲ縺吶ｋ縺ｨ縲∵ｬ｡縺ｮ荳蜩√ｒ謠先｡医＠縺ｾ縺吶・',
+    title: 'となりごはん — いつもの料理から、次の一品へ。',
+    description: '作れる料理を登録すると、少し変えれば作れそうな次の一品を提案します。',
     url: 'https://tonari-app-fawn.vercel.app',
-    siteName: '縺ｨ縺ｪ繧翫＃縺ｯ繧・',
+    siteName: 'となりごはん',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '縲後→縺ｪ繧翫＃縺ｯ繧・窶・縺・▽繧ゅ・譁咏炊縺九ｉ縲∵ｬ｡縺ｮ荳蜩√∈縲・',
-    description: '菴懊ｌ繧区侭逅・ｒ逋ｻ骭ｲ縺吶ｋ縺ｨ縲∵ｬ｡縺ｮ荳蜩√ｒ謠先｡医＠縺ｾ縺吶・',
+    title: 'となりごはん — いつもの料理から、次の一品へ。',
+    description: '作れる料理を登録すると、少し変えれば作れそうな次の一品を提案します。',
   },
 }
 
