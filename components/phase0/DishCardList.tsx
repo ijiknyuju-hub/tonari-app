@@ -5,6 +5,7 @@ import Link from 'next/link'
 import DishCard from '@/components/phase0/DishCard'
 import DishDetailModal from '@/components/phase0/DishDetailModal'
 import type { RecommendedDish } from '@/lib/phase0/recommendDishes'
+import { useSavedDishes } from '@/lib/phase0/useSavedDishes'
 import type { BaseDish } from '@/types/dish'
 
 type DishCardListProps = {
@@ -13,14 +14,20 @@ type DishCardListProps = {
 }
 
 export default function DishCardList({ recommendations, selectedDishes }: DishCardListProps) {
-  const [savedIds, setSavedIds] = useState<string[]>([])
+  const { savedDishes, isSaved, save, unsave } = useSavedDishes()
   const [openRecommendation, setOpenRecommendation] = useState<RecommendedDish | null>(null)
+  const [feedbackDishTitle, setFeedbackDishTitle] = useState<string | null>(null)
   const selectedNames = useMemo(() => selectedDishes.map((dish) => dish.title), [selectedDishes])
 
   function toggleSave(dishId: string) {
-    setSavedIds((current) =>
-      current.includes(dishId) ? current.filter((id) => id !== dishId) : [...current, dishId],
-    )
+    if (isSaved(dishId)) {
+      unsave(dishId)
+      setFeedbackDishTitle(null)
+      return
+    }
+
+    save(dishId)
+    setFeedbackDishTitle(recommendations.find((recommendation) => recommendation.card.id === dishId)?.card.title ?? null)
   }
 
   return (
@@ -40,6 +47,27 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
               選んだ料理との差分が小さいものから並べています。
             </p>
           </div>
+
+          <Link
+            href="/saved"
+            className="flex min-h-12 items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 text-sm font-black text-zinc-800 shadow-sm"
+          >
+            <span>作ってみたいリスト</span>
+            <span className="rounded-full bg-[#E8611A]/10 px-3 py-1 text-xs text-[#B9470F]">
+              {savedDishes.length}件
+            </span>
+          </Link>
+
+          {feedbackDishTitle ? (
+            <div className="rounded-2xl border border-[#E8611A]/20 bg-[#E8611A]/10 p-4">
+              <p className="text-sm font-bold leading-6 text-[#B9470F]">
+                {feedbackDishTitle}を作ってみたいリストに追加しました。
+              </p>
+              <Link href="/saved" className="mt-2 inline-flex text-sm font-black text-[#B9470F] underline">
+                リストを見る
+              </Link>
+            </div>
+          ) : null}
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
@@ -66,7 +94,7 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
               <DishCard
                 key={recommendation.card.id}
                 recommendation={recommendation}
-                isSaved={savedIds.includes(recommendation.card.id)}
+                isSaved={isSaved(recommendation.card.id)}
                 onToggleSave={toggleSave}
                 onOpenDetail={setOpenRecommendation}
               />
@@ -91,7 +119,8 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
       {openRecommendation ? (
         <DishDetailModal
           recommendation={openRecommendation}
-          isSaved={savedIds.includes(openRecommendation.card.id)}
+          isSaved={isSaved(openRecommendation.card.id)}
+          showSaveFeedback={feedbackDishTitle === openRecommendation.card.title}
           onClose={() => setOpenRecommendation(null)}
           onToggleSave={toggleSave}
         />

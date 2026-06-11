@@ -1,10 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import type { RecommendedDish } from '@/lib/phase0/recommendDishes'
 
 type DishDetailModalProps = {
   recommendation: RecommendedDish
   isSaved: boolean
+  showSaveFeedback?: boolean
   onClose: () => void
   onToggleSave: (dishId: string) => void
 }
@@ -12,6 +14,7 @@ type DishDetailModalProps = {
 export default function DishDetailModal({
   recommendation,
   isSaved,
+  showSaveFeedback,
   onClose,
   onToggleSave,
 }: DishDetailModalProps) {
@@ -66,6 +69,16 @@ export default function DishDetailModal({
         </div>
 
         <div className="sticky bottom-0 mt-5 bg-[#F7F8F5] pb-1 pt-4">
+          {showSaveFeedback ? (
+            <div className="mb-3 rounded-2xl border border-[#E8611A]/20 bg-[#E8611A]/10 p-4">
+              <p className="text-sm font-bold leading-6 text-[#B9470F]">
+                {card.title}を作ってみたいリストに追加しました。
+              </p>
+              <Link href="/saved" className="mt-2 inline-flex text-sm font-black text-[#B9470F] underline">
+                リストを見る
+              </Link>
+            </div>
+          ) : null}
           <button
             type="button"
             onClick={() => onToggleSave(card.id)}
