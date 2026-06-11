@@ -1,5 +1,4 @@
-import Link from 'next/link'
-
+import StartSelectDishesLink from '@/components/phase0/StartSelectDishesLink'
 import { dishCards } from '@/data/dishCards'
 
 const sampleCards = dishCards.slice(0, 3)
@@ -29,12 +28,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Link
-            href="/select"
-            className="flex min-h-14 items-center justify-center rounded-2xl bg-[#E8611A] px-5 text-center text-base font-black text-white shadow-[0_14px_30px_rgba(232,97,26,0.25)] transition hover:bg-[#d95512] focus:outline-none focus:ring-4 focus:ring-[#E8611A]/25"
-          >
-            作れる料理を選ぶ
-          </Link>
+          <StartSelectDishesLink />
         </div>
 
         <div id="sample-cards" className="space-y-3 scroll-mt-6">

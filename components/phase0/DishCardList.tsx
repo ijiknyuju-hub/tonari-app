@@ -1,9 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import DishCard from '@/components/phase0/DishCard'
 import DishDetailModal from '@/components/phase0/DishDetailModal'
+import { trackEvent } from '@/lib/phase0/analytics'
 import type { RecommendedDish } from '@/lib/phase0/recommendDishes'
 import { useSavedDishes } from '@/lib/phase0/useSavedDishes'
 import type { BaseDish } from '@/types/dish'
@@ -17,7 +18,17 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
   const { savedDishes, isSaved, save, unsave } = useSavedDishes()
   const [openRecommendation, setOpenRecommendation] = useState<RecommendedDish | null>(null)
   const [feedbackDishTitle, setFeedbackDishTitle] = useState<string | null>(null)
+  const trackedRecommendations = useRef(false)
   const selectedNames = useMemo(() => selectedDishes.map((dish) => dish.title), [selectedDishes])
+
+  useEffect(() => {
+    if (trackedRecommendations.current) {
+      return
+    }
+
+    trackedRecommendations.current = true
+    trackEvent('show_recommendations', { count: selectedDishes.length })
+  }, [selectedDishes.length])
 
   function toggleSave(dishId: string) {
     if (isSaved(dishId)) {
@@ -27,7 +38,13 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
     }
 
     save(dishId)
+    trackEvent('click_want_to_make', { dishId })
     setFeedbackDishTitle(recommendations.find((recommendation) => recommendation.card.id === dishId)?.card.title ?? null)
+  }
+
+  function openDetail(recommendation: RecommendedDish) {
+    trackEvent('open_dish_card', { dishId: recommendation.card.id })
+    setOpenRecommendation(recommendation)
   }
 
   return (
@@ -96,7 +113,7 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
                 recommendation={recommendation}
                 isSaved={isSaved(recommendation.card.id)}
                 onToggleSave={toggleSave}
-                onOpenDetail={setOpenRecommendation}
+                onOpenDetail={openDetail}
               />
             ))}
           </div>

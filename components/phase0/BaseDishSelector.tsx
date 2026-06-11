@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { trackEvent } from '@/lib/phase0/analytics'
 import type { BaseDish } from '@/types/dish'
 
 type BaseDishSelectorProps = {
@@ -19,6 +20,10 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
   )
 
   function toggleDish(id: string) {
+    if (!selectedIds.includes(id)) {
+      trackEvent('select_base_dish', { dishId: id })
+    }
+
     setSelectedIds((current) =>
       current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id],
     )

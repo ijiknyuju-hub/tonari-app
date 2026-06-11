@@ -1,15 +1,17 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { baseDishes } from '@/data/baseDishes'
 import DishDetailModal from '@/components/phase0/DishDetailModal'
+import { trackEvent } from '@/lib/phase0/analytics'
 import { recommendDishes, type RecommendedDish } from '@/lib/phase0/recommendDishes'
 import { useSavedDishes } from '@/lib/phase0/useSavedDishes'
 
 export default function SavedDishList() {
   const { savedDishes, isSaved, save, unsave } = useSavedDishes()
   const [openRecommendation, setOpenRecommendation] = useState<RecommendedDish | null>(null)
+  const trackedSavedList = useRef(false)
 
   const savedRecommendations = useMemo(() => {
     const savedOrder = new Map(savedDishes.map((dish, index) => [dish.dishId, index]))
@@ -22,6 +24,15 @@ export default function SavedDishList() {
       )
   }, [savedDishes])
 
+  useEffect(() => {
+    if (trackedSavedList.current) {
+      return
+    }
+
+    trackedSavedList.current = true
+    trackEvent('open_saved_list')
+  }, [])
+
   function toggleSave(dishId: string) {
     if (isSaved(dishId)) {
       unsave(dishId)
@@ -32,6 +43,12 @@ export default function SavedDishList() {
     }
 
     save(dishId)
+    trackEvent('click_want_to_make', { dishId })
+  }
+
+  function openDetail(recommendation: RecommendedDish) {
+    trackEvent('open_dish_card', { dishId: recommendation.card.id })
+    setOpenRecommendation(recommendation)
   }
 
   return (
@@ -78,7 +95,7 @@ export default function SavedDishList() {
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setOpenRecommendation(recommendation)}
+                    onClick={() => openDetail(recommendation)}
                     className="min-h-12 rounded-2xl bg-[#E8611A] px-3 text-sm font-black text-white shadow-[0_10px_22px_rgba(232,97,26,0.22)]"
                   >
                     詳しく見る
