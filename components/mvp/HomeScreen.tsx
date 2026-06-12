@@ -28,7 +28,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
   const [openRecommendation, setOpenRecommendation] = useState<RecommendedDish | null>(null)
   const [showSaveFeedbackFor, setShowSaveFeedbackFor] = useState<string | null>(null)
   const { selectedBaseDishIds } = useSelectedBaseDishes()
-  const { savedDishes, isSaved, save, unsave } = useSavedDishes()
+  const { savedDishes, madeDishes, isSaved, isMade, save, unsave, markMade, unmarkMade } = useSavedDishes()
 
   const recommendations = useMemo(() => recommendDishes(selectedBaseDishIds), [selectedBaseDishIds])
   const featured = useMemo(
@@ -43,6 +43,22 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
     const savedIds = new Set(savedDishes.map((dish) => dish.dishId))
     return dishCards.filter((card) => savedIds.has(card.id)).slice(0, 3).map((card) => card.title)
   }, [savedDishes])
+  const recentMadeRecommendations = useMemo(() => {
+    const recommendationsById = new Map(
+      recommendDishes(baseDishes.map((dish) => dish.id)).map((recommendation) => [
+        recommendation.card.id,
+        recommendation,
+      ]),
+    )
+
+    return madeDishes
+      .map((dish) => ({
+        madeAt: dish.madeAt,
+        recommendation: recommendationsById.get(dish.dishId),
+      }))
+      .filter((item): item is { madeAt: string; recommendation: RecommendedDish } => Boolean(item.recommendation))
+      .slice(0, 2)
+  }, [madeDishes])
 
   const baseDishTitle = featured?.closestBaseDishTitle ?? getBaseDishTitle(selectedBaseDishIds[0])
   const recommendHref = `/recommend?base=${encodeURIComponent(selectedBaseDishIds.join(','))}`
@@ -57,6 +73,16 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
     save(dishId)
     trackEvent('click_want_to_make', { dishId })
     setShowSaveFeedbackFor(dishId)
+  }
+
+  function toggleMade(dishId: string) {
+    if (isMade(dishId)) {
+      unmarkMade(dishId)
+      return
+    }
+
+    markMade(dishId)
+    trackEvent('mark_made', { dishId })
   }
 
   function openDetail(recommendation: RecommendedDish) {
@@ -167,7 +193,28 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
           </div>
           <div className="tn-card p-4">
             <h2 className="text-sm font-black">最近作った料理</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--tn-text-sub)]">作った記録はまだありません</p>
+            {recentMadeRecommendations.length > 0 ? (
+              <ul className="mt-3 space-y-2">
+                {recentMadeRecommendations.map(({ madeAt, recommendation }) => (
+                  <li key={recommendation.card.id}>
+                    <button
+                      type="button"
+                      onClick={() => openDetail(recommendation)}
+                      className="block w-full rounded-2xl bg-[var(--tn-surface-soft)] px-3 py-2 text-left"
+                    >
+                      <span className="block text-sm font-black leading-5 text-[var(--tn-text)]">
+                        {recommendation.card.title}
+                      </span>
+                      <span className="mt-1 block text-xs font-bold leading-5 text-[var(--tn-text-sub)]">
+                        作った日: {formatMadeDate(madeAt)}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-[var(--tn-text-sub)]">作った記録はまだありません</p>
+            )}
           </div>
         </section>
       </section>
@@ -176,9 +223,11 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
         <DishDetailModal
           recommendation={openRecommendation}
           isSaved={isSaved(openRecommendation.card.id)}
+          isMade={isMade(openRecommendation.card.id)}
           showSaveFeedback={showSaveFeedbackFor === openRecommendation.card.id}
           onClose={() => setOpenRecommendation(null)}
           onToggleSave={toggleSave}
+          onToggleMade={toggleMade}
         />
       ) : null}
       <BottomNav />
@@ -232,6 +281,19 @@ function FeaturedCard({
       </div>
     </article>
   )
+}
+
+function formatMadeDate(madeAt: string): string {
+  const date = new Date(madeAt)
+  if (Number.isNaN(date.getTime())) {
+    return '-'
+  }
+
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date)
 }
 
 function SecondaryCard({

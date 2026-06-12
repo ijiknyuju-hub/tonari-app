@@ -16,7 +16,7 @@ type DishCardListProps = {
 }
 
 export default function DishCardList({ recommendations, selectedDishes }: DishCardListProps) {
-  const { savedDishes, isSaved, save, unsave } = useSavedDishes()
+  const { savedDishes, isSaved, isMade, save, unsave, markMade, unmarkMade } = useSavedDishes()
   const [openRecommendation, setOpenRecommendation] = useState<RecommendedDish | null>(null)
   const [feedbackDishTitle, setFeedbackDishTitle] = useState<string | null>(null)
   const trackedRecommendations = useRef(false)
@@ -41,6 +41,16 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
     save(dishId)
     trackEvent('click_want_to_make', { dishId })
     setFeedbackDishTitle(recommendations.find((recommendation) => recommendation.card.id === dishId)?.card.title ?? null)
+  }
+
+  function toggleMade(dishId: string) {
+    if (isMade(dishId)) {
+      unmarkMade(dishId)
+      return
+    }
+
+    markMade(dishId)
+    trackEvent('mark_made', { dishId })
   }
 
   function openDetail(recommendation: RecommendedDish) {
@@ -128,9 +138,11 @@ export default function DishCardList({ recommendations, selectedDishes }: DishCa
         <DishDetailModal
           recommendation={openRecommendation}
           isSaved={isSaved(openRecommendation.card.id)}
+          isMade={isMade(openRecommendation.card.id)}
           showSaveFeedback={feedbackDishTitle === openRecommendation.card.title}
           onClose={() => setOpenRecommendation(null)}
           onToggleSave={toggleSave}
+          onToggleMade={toggleMade}
         />
       ) : null}
       <Phase0BottomNav savedCount={savedDishes.length} />

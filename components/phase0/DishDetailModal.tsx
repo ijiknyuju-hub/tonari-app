@@ -6,17 +6,21 @@ import type { RecommendedDish } from '@/lib/phase0/recommendDishes'
 type DishDetailModalProps = {
   recommendation: RecommendedDish
   isSaved: boolean
+  isMade: boolean
   showSaveFeedback?: boolean
   onClose: () => void
   onToggleSave: (dishId: string) => void
+  onToggleMade: (dishId: string) => void
 }
 
 export default function DishDetailModal({
   recommendation,
   isSaved,
+  isMade,
   showSaveFeedback,
   onClose,
   onToggleSave,
+  onToggleMade,
 }: DishDetailModalProps) {
   const { card, closestBaseDishTitle, label } = recommendation
 
@@ -45,7 +49,9 @@ export default function DishDetailModal({
         </div>
 
         <section className="mt-5 rounded-2xl bg-[#FFF3EC] p-4">
-          <h3 className="text-lg font-black leading-7 text-[#B9470F]">{closestBaseDishTitle}が作れるなら近い</h3>
+          <h3 className="text-lg font-black leading-7 text-[#B9470F]">
+            {closestBaseDishTitle}が作れるなら近い
+          </h3>
         </section>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
@@ -63,7 +69,7 @@ export default function DishDetailModal({
           <DetailSection title="そのまま使える" items={card.reusableSkills} />
           <DetailSection title="変えるところ" items={card.changedPoints} />
           <DetailSection
-            title="買い足し食材"
+            title="買い足す食材"
             items={card.extraIngredients.length > 0 ? card.extraIngredients : ['なし']}
           />
           <DetailSection title="ざっくり手順" items={card.roughSteps} ordered />
@@ -80,18 +86,32 @@ export default function DishDetailModal({
               </Link>
             </div>
           ) : null}
-          <button
-            type="button"
-            onClick={() => onToggleSave(card.id)}
-            className={[
-              'flex min-h-16 w-full items-center justify-center rounded-2xl px-5 text-lg font-black transition focus:outline-none focus:ring-4 focus:ring-[#E8611A]/20',
-              isSaved
-                ? 'bg-[#E8611A]/10 text-[#B9470F]'
-                : 'bg-[#E8611A] text-white shadow-[0_14px_30px_rgba(232,97,26,0.25)]',
-            ].join(' ')}
-          >
-            {isSaved ? '保存済み' : '作ってみたい'}
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => onToggleSave(card.id)}
+              className={[
+                'flex min-h-16 items-center justify-center rounded-2xl px-3 text-base font-black transition focus:outline-none focus:ring-4 focus:ring-[#E8611A]/20',
+                isSaved
+                  ? 'bg-[#E8611A]/10 text-[#B9470F]'
+                  : 'bg-[#E8611A] text-white shadow-[0_14px_30px_rgba(232,97,26,0.25)]',
+              ].join(' ')}
+            >
+              {isSaved ? '保存済み' : '作ってみたい'}
+            </button>
+            <button
+              type="button"
+              onClick={() => onToggleMade(card.id)}
+              className={[
+                'flex min-h-16 items-center justify-center rounded-2xl border px-3 text-base font-black transition focus:outline-none focus:ring-4 focus:ring-[#E8611A]/20',
+                isMade
+                  ? 'border-[#E8611A]/30 bg-[#FFF3EC] text-[#B9470F]'
+                  : 'border-zinc-200 bg-white text-zinc-800',
+              ].join(' ')}
+            >
+              {isMade ? '作った済み' : '作った'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

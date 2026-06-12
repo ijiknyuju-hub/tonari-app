@@ -9,6 +9,7 @@ export type Phase0EventName =
   | 'show_recommendations'
   | 'open_dish_card'
   | 'click_want_to_make'
+  | 'mark_made'
   | 'open_saved_list'
 
 export type Phase0EventParams = {

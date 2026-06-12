@@ -28,4 +28,5 @@ export type DishCard = {
 export type SavedDish = {
   dishId: string
   savedAt: string
+  madeAt?: string
 }
