@@ -112,12 +112,12 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
           })}
         </div>
 
-        <div className="sticky bottom-[4.25rem] mt-auto bg-[#F7F8F5]/95 pb-3 pt-5 backdrop-blur">
+        <div className="pointer-events-none sticky bottom-[4.25rem] mt-auto bg-[#F7F8F5]/95 pb-3 pt-2 backdrop-blur">
           <button
             type="button"
             onClick={proceed}
             disabled={selectedIds.length === 0}
-            className="phase0-primary-button flex w-full items-center justify-center px-5 text-center text-base font-black transition enabled:hover:bg-[#d95512] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
+            className="phase0-primary-button pointer-events-auto flex w-full items-center justify-center px-5 text-center text-base font-black transition enabled:hover:bg-[#d95512] disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
           >
             あなたのとなりごはんを探す
           </button>
