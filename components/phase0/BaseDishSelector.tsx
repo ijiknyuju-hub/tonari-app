@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Phase0BottomNav from '@/components/phase0/Phase0BottomNav'
 import { trackEvent } from '@/lib/phase0/analytics'
+import { writeSelectedBaseDishIds } from '@/lib/mvp/useSelectedBaseDishes'
 import type { BaseDish } from '@/types/dish'
 
 type BaseDishSelectorProps = {
@@ -37,6 +38,7 @@ export default function BaseDishSelector({ baseDishes }: BaseDishSelectorProps) 
 
     const params = new URLSearchParams()
     params.set('base', selectedIds.join(','))
+    writeSelectedBaseDishIds(selectedIds)
     router.push(`/recommend?${params.toString()}`)
   }
 
