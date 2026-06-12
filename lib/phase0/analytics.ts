@@ -11,6 +11,7 @@ export type Phase0EventName =
   | 'click_want_to_make'
   | 'mark_made'
   | 'open_saved_list'
+  | 'open_island_map'
 
 export type Phase0EventParams = {
   dishId?: string
