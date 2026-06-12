@@ -1,5 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
+import { VisitTracker } from '@/components/mvp/VisitTracker'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
+        <VisitTracker />
         {children}
         <Analytics />
       </body>

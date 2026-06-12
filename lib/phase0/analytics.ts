@@ -12,10 +12,12 @@ export type Phase0EventName =
   | 'mark_made'
   | 'open_saved_list'
   | 'open_island_map'
+  | 'return_visit'
 
 export type Phase0EventParams = {
   dishId?: string
   count?: number
+  daysBucket?: '1-2d' | '3-7d' | '8d+'
 }
 
 export function trackEvent(name: Phase0EventName, params?: Phase0EventParams) {
