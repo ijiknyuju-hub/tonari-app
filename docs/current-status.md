@@ -34,8 +34,23 @@ Last updated: 2026-06-16
   - HomeScreen redirects first-time visitors to /onboarding
   - Shared useIsClient hook extracted to lib/mvp/useIsClient.ts
   - Spec: docs/specs/spec-020-onboarding.md
-- **Next goal**: Goal 009 — event tracking (analytics)
-  - Then: ad polish (010) → release check (011) → v2.7 public launch
+- **Goal 009: Event Tracking** — COMPLETED 2026-06-16
+  - 6 events wired via Vercel Analytics: start_select_dishes, select_base_dish,
+    show_recommendations, open_dish_card, bookmark, page_view (auto)
+  - open_saved_list skipped (no saved list screen yet)
+- **Goal 010: Ad-Ready Polish** — COMPLETED 2026-06-16
+  - Most items already covered by goals 018-019 UI rebuild
+  - Added "試作版です" notice in BottomNav
+- **Goal 011: Release Check** — COMPLETED 2026-06-16
+  - 9/10 checklist items PASS, 1 finding (saved list screen not implemented)
+  - lint/build/console all clean
+  - **Ready for ad traffic** — core funnel works end-to-end
+
+## Next Steps (post-release)
+- Resume Vercel deployment and confirm production URL
+- Set up ad campaign (small budget, multiple creatives)
+- Watch funnel events against Go/No-Go thresholds
+- Saved list screen (Phase 0.5)
 
 ## Recent Decisions
 
