@@ -14,6 +14,9 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--tn-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <p className="py-1 text-center text-[10px] font-bold" style={{ color: 'var(--tn-text-sub)' }}>
+        試作版です — ご意見お待ちしています
+      </p>
       <div className="mx-auto grid max-w-md grid-cols-3">
         {ITEMS.map((item) => {
           const active = pathname === item.href
