@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import BottomNav from '@/components/mvp/BottomNav'
 import { FeaturedCard, CompactCard } from '@/components/mvp/NearbyDishCard'
 import { dishes, relations } from '@/data/v3'
+import { useIsClient } from '@/lib/mvp/useIsClient'
 import { todaysPick, type HomeMode } from '@/lib/mvp/todaysPick'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
@@ -26,7 +28,9 @@ function greeting(): string {
 }
 
 export default function HomeScreen({ dateISO }: { dateISO: string }) {
+  const router = useRouter()
   const [mode, setMode] = useState<HomeMode>('easy')
+  const isClient = useIsClient()
   const { selectedBaseDishIds, setSelectedBaseDishIds } = useSelectedBaseDishes()
   const { recordMade } = useUserState()
 
@@ -64,6 +68,17 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
       made_at: new Date().toISOString(),
       rating: 'ok',
     })
+  }
+
+  // Redirect first-time visitors to onboarding
+  useEffect(() => {
+    if (isClient && selectedBaseDishIds.length === 0) {
+      router.replace('/onboarding')
+    }
+  }, [isClient, selectedBaseDishIds, router])
+
+  if (!isClient || selectedBaseDishIds.length === 0) {
+    return <div className="tn-screen" />
   }
 
   const sourceName = featured ? getDishName(featured.source) : ''
@@ -165,14 +180,12 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
         )}
 
         {/* Featured card */}
-        {featured ? (
+        {featured && (
           <FeaturedCard
             relation={featured}
             targetName={getDishName(featured.target)}
             onMadeIt={handleMadeIt}
           />
-        ) : (
-          <EmptyState hasSelection={selectedBaseDishIds.length > 0} />
         )}
 
         {/* Other cards section */}
@@ -200,20 +213,5 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
 
       <BottomNav />
     </main>
-  )
-}
-
-function EmptyState({ hasSelection }: { hasSelection: boolean }) {
-  return (
-    <section className="tn-card p-5">
-      <p className="text-base font-black" style={{ color: 'var(--tn-text)' }}>
-        {hasSelection ? 'まだ料理データがありません' : 'まずは作れる料理を選びましょう'}
-      </p>
-      <p className="mt-3 text-sm font-bold leading-7" style={{ color: 'var(--tn-text-sub)' }}>
-        {hasSelection
-          ? '近い料理のデータを準備中です。もうしばらくお待ちください。'
-          : '作れる料理を選ぶと、今日のおすすめを表示します。'}
-      </p>
-    </section>
   )
 }
