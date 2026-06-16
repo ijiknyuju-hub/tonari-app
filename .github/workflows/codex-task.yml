@@ -1,0 +1,138 @@
+name: Codex Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task description for Codex'
+        required: true
+        type: string
+      base_branch:
+        description: 'Base branch to branch from and PR target'
+        required: false
+        default: 'sekaishi-chizu'
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  codex:
+    runs-on: [self-hosted, local-codex]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.base_branch }}
+          persist-credentials: true
+
+      - name: Create codex branch
+        shell: powershell
+        run: |
+          $branch = "codex/run-$env:GITHUB_RUN_NUMBER"
+          git checkout -b $branch
+          "CODEX_BRANCH=$branch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Created branch: $branch"
+          Write-Host "CODEX_BRANCH=$branch"
+
+      - name: Verify codex
+        shell: powershell
+        run: |
+          $codexPath = (where.exe codex 2>$null) | Select-Object -First 1
+          if (-not $codexPath) {
+            Write-Error "codex not found. Run: npm install -g @openai/codex"
+            exit 1
+          }
+          Write-Host "codex: $codexPath"
+          codex --version
+
+      - name: Run Codex
+        shell: powershell
+        env:
+          CODEX_TASK: ${{ inputs.task }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $outFile = Join-Path $env:RUNNER_TEMP "codex-output.txt"
+          "CODEX_OUT=$outFile" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "=== Task ===" ; Write-Host $env:CODEX_TASK ; Write-Host "============"
+          & codex exec --sandbox workspace-write $env:CODEX_TASK 2>&1 | Tee-Object -FilePath $outFile
+          $ec = $LASTEXITCODE
+          Write-Host "codex exit code: $ec"
+          if ($ec -ne 0) { exit $ec }
+
+      - name: Capture git status and diff
+        shell: powershell
+        if: always()
+        run: |
+          $statusFile = Join-Path $env:RUNNER_TEMP "git-status.txt"
+          $diffFile   = Join-Path $env:RUNNER_TEMP "git-diff.txt"
+          "GIT_STATUS_FILE=$statusFile" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GIT_DIFF_FILE=$diffFile"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          git status --short | Tee-Object -FilePath $statusFile
+          git diff HEAD      | Tee-Object -FilePath $diffFile
+
+      - name: Commit and push codex branch
+        shell: powershell
+        run: |
+          $currentBranch = git rev-parse --abbrev-ref HEAD
+          Write-Host "Current branch: $currentBranch"
+          git config user.name "Codex Bot"
+          git config user.email "codex@local"
+          git add -A
+          $staged = git diff --staged --stat
+          if ($staged) {
+            Write-Host $staged
+            git commit -m "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
+            git push -u origin $currentBranch
+            Write-Host "Pushed: $currentBranch"
+          } else {
+            Write-Host "No changes to commit"
+          }
+
+      - name: Open PR for Claude review
+        shell: powershell
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ inputs.base_branch }}
+        run: |
+          $currentBranch = git rev-parse --abbrev-ref HEAD
+          Write-Host "Opening PR: $currentBranch -> $env:BASE"
+
+          $ahead = (git rev-list --count "origin/$env:BASE..$currentBranch" 2>$null)
+          Write-Host "Commits ahead of base: $ahead"
+          if (-not $ahead -or $ahead -eq "0") {
+            Write-Host "No new commits — skipping PR creation"
+            exit 0
+          }
+
+          $prBody = @{
+            title = "codex: implement changes (run $env:GITHUB_RUN_NUMBER)"
+            head  = $currentBranch
+            base  = $env:BASE
+            body  = "Automated implementation by Codex CLI on local runner DESKTOP-74GPCLK.`n`nRun: $env:GITHUB_RUN_NUMBER`nTask dispatched by Claude Code review loop."
+          } | ConvertTo-Json -Depth 3
+
+          $resp = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/ijiknyuju-hub/tonari-app/pulls" `
+            -Method POST `
+            -Headers @{ Authorization="Bearer $env:GITHUB_TOKEN"; Accept="application/vnd.github+json" } `
+            -Body $prBody `
+            -ContentType "application/json"
+
+          Write-Host "PR created: #$($resp.number) $($resp.html_url)"
+          "PR_NUMBER=$($resp.number)"    | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PR_URL=$($resp.html_url)"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codex-results-${{ github.run_number }}
+          path: |
+            ${{ env.CODEX_OUT }}
+            ${{ env.GIT_STATUS_FILE }}
+            ${{ env.GIT_DIFF_FILE }}
