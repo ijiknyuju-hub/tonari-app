@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tonari Gohan
 
-## Getting Started
+Tonari Gohan is a Next.js app for helping people choose what to cook next from nearby dishes in their own repertoire.
 
-First, run the development server:
+This repository is currently in an early development phase. Product behavior should be specified in issues or `docs/specs/` before implementation.
+
+## Development Roles
+
+- Fable: reads specs, drafts issues and goal files, and reviews plans or PRs.
+- Codex: implements one issue or goal at a time, runs checks, and prepares PR-ready changes.
+- Human: decides product direction, priorities, final review, and merge.
+
+## Documentation
+
+- AI workflow: `docs/operations/ai-workflow.md`
+- GitHub workflow: `docs/operations/github-workflow.md`
+- Codex workflow: `docs/operations/codex-workflow.md`
+- Fable workflow: `docs/operations/fable-workflow.md`
+- Repository strategy: `docs/operations/repository-strategy.md`
+- Goal template: `docs/goals/_template-goal.md`
+
+## Local Development
+
+Use npm.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Useful checks:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+`npm run typecheck` may be added later if the project defines a dedicated script.
 
-To learn more about Next.js, take a look at the following resources:
+## GitHub Workflow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Work from a GitHub issue or `docs/goals/*.md` file.
+- Use one branch per issue or goal.
+- Use one pull request per issue whenever possible.
+- Do not push directly to `main`.
+- Keep changes small and reviewable.
+- Run relevant checks and document any skipped checks.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Secrets
 
-## Deploy on Vercel
+This repository is public. Do not commit real secrets, private user data, `.env.local`, or value-filled environment files.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use `.env.example` only for placeholder names when environment documentation is needed.
