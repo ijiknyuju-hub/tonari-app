@@ -24,12 +24,12 @@ Last updated: 2026-06-16
 
 ## What's Next
 
-- **Goal 019: Home Screen Card UI** (spec approved 2026-06-16, ready for implementation)
-  - Spec: `docs/specs/spec-019-home-card-ui.md` (approved)
-  - Goal: `docs/goals/019-home-card-ui.md` (ready)
-  - Next: `/codex-goal` to start implementation
-  - Scope: featured card + horizontal scroll small cards + detail screen + bookmark/made buttons
-  - Not in scope: real photos, notification, onboarding, memo/edit
+- **Goal 019: Home Screen Card UI** — COMPLETED 2026-06-16
+  - FeaturedCard + CompactCard + DishDetailScreen + HomeScreen rewrite
+  - design-system.md created for AI-safe UI constraints
+  - All 52 dish detail pages statically generated
+  - Verified: tabs, bookmark, made-it, detail navigation, empty state
+- **Next goal**: TBD — onboarding flow, real photos, or notification system
 
 ## Recent Decisions
 
