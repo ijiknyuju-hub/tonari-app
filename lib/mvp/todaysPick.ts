@@ -1,37 +1,25 @@
-import { recommendDishes, type RecommendedDish } from '@/lib/phase0/recommendDishes'
+import { relations } from '@/data/v3'
+import type { Difficulty, NearbyRelation } from '@/types/dish'
 
-export type HomeMode = 'easy' | 'stretch' | 'full'
-
-const MODE_DIFFICULTY: Record<HomeMode, 1 | 2 | 3> = {
-  easy: 1,
-  stretch: 2,
-  full: 3,
-}
+export type HomeMode = Difficulty
 
 export function todaysPick(
-  selectedBaseDishIds: string[],
+  selectedDishIds: string[],
   mode: HomeMode,
   dateISO: string,
-): RecommendedDish | null {
-  const recommendations = recommendDishes(selectedBaseDishIds)
-  if (recommendations.length === 0) {
-    return null
-  }
-
-  const difficulty = MODE_DIFFICULTY[mode]
-  const modeMatches = recommendations.filter((recommendation) => recommendation.card.difficulty === difficulty)
-  const candidates = modeMatches.length > 0 ? modeMatches : recommendations
-  const index = stableHash(`${dateISO}:${mode}:${selectedBaseDishIds.join(',')}`) % candidates.length
-
+): NearbyRelation | null {
+  const candidates = relations.filter(
+    (r) => r.tab === mode && selectedDishIds.includes(r.source),
+  )
+  if (candidates.length === 0) return null
+  const index = stableHash(`${dateISO}:${mode}:${selectedDishIds.join(',')}`) % candidates.length
   return candidates[index] ?? null
 }
 
 function stableHash(value: string): number {
   let hash = 0
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
   }
-
   return hash
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { trackEvent } from '@/lib/phase0/analytics'
+import { trackEvent } from '@/lib/mvp/analytics'
 
 const FIRST_VISIT_KEY = 'tonari.v28.firstVisitAt'
 const LAST_VISIT_KEY = 'tonari.v28.lastVisitAt'

@@ -2,6 +2,22 @@
 
 State the single outcome Codex should produce.
 
+# Spec Reference
+
+- Spec: `docs/specs/spec-NNN-slug.md`
+
+# Dependencies
+
+- [ ] goal NNN (must be completed first)
+
+None if no dependencies.
+
+# Design References
+
+List design image paths if any. Images trigger Codex implementation via `codex exec -i`.
+
+None if no images.
+
 # Product Context
 
 Explain why this matters for Tonari Gohan and link any relevant specs or issues.

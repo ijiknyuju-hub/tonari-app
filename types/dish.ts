@@ -1,32 +1,41 @@
-export type Difficulty = 1 | 2 | 3
+export type Difficulty = 'easy' | 'stretch' | 'full'
 
-export type ClosenessLabel = 'かなり近い' | '少し変えれば作れる' | 'ちょっと挑戦'
-
-export type BaseDish = {
+export type Dish = {
   id: string
-  title: string
+  name: string
+  photo_url?: string
+  variations: Variation[]
 }
 
-export type DishCard = {
+export type Variation = {
   id: string
-  title: string
-  baseDishIds: string[]
-  image?: string
-  shortCopy: string
-  difficulty: Difficulty
-  timeMinutes: number
-  tags: string[]
-  reusableSkills: string[]
-  changedPoints: string[]
-  extraIngredients: string[]
-  roughSteps: string[]
-  tasteAxis: string[]
-  cookingMethod: string[]
-  mainIngredients: string[]
+  name: string
+  description: string
+  can_promote: boolean
 }
 
-export type SavedDish = {
-  dishId: string
-  savedAt: string
-  madeAt?: string
+export type NearbyRelation = {
+  source: string
+  target: string
+  proximity: number
+  tab: Difficulty
+  description_line1: string
+  description_line2: string
+  new_ingredients: string[]
+  rough_steps?: string[]
+  cooking_time_minutes?: number
+}
+
+export type MadeRecord = {
+  dish_id: string
+  made_at: string
+  rating: 'great' | 'ok' | 'meh'
+  memo?: string
+}
+
+export type UserState = {
+  selected_dishes: string[]
+  bookmarked: string[]
+  made_records: MadeRecord[]
+  promoted_variations: string[]
 }

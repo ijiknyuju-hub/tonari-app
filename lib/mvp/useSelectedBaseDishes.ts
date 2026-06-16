@@ -2,8 +2,9 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
 
-const STORAGE_KEY = 'tonari.v28.selectedBaseDishes'
-const STORAGE_EVENT = 'tonari.v28.selectedBaseDishes.changed'
+const STORAGE_KEY = 'tonari.v3.selectedDishes'
+const STORAGE_EVENT = 'tonari.v3.selectedDishes.changed'
+const OLD_STORAGE_KEY = 'tonari.v28.selectedBaseDishes'
 const EMPTY_SNAPSHOT = '[]'
 
 export function useSelectedBaseDishes() {
@@ -51,6 +52,12 @@ function getSnapshot(): string {
 
   const raw = window.localStorage.getItem(STORAGE_KEY)
   if (!raw) {
+    const legacy = window.localStorage.getItem(OLD_STORAGE_KEY)
+    if (legacy && isValidSelectedIdsJson(legacy)) {
+      window.localStorage.setItem(STORAGE_KEY, legacy)
+      window.localStorage.removeItem(OLD_STORAGE_KEY)
+      return legacy
+    }
     return EMPTY_SNAPSHOT
   }
 
