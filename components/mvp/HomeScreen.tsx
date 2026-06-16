@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import BottomNav from '@/components/mvp/BottomNav'
 import { FeaturedCard, CompactCard } from '@/components/mvp/NearbyDishCard'
 import { dishes, relations } from '@/data/v3'
+import { trackEvent } from '@/lib/mvp/analytics'
 import { useIsClient } from '@/lib/mvp/useIsClient'
 import { todaysPick, type HomeMode } from '@/lib/mvp/todaysPick'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
@@ -76,6 +77,12 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
       router.replace('/onboarding')
     }
   }, [isClient, selectedBaseDishIds, router])
+
+  useEffect(() => {
+    if (isClient && featured) {
+      trackEvent('show_recommendations', { count: selectedBaseDishIds.length })
+    }
+  }, [isClient, featured, selectedBaseDishIds.length])
 
   if (!isClient || selectedBaseDishIds.length === 0) {
     return <div className="tn-screen" />

@@ -4,6 +4,9 @@ import { track } from '@vercel/analytics'
 
 export type EventName =
   | 'page_view'
+  | 'start_select_dishes'
+  | 'select_base_dish'
+  | 'show_recommendations'
   | 'open_dish_card'
   | 'bookmark'
   | 'mark_made'

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { dishes } from '@/data/v3'
+import { trackEvent } from '@/lib/mvp/analytics'
 
 const DISH_EMOJI: Record<string, string> = {
   'curry': '🍛',
@@ -27,9 +28,11 @@ export default function BaseDishSelector({ onComplete }: BaseDishSelectorProps) 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   function toggleDish(id: string) {
+    const removing = selectedIds.includes(id)
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+      removing ? prev.filter((x) => x !== id) : [...prev, id],
     )
+    if (!removing) trackEvent('select_base_dish', { dishId: id })
   }
 
   function handleProceed() {

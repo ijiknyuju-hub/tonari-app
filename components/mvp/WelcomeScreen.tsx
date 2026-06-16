@@ -1,5 +1,7 @@
 'use client'
 
+import { trackEvent } from '@/lib/mvp/analytics'
+
 interface WelcomeScreenProps {
   onStart: () => void
 }
@@ -63,7 +65,7 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
         {/* Start button */}
         <button
           type="button"
-          onClick={onStart}
+          onClick={() => { trackEvent('start_select_dishes'); onStart() }}
           className="w-full rounded-2xl py-4 text-base font-black text-white shadow-md transition active:opacity-80"
           style={{ background: 'var(--tn-accent)' }}
         >

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import type { Difficulty, NearbyRelation } from '@/types/dish'
+import { trackEvent } from '@/lib/mvp/analytics'
 import { useUserState } from '@/lib/mvp/useUserState'
 
 // Emoji placeholders keyed by dish id (fallback to generic)
@@ -96,7 +97,7 @@ function BookmarkButton({ dishId }: { dishId: string }) {
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()
-        if (saved) { unbookmark(dishId) } else { bookmark(dishId) }
+        if (saved) { unbookmark(dishId) } else { bookmark(dishId); trackEvent('bookmark', { dishId }) }
       }}
       className="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow-sm"
     >

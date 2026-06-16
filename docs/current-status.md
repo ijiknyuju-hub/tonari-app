@@ -29,7 +29,13 @@ Last updated: 2026-06-16
   - design-system.md created for AI-safe UI constraints
   - All 52 dish detail pages statically generated
   - Verified: tabs, bookmark, made-it, detail navigation, empty state
-- **Next goal**: TBD — onboarding flow, real photos, or notification system
+- **Goal 020: Onboarding** — COMPLETED 2026-06-16
+  - WelcomeScreen (app intro + はじめる) + BaseDishSelector (10 dishes, 2x5 grid)
+  - HomeScreen redirects first-time visitors to /onboarding
+  - Shared useIsClient hook extracted to lib/mvp/useIsClient.ts
+  - Spec: docs/specs/spec-020-onboarding.md
+- **Next goal**: Goal 009 — event tracking (analytics)
+  - Then: ad polish (010) → release check (011) → v2.7 public launch
 
 ## Recent Decisions
 

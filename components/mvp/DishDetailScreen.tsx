@@ -1,7 +1,9 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import type { NearbyRelation } from '@/types/dish'
+import { trackEvent } from '@/lib/mvp/analytics'
 import { useUserState } from '@/lib/mvp/useUserState'
 
 // Difficulty label text
@@ -35,6 +37,10 @@ export default function DishDetailScreen({
   const { isBookmarked, bookmark, unbookmark, madeRecordsFor, recordMade } = useUserState()
   const saved = isBookmarked(relation.target)
   const madeCount = madeRecordsFor(relation.target).length
+
+  useEffect(() => {
+    trackEvent('open_dish_card', { dishId: relation.target })
+  }, [relation.target])
 
   function handleMadeIt() {
     recordMade({
@@ -162,7 +168,9 @@ export default function DishDetailScreen({
         <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() => (saved ? unbookmark(relation.target) : bookmark(relation.target))}
+            onClick={() => {
+              if (saved) { unbookmark(relation.target) } else { bookmark(relation.target); trackEvent('bookmark', { dishId: relation.target }) }
+            }}
             className="tn-pill-button flex items-center justify-center gap-2 py-3 text-sm font-bold"
             style={
               saved
