@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>concept: 料理路線図</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+    background: #FAF6F0; color: #2B2725; max-width: 375px; margin: 0 auto;
+    min-height: 100vh; padding-bottom: 76px; position: relative; overflow-x: hidden;
+  }
+  .eyebrow { font-size: 12px; font-weight: 700; color: rgba(43,39,37,.55); letter-spacing: .08em; }
+  header { padding: 28px 20px 8px; }
+  h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-top: 2px; }
+  .sub { font-size: 13px; color: rgba(43,39,37,.6); margin-top: 6px; line-height: 1.6; }
+  .newline-banner {
+    margin: 14px 20px 0; display: flex; align-items: center; gap: 10px;
+    background: #FDF3EC; border: 1px solid #EFD9C9; border-radius: 12px; padding: 10px 14px;
+  }
+  .newline-banner .dot { width: 10px; height: 10px; border-radius: 50%; background: #2E8B57;
+    box-shadow: 0 0 0 4px rgba(46,139,87,.18); flex-shrink: 0; }
+  .newline-banner b { font-size: 13.5px; font-weight: 700; }
+  .newline-banner span { font-size: 12px; color: rgba(43,39,37,.6); }
+  .mapwrap { margin: 12px 8px 0; }
+  .legend { display: flex; gap: 16px; padding: 10px 14px 2px; }
+  .legend div { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: rgba(43,39,37,.65); }
+  .lg { width: 12px; height: 12px; border-radius: 50%; }
+  .sheet {
+    position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
+    width: 359px; background: #fff; border-radius: 18px 18px 0 0;
+    box-shadow: 0 -6px 24px rgba(43,39,37,.14); padding: 14px 16px 16px;
+  }
+  .sheet .grab { width: 36px; height: 4px; border-radius: 2px; background: #E5DDD2; margin: 0 auto 12px; }
+  .sheet-row { display: flex; gap: 14px; align-items: center; }
+  .thumb { width: 76px; height: 76px; border-radius: 14px; background: linear-gradient(135deg,#F5E3D7,#FDEFE2);
+    display: flex; align-items: center; justify-content: center; font-size: 38px; flex-shrink: 0; }
+  .sheet h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .sheet .diff { font-size: 12.5px; color: rgba(43,39,37,.62); margin-top: 3px; line-height: 1.5; }
+  .sheet .meta { font-size: 12px; color: rgba(43,39,37,.5); margin-top: 4px; }
+  .cta { display: block; width: 100%; margin-top: 12px; background: #C8531C; color: #fff;
+    border: none; border-radius: 12px; padding: 12px; font-size: 15px; font-weight: 700; }
+  nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 375px;
+    background: #fff; border-top: 1px solid #EFE8DE; display: flex; height: 56px; }
+  nav div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10.5px; color: rgba(43,39,37,.5); gap: 2px; }
+  nav div.on { color: #C8531C; font-weight: 700; }
+  nav .ic { font-size: 18px; line-height: 1; }
+  text { font-family: inherit; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">となりごはん</div>
+    <h1>わたしの料理路線図</h1>
+    <div class="sub">3路線・開通12駅 — 唐揚げ線がのびてきました</div>
+  </header>
+
+  <div class="newline-banner">
+    <div class="dot"></div>
+    <div><b>ナンプラー線 開通！</b><br><span>沿線の3駅が作れるようになりました</span></div>
+  </div>
+
+  <div class="legend">
+    <div><span class="lg" style="background:#C8531C"></span>作った</div>
+    <div><span class="lg" style="background:#fff;border:2.5px solid #C8531C"></span>作れる</div>
+    <div><span class="lg" style="background:#D9D2C7"></span>未踏</div>
+  </div>
+
+  <div class="mapwrap">
+  <svg viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg">
+    <path d="M28,60 L130,60 L210,120 L330,120" fill="none" stroke="#D9483B" stroke-width="7" stroke-linecap="round"/>
+    <path d="M28,190 L120,190 L190,250 L330,250" fill="none" stroke="#E2A73B" stroke-width="7" stroke-linecap="round"/>
+    <path d="M258,58 L258,168 Q258,196 230,210 L190,250" fill="none" stroke="#2E8B57" stroke-width="7" stroke-linecap="round" opacity="0.95"/>
+    <text x="30" y="46" font-size="11" font-weight="700" fill="#D9483B">唐揚げ線</text>
+    <text x="30" y="178" font-size="11" font-weight="700" fill="#B98220">チャーハン線</text>
+    <text x="266" y="52" font-size="11" font-weight="700" fill="#2E8B57">ナンプラー線 ✦</text>
+
+    <circle cx="28" cy="60" r="10" fill="#C8531C"/>
+    <text x="28" y="86" font-size="11.5" font-weight="700" text-anchor="middle" fill="#2B2725">唐揚げ</text>
+    <circle cx="130" cy="60" r="9" fill="#C8531C"/>
+    <text x="130" y="86" font-size="11.5" font-weight="700" text-anchor="middle" fill="#2B2725">油淋鶏</text>
+    <circle cx="210" cy="120" r="8" fill="#fff" stroke="#D9483B" stroke-width="3"/>
+    <text x="210" y="145" font-size="11" text-anchor="middle" fill="#6B655C">タンドリー</text>
+    <circle cx="330" cy="120" r="7" fill="#D9D2C7"/>
+    <text x="330" y="145" font-size="11" text-anchor="middle" fill="#A69F92">チキン南蛮</text>
+
+    <circle cx="28" cy="190" r="10" fill="#C8531C"/>
+    <text x="28" y="216" font-size="11.5" font-weight="700" text-anchor="middle" fill="#2B2725">チャーハン</text>
+    <circle cx="120" cy="190" r="9" fill="#C8531C"/>
+    <text x="120" y="216" font-size="11.5" font-weight="700" text-anchor="middle" fill="#2B2725">キムチ炒飯</text>
+
+    <g>
+      <circle cx="258" cy="92" r="11" fill="#fff" stroke="#2E8B57" stroke-width="3.5"/>
+      <circle cx="258" cy="92" r="17" fill="none" stroke="#2E8B57" stroke-width="1.5" opacity="0.35"/>
+      <text x="278" y="96" font-size="11.5" font-weight="700" fill="#2B2725">フォー</text>
+    </g>
+    <g>
+      <circle cx="258" cy="150" r="11" fill="#fff" stroke="#2E8B57" stroke-width="3.5"/>
+      <circle cx="258" cy="150" r="17" fill="none" stroke="#2E8B57" stroke-width="1.5" opacity="0.35"/>
+      <text x="278" y="154" font-size="11.5" font-weight="700" fill="#2B2725">ヤムウンセン</text>
+    </g>
+    <g>
+      <circle cx="190" cy="250" r="13" fill="#fff" stroke="#2E8B57" stroke-width="4"/>
+      <circle cx="190" cy="250" r="6" fill="none" stroke="#E2A73B" stroke-width="3"/>
+      <circle cx="190" cy="250" r="21" fill="none" stroke="#2E8B57" stroke-width="1.5" opacity="0.35"/>
+      <text x="190" y="285" font-size="12" font-weight="800" text-anchor="middle" fill="#1E5E3C">ガパオライス</text>
+      <text x="190" y="299" font-size="9.5" text-anchor="middle" fill="#2E8B57">乗換駅・いま作れる</text>
+    </g>
+    <circle cx="330" cy="250" r="7" fill="#D9D2C7"/>
+    <text x="330" y="275" font-size="11" text-anchor="middle" fill="#A69F92">パッタイ</text>
+  </svg>
+  </div>
+
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="sheet-row">
+      <div class="thumb">🍚</div>
+      <div>
+        <h2>ガパオライス</h2>
+        <div class="diff">チャーハンの炒め技はそのまま。ナンプラーとバジルでタイの味に。</div>
+        <div class="meta">🕒 20分 ・ あと必要なもの: バジル</div>
+      </div>
+    </div>
+    <button class="cta">詳しく見る</button>
+  </div>
+
+  <nav>
+    <div><span class="ic">🔍</span>探す</div>
+    <div><span class="ic">🏠</span>ホーム</div>
+    <div class="on"><span class="ic">📖</span>料理帳</div>
+  </nav>
+</body>
+</html>
