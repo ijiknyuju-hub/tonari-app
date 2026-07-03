@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -52,7 +52,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
     return (
       <main className="tn-screen">
         <div className="tn-container pt-6">
-          <Link href="/repertoire" className="text-sm font-bold text-[var(--tn-accent)]">
+          <Link href="/repertoire" className="text-sm font-bold text-[var(--tn-text-sub)]">
             ← 戻る
           </Link>
           <p className="mt-8 text-sm font-bold text-[var(--tn-text-sub)]">
@@ -93,13 +93,13 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
     <main className="tn-screen">
       <div className="tn-container tn-bottom-safe pt-4">
         <div className="flex items-center justify-between">
-          <Link href="/repertoire" className="inline-flex items-center gap-1 text-sm font-bold text-[var(--tn-accent)]">
+          <Link href="/repertoire" className="inline-flex items-center gap-1 text-sm font-bold text-[var(--tn-text-sub)]">
             ← 戻る
           </Link>
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--tn-border)] bg-white text-[var(--tn-accent)]"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--tn-border)] bg-white text-[var(--tn-text-sub)]"
             aria-label="編集"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
@@ -113,7 +113,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
           {relation && <DifficultyTag difficulty={relation.tab} />}
           {customDish && <span className="tn-tag tn-tag-easy">自作</span>}
           {override && (
-            <span className="ml-2 rounded-full bg-[var(--tn-accent-soft)] px-3 py-1 text-xs font-black text-[var(--tn-accent)]">
+            <span className="tn-neutral-chip ml-2 rounded-full px-3 py-1 text-xs font-black">
               自分流に編集済み
             </span>
           )}
@@ -135,7 +135,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
               {content.ingredients.map((ingredient) => (
                 <li
                   key={ingredient}
-                  className="flex items-center gap-2 rounded-2xl bg-[var(--tn-accent-soft)] px-4 py-2 text-sm font-bold text-[var(--tn-accent)]"
+                  className="tn-neutral-chip flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-bold"
                 >
                   <span>•</span>
                   <span>{ingredient}</span>
@@ -151,7 +151,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
             <ol className="mt-2 space-y-2">
               {content.steps.map((step, i) => (
                 <li key={i} className="flex items-start gap-3 rounded-2xl bg-[var(--tn-surface-soft)] px-4 py-2 text-sm text-[var(--tn-text)]">
-                  <span className="shrink-0 font-black text-[var(--tn-accent)]">{i + 1}</span>
+                  <span className="shrink-0 font-black text-[var(--tn-text-sub)]">{i + 1}</span>
                   <span>{step}</span>
                 </li>
               ))}
@@ -185,7 +185,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
                 }
               }}
               className="tn-pill-button flex items-center justify-center gap-2 py-3 text-sm font-bold"
-              style={saved ? { background: 'var(--tn-accent-soft)', borderColor: 'var(--tn-accent)' } : undefined}
+              style={saved ? { background: 'var(--tn-tag-bg)', borderColor: 'var(--tn-text)' } : undefined}
             >
               {saved ? '保存済み' : '作りたい'}
             </button>
@@ -193,8 +193,7 @@ export default function DishDetailScreen({ relation, dishId, targetName, sourceN
           <button
             type="button"
             onClick={handleMadeIt}
-            className={customDish ? 'col-span-2 rounded-2xl py-3 text-sm font-bold text-white' : 'rounded-2xl py-3 text-sm font-bold text-white'}
-            style={{ background: madeCount > 0 ? '#6aab40' : 'var(--tn-accent)' }}
+            className={customDish ? 'tn-primary-cta col-span-2 rounded-2xl py-3 text-sm font-bold' : 'tn-primary-cta rounded-2xl py-3 text-sm font-bold'}
           >
             {madeCount > 0 ? `${madeCount}回作った` : '作った'}
           </button>
@@ -247,10 +246,10 @@ function DishEditForm({
         }}
       >
         <div className="flex items-center justify-between">
-          <button type="button" onClick={onCancel} className="text-sm font-bold text-[var(--tn-accent)]">
+          <button type="button" onClick={onCancel} className="text-sm font-bold text-[var(--tn-text-sub)]">
             ← 戻る
           </button>
-          <button type="submit" className="rounded-full bg-[var(--tn-accent)] px-4 py-2 text-sm font-black text-white">
+          <button type="submit" className="tn-primary-cta rounded-full px-4 py-2 text-sm font-black">
             保存
           </button>
         </div>
@@ -316,7 +315,7 @@ function EditableLines({
       <button
         type="button"
         onClick={() => onChange([...values, ''])}
-        className="mt-2 rounded-full border border-[var(--tn-border)] bg-white px-4 py-2 text-xs font-black text-[var(--tn-accent)]"
+        className="mt-2 rounded-full border border-[var(--tn-border)] bg-white px-4 py-2 text-xs font-black text-[var(--tn-text-sub)]"
       >
         + 追加
       </button>

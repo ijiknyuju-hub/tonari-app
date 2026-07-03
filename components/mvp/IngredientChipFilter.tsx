@@ -14,7 +14,7 @@ export function IngredientChipFilter({
   if (ingredients.length === 0) return null
 
   return (
-    <div className="mt-4 px-4">
+    <div className="mt-6">
       <p
         className="mb-2 text-sm font-bold"
         style={{ color: 'var(--tn-text-sub)' }}
@@ -29,17 +29,18 @@ export function IngredientChipFilter({
               key={ingredient}
               type="button"
               onClick={() => onToggle(ingredient)}
-              className="shrink-0 rounded-full px-3 py-1.5 text-sm font-bold transition-colors"
+              className="shrink-0 rounded-full border px-3 py-1.5 text-sm font-bold transition-colors"
               style={
                 isActive
                   ? {
-                      background: 'var(--tn-accent)',
-                      color: '#fff',
+                      background: 'var(--tn-tag-bg)',
+                      color: 'var(--tn-text)',
+                      borderColor: 'var(--tn-text)',
                     }
                   : {
                       background: 'var(--tn-surface)',
                       color: 'var(--tn-text-sub)',
-                      border: '1px solid var(--tn-border)',
+                      borderColor: 'var(--tn-border)',
                     }
               }
             >

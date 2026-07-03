@@ -9,10 +9,11 @@ interface ReturnNudgeProps {
 export function ReturnNudge({ dishName, onRecord, onDismiss }: ReturnNudgeProps) {
   return (
     <div
-      className="mx-4 mb-3 flex items-center justify-between rounded-2xl px-4 py-3"
+      className="mb-5 flex items-center justify-between rounded-2xl px-4 py-3"
       style={{
-        background: 'var(--tn-accent-soft)',
-        border: '1px solid var(--tn-accent)',
+        background: 'var(--tn-surface)',
+        border: '1px solid var(--tn-border)',
+        boxShadow: 'var(--tn-shadow-soft)',
       }}
     >
       <p className="text-sm font-bold" style={{ color: 'var(--tn-text)' }}>
@@ -22,8 +23,7 @@ export function ReturnNudge({ dishName, onRecord, onDismiss }: ReturnNudgeProps)
         <button
           type="button"
           onClick={onRecord}
-          className="rounded-full px-3 py-1 text-xs font-bold text-white"
-          style={{ background: 'var(--tn-accent)' }}
+          className="tn-primary-cta rounded-full px-3 py-1 text-xs font-bold"
         >
           作った!
         </button>

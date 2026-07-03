@@ -33,6 +33,7 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
+  const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const selectedDishIds = state.selected_dishes
@@ -120,11 +121,15 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
         rating,
         ...(photoUrl ? { photo_url: photoUrl } : {}),
       }
+      const before = new Set(state.made_records.map((r) => r.dish_id)).size
+      const after = new Set([...state.made_records.map((r) => r.dish_id), selectedDishId]).size
+      const reached = MILESTONES.find((m) => before < m && after >= m) ?? null
       recordMade(record)
       trackEvent('fab_record', { dishId: selectedDishId, rating })
+      if (reached != null) setCelebratedMilestone(reached)
       setStep('complete')
     },
-    [selectedDishId, photoUrl, recordMade],
+    [selectedDishId, photoUrl, recordMade, state.made_records],
   )
 
   return (
@@ -205,7 +210,7 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
                 type="button"
                 onClick={() => setShowSearch(true)}
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold"
-                style={{ color: 'var(--tn-accent)', border: '1px solid var(--tn-border)' }}
+                style={{ color: 'var(--tn-text-sub)', border: '1px solid var(--tn-border)' }}
               >
                 🔍 他の料理を探す
               </button>
@@ -312,14 +317,14 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
               className="mb-4 flex w-full flex-col items-center gap-2 rounded-2xl py-4"
               style={{ background: 'var(--tn-surface-soft)' }}
             >
-              <p className="text-2xl font-black" style={{ color: 'var(--tn-accent)' }}>
+              <p className="text-2xl font-black" style={{ color: 'var(--tn-text)' }}>
                 レパートリー {repertoireCount}品
               </p>
               <p className="text-sm" style={{ color: 'var(--tn-text-sub)' }}>
                 累計 {cumulativeDays}日目
               </p>
               {remaining > 0 && (
-                <p className="text-sm font-bold" style={{ color: 'var(--tn-accent)' }}>
+                <p className="text-sm font-bold" style={{ color: 'var(--tn-text-sub)' }}>
                   あと{remaining}品で{nextMilestone}品！
                 </p>
               )}
@@ -328,14 +333,33 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
             <button
               type="button"
               onClick={onClose}
-              className="w-full rounded-2xl py-3 text-sm font-bold text-white"
-              style={{ background: 'var(--tn-accent)' }}
+              className="tn-primary-cta w-full rounded-2xl py-3 text-sm font-bold"
             >
               ホームに戻る
             </button>
           </div>
         )}
       </div>
+      {celebratedMilestone != null && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgba(43,39,37,0.28)] px-5">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5 text-left shadow-[var(--tn-shadow-soft)]">
+            <p className="text-4xl" aria-hidden="true">★</p>
+            <h3 className="mt-3 text-[1.375rem] font-black leading-tight text-[var(--tn-text)]">
+              {celebratedMilestone} dishes reached
+            </h3>
+            <p className="tn-meta mt-2">
+              Next goal: {MILESTONES.find((m) => m > celebratedMilestone) ?? 100} dishes.
+            </p>
+            <button
+              type="button"
+              onClick={() => setCelebratedMilestone(null)}
+              className="tn-primary-cta mt-5 w-full rounded-2xl py-3 text-sm font-black"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

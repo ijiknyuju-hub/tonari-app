@@ -36,7 +36,7 @@ export default function CustomDishForm() {
           router.push('/repertoire')
         }}
       >
-        <Link href="/repertoire" className="text-sm font-bold text-[var(--tn-accent)]">
+        <Link href="/repertoire" className="text-sm font-bold text-[var(--tn-text-sub)]">
           ← 戻る
         </Link>
         <div>
@@ -69,7 +69,7 @@ export default function CustomDishForm() {
         </label>
         <EditableLines title="材料" values={ingredients} onChange={setIngredients} />
         <EditableLines title="手順" values={steps} onChange={setSteps} />
-        <button type="submit" className="w-full rounded-2xl bg-[var(--tn-accent)] py-3 text-sm font-black text-white">
+        <button type="submit" className="tn-primary-cta w-full rounded-2xl py-3 text-sm font-black">
           作成する
         </button>
       </form>
@@ -112,7 +112,7 @@ function EditableLines({
       <button
         type="button"
         onClick={() => onChange([...values, ''])}
-        className="mt-2 rounded-full border border-[var(--tn-border)] bg-white px-4 py-2 text-xs font-black text-[var(--tn-accent)]"
+        className="mt-2 rounded-full border border-[var(--tn-border)] bg-white px-4 py-2 text-xs font-black text-[var(--tn-text-sub)]"
       >
         + 追加
       </button>

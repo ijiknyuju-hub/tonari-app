@@ -28,7 +28,7 @@ export default function BottomNav() {
               href={item.href}
               aria-current={active ? 'page' : undefined}
               className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-extrabold"
-              style={{ color: active ? 'var(--tn-accent)' : 'var(--tn-text-sub)' }}
+              style={{ color: active ? 'var(--tn-text)' : 'var(--tn-text-sub)' }}
             >
               <Icon />
               <span>{item.label}</span>

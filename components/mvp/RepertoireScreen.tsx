@@ -46,21 +46,21 @@ export default function RepertoireScreen() {
       <section className="tn-container pt-6">
         <header className="space-y-4">
           <div>
-            <p className="text-sm font-extrabold text-[var(--tn-accent)]">Tonari Gohan</p>
+            <p className="text-sm font-extrabold text-[var(--tn-text-sub)]">となりごはん</p>
             <h1 className="text-2xl font-black text-[var(--tn-text)]">あなたのレパートリー</h1>
           </div>
           <div className="tn-card p-4">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-5xl font-black text-[var(--tn-accent)]">{repertoireCount}</p>
+                <p className="text-5xl font-black text-[var(--tn-text)]">{repertoireCount}</p>
                 <p className="text-sm font-bold text-[var(--tn-text-sub)]">作った料理</p>
               </div>
               <p className="text-sm font-bold text-[var(--tn-text-sub)]">累計 {cumulativeDays} 日</p>
             </div>
             <div className="mt-4 h-3 overflow-hidden rounded-full bg-[var(--tn-surface-soft)]">
-              <div className="h-full rounded-full bg-[var(--tn-accent)]" style={{ width: `${progressPct}%` }} />
+              <div className="h-full rounded-full bg-[var(--tn-text)]" style={{ width: `${progressPct}%` }} />
             </div>
-            <p className="mt-2 text-right text-xs font-black text-[var(--tn-accent)]">
+            <p className="mt-2 text-right text-xs font-black text-[var(--tn-text-sub)]">
               あと {Math.max(nextMilestone - repertoireCount, 0)} 品で {nextMilestone} 品
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function RepertoireScreen() {
 function segmentClass(active: boolean) {
   return [
     'rounded-xl px-3 py-2 text-sm font-black',
-    active ? 'bg-[var(--tn-accent)] text-white' : 'text-[var(--tn-text-sub)]',
+    active ? 'bg-[var(--tn-tag-bg)] text-[var(--tn-text)]' : 'text-[var(--tn-text-sub)]',
   ].join(' ')
 }
 
@@ -138,7 +138,7 @@ function CookbookList() {
     <section className="tn-container tn-bottom-safe space-y-5 pt-2">
       <Link
         href="/custom-dish/new"
-        className="flex w-full items-center justify-center rounded-2xl bg-[var(--tn-accent)] py-3 text-sm font-black text-white"
+        className="tn-primary-cta flex w-full items-center justify-center rounded-2xl py-3 text-sm font-black"
       >
         + 自分の料理を追加
       </Link>
@@ -149,7 +149,7 @@ function CookbookList() {
             {monthly.map(([month, count]) => (
               <div key={month} className="flex flex-1 flex-col items-center gap-1">
                 <span className="text-xs font-bold text-[var(--tn-text-sub)]">{count}</span>
-                <div className="w-full rounded-t-lg bg-[var(--tn-accent)]" style={{ height: `${(count / max) * 100}%` }} />
+                <div className="w-full rounded-t-lg bg-[var(--tn-text)] opacity-70" style={{ height: `${(count / max) * 100}%` }} />
                 <span className="text-[10px] font-bold text-[var(--tn-text-sub)]">{month.slice(5)}月</span>
               </div>
             ))}
@@ -174,7 +174,7 @@ function CookbookList() {
                   {row.date ? row.date.slice(0, 10).replace(/-/g, '/') : '未記録'}
                 </p>
               </div>
-              <span className="rounded-full bg-[var(--tn-accent-soft)] px-3 py-1 text-xs font-black text-[var(--tn-accent)]">
+              <span className="tn-neutral-chip rounded-full px-3 py-1 text-xs font-black">
                 {row.badge}
               </span>
             </Link>

@@ -225,7 +225,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="text-lg font-black" style={{ color: 'var(--tn-accent)' }}>
+          <span className="text-lg font-black" style={{ color: 'var(--tn-text)' }}>
             となりごはん
           </span>
           <button
@@ -272,15 +272,15 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setMode(item.id)}
-                className="min-h-[4.5rem] rounded-[1.25rem] border px-2 text-center shadow-[var(--tn-shadow-soft)] transition"
+                className="min-h-[4.5rem] rounded-2xl border px-2 text-center shadow-[var(--tn-shadow-soft)] transition"
                 style={{
-                  borderColor: selected ? 'var(--tn-accent)' : 'var(--tn-border)',
-                  background: selected ? 'var(--tn-accent-soft)' : 'var(--tn-surface)',
+                  borderColor: selected ? 'var(--tn-text)' : 'var(--tn-border)',
+                  background: selected ? 'var(--tn-tag-bg)' : 'var(--tn-surface)',
                 }}
               >
                 <span
                   className="block text-sm font-black"
-                  style={{ color: selected ? 'var(--tn-accent)' : 'var(--tn-text)' }}
+                  style={{ color: 'var(--tn-text)' }}
                 >
                   {item.label}
                 </span>
@@ -305,7 +305,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
               type="button"
               onClick={handleSwitchBase}
               className="shrink-0 rounded-full border px-3 py-1 text-xs font-bold"
-              style={{ borderColor: 'var(--tn-accent)', color: 'var(--tn-accent)' }}
+              style={{ borderColor: 'var(--tn-border)', color: 'var(--tn-text-sub)', background: 'var(--tn-surface)' }}
             >
               他の起点にする
             </button>
@@ -361,13 +361,8 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
       <button
         type="button"
         onClick={() => setShowRecordModal(true)}
-        className="fixed z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg"
-        style={{
-          bottom: '5.5rem',
-          right: '1.25rem',
-          background: 'var(--tn-accent)',
-          color: '#fff',
-        }}
+        className="tn-primary-cta fixed z-40 flex h-14 w-14 items-center justify-center rounded-full"
+        style={{ bottom: '5.5rem', right: '1.25rem' }}
         aria-label="料理を記録する"
       >
         <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

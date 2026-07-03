@@ -73,9 +73,9 @@ export default function BaseDishSelector({ onComplete }: BaseDishSelectorProps) 
                   key={id}
                   className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold"
                   style={{
-                    borderColor: 'var(--tn-accent)',
-                    background: 'var(--tn-accent-soft)',
-                    color: 'var(--tn-accent)',
+                    borderColor: 'var(--tn-border)',
+                    background: 'var(--tn-tag-bg)',
+                    color: 'var(--tn-text)',
                   }}
                 >
                   <span>{DISH_EMOJI[id] ?? '🍽️'}</span>
@@ -98,15 +98,15 @@ export default function BaseDishSelector({ onComplete }: BaseDishSelectorProps) 
                 onClick={() => toggleDish(dish.id)}
                 className="flex flex-col items-center rounded-2xl border px-3 py-4 text-center transition active:scale-95"
                 style={{
-                  borderColor: selected ? 'var(--tn-accent)' : 'var(--tn-border)',
-                  background: selected ? 'var(--tn-accent-soft)' : 'var(--tn-surface)',
+                  borderColor: selected ? 'var(--tn-text)' : 'var(--tn-border)',
+                  background: selected ? 'var(--tn-tag-bg)' : 'var(--tn-surface)',
                   boxShadow: 'var(--tn-shadow-soft)',
                 }}
               >
                 <span className="mb-2 text-3xl">{DISH_EMOJI[dish.id] ?? '🍽️'}</span>
                 <span
                   className="text-sm font-black leading-5"
-                  style={{ color: selected ? 'var(--tn-accent)' : 'var(--tn-text)' }}
+                  style={{ color: 'var(--tn-text)' }}
                 >
                   {dish.name}
                 </span>

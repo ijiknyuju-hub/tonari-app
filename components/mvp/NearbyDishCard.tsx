@@ -99,13 +99,13 @@ function BookmarkButton({ dishId }: { dishId: string }) {
         e.preventDefault()
         if (saved) { unbookmark(dishId) } else { bookmark(dishId); trackEvent('bookmark', { dishId }) }
       }}
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow-sm"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--tn-border)] bg-white/90"
     >
       <svg
         viewBox="0 0 24 24"
         className="h-5 w-5"
-        fill={saved ? 'var(--tn-accent)' : 'none'}
-        stroke="var(--tn-accent)"
+        fill={saved ? 'var(--tn-text)' : 'none'}
+        stroke="var(--tn-text)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -129,7 +129,7 @@ export function FeaturedCard({ relation, targetName, onMadeIt }: FeaturedCardPro
   const ingredients = relation.new_ingredients.join('、')
 
   return (
-    <div className="tn-card overflow-hidden">
+    <div className="tn-card tn-feature-card overflow-hidden">
       {/* Card body: image left, info right */}
       <div className="flex">
         {/* Left: placeholder image */}
@@ -153,26 +153,21 @@ export function FeaturedCard({ relation, targetName, onMadeIt }: FeaturedCardPro
           <div>
             <DifficultyTag difficulty={relation.tab} />
             <p
-              className="mt-2 font-black leading-snug"
-              style={{ fontSize: '1.375rem', color: 'var(--tn-text)' }}
+              className="tn-dish-title mt-2"
             >
               {targetName}
             </p>
-            <p className="mt-1 text-xs leading-5" style={{ color: 'var(--tn-text-sub)' }}>
+            <p className="tn-meta mt-1">
               {relation.description_line1}
             </p>
-            <p className="text-xs leading-5" style={{ color: 'var(--tn-text-sub)' }}>
+            <p className="tn-meta">
               {relation.description_line2}
             </p>
           </div>
 
           {ingredients && (
             <div
-              className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
-              style={{
-                background: 'var(--tn-accent-soft)',
-                color: 'var(--tn-accent)',
-              }}
+              className="tn-neutral-chip mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
             >
               <span>新しく必要：{ingredients}</span>
             </div>
@@ -192,8 +187,7 @@ export function FeaturedCard({ relation, targetName, onMadeIt }: FeaturedCardPro
         </button>
         <Link
           href={`/dish/${relation.target}`}
-          className="flex flex-1 items-center justify-center gap-1 rounded-2xl py-2 text-sm font-bold text-white"
-          style={{ background: 'var(--tn-accent)' }}
+          className="tn-primary-cta flex flex-1 items-center justify-center gap-1 rounded-2xl py-2 text-sm font-bold"
         >
           詳しく見る ›
         </Link>
@@ -235,14 +229,14 @@ export function CompactCard({ relation, targetName }: CompactCardProps) {
 
       {/* Text info */}
       <div className="flex flex-col gap-1 p-2">
-        <p className="text-sm font-black leading-snug" style={{ color: 'var(--tn-text)' }}>
+        <p className="text-[0.9375rem] font-black leading-snug" style={{ color: 'var(--tn-text)' }}>
           {targetName}
         </p>
-        <p className="text-xs leading-4" style={{ color: 'var(--tn-text-sub)' }}>
+        <p className="tn-meta">
           {relation.description_line1}
         </p>
         {ingredients && (
-          <p className="text-xs font-bold" style={{ color: 'var(--tn-accent)' }}>
+          <p className="text-xs font-bold" style={{ color: 'var(--tn-text-sub)' }}>
             {ingredients}
           </p>
         )}

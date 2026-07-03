@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useEffect, useMemo } from 'react'
@@ -8,7 +8,7 @@ import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
 
-type NodeState = 'made' | 'bookmarked' | 'base' | 'custom' | 'unexplored'
+type NodeState = 'made' | 'available' | 'custom' | 'unexplored'
 
 interface IslandMapProps {
   embedded?: boolean
@@ -38,8 +38,7 @@ export default function IslandMap({ embedded = false }: IslandMapProps) {
 
   function getNodeState(dishId: string): NodeState {
     if (madeSet.has(dishId)) return 'made'
-    if (bookmarkedSet.has(dishId)) return 'bookmarked'
-    if (selectedBaseSet.has(dishId)) return 'base'
+    if (bookmarkedSet.has(dishId) || selectedBaseSet.has(dishId)) return 'available'
     return 'unexplored'
   }
 
@@ -56,18 +55,16 @@ export default function IslandMap({ embedded = false }: IslandMapProps) {
     <section className={embedded ? 'tn-container tn-bottom-safe pt-2' : 'tn-container tn-bottom-safe pt-6'}>
       {!embedded && (
         <header className="mb-5 space-y-2">
-          <p className="text-sm font-extrabold text-[var(--tn-accent)]">Tonari Gohan</p>
-          <h1 className="text-2xl font-black text-[var(--tn-text)]">レパートリーマップ</h1>
+          <p className="text-sm font-extrabold text-[var(--tn-text-sub)]">となりごはん</p>
+          <h1 className="text-2xl font-black text-[var(--tn-text)]">広がりマップ</h1>
         </header>
       )}
 
       <div className="mb-4 flex gap-2 overflow-x-auto rounded-2xl border border-[var(--tn-border)] bg-[var(--tn-surface)] p-2">
-        <LegendDot label="作った" className="bg-[var(--tn-accent)]" />
-        <LegendDot label="保存済み" className="border border-[var(--tn-accent)] bg-[var(--tn-accent-soft)]" />
-        <LegendDot label="自作" className="bg-[#6aab40]" />
-        <LegendDot label="これから" className="bg-zinc-300 opacity-70" />
+        <LegendDot label="作った" className="bg-[var(--tn-accent)] shadow-[var(--tn-shadow-soft)]" />
+        <LegendDot label="作れる" className="bg-[var(--tn-tag-bg)]" />
+        <LegendDot label="未踏" className="bg-zinc-300 opacity-40" />
       </div>
-
       <div className="rounded-[1.5rem] border border-[var(--tn-border)] bg-[var(--tn-bg)] p-4 shadow-[var(--tn-shadow-soft)]">
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
           {visibleDishIds.map((id) => {
@@ -92,7 +89,7 @@ export default function IslandMap({ embedded = false }: IslandMapProps) {
 
         {(customByBase.get('__custom__') ?? []).length > 0 && (
           <div className="mt-5 rounded-2xl border border-dashed border-[var(--tn-border)] bg-white p-3">
-            <p className="mb-2 text-xs font-black text-[var(--tn-text-sub)]">自作エリア</p>
+            <p className="mb-2 text-xs font-black text-[var(--tn-text-sub)]">閾ｪ菴懊お繝ｪ繧｢</p>
             <div className="grid grid-cols-2 gap-2">
               {(customByBase.get('__custom__') ?? []).map((custom) => (
                 <Link key={custom.id} href={`/dish/${custom.id}`} className={nodeClass('custom')}>
@@ -108,13 +105,12 @@ export default function IslandMap({ embedded = false }: IslandMapProps) {
 }
 
 function nodeClass(state: NodeState) {
-  const base = 'block rounded-2xl p-3 text-center text-sm font-black'
-  if (state === 'made') return `${base} bg-[var(--tn-accent)] text-white`
-  if (state === 'bookmarked' || state === 'base') {
-    return `${base} border border-[var(--tn-accent)] bg-[var(--tn-accent-soft)] text-[var(--tn-accent)]`
+  const base = 'block rounded-2xl p-3 text-center text-sm font-black transition-transform'
+  if (state === 'made') return `${base} bg-[var(--tn-accent)] text-white shadow-[var(--tn-shadow-soft)]`
+  if (state === 'available' || state === 'custom') {
+    return `${base} border border-[var(--tn-border)] bg-[var(--tn-tag-bg)] text-[var(--tn-text)] opacity-60`
   }
-  if (state === 'custom') return `${base} bg-[#6aab40] text-white`
-  return `${base} bg-zinc-100 text-zinc-400`
+  return `${base} bg-zinc-100 text-zinc-500 opacity-40`
 }
 
 function LegendDot({ label, className }: { label: string; className: string }) {

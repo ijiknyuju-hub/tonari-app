@@ -48,7 +48,7 @@ export default function IngredientsSearch() {
                     className={[
                       'min-h-12 shrink-0 rounded-2xl border bg-white px-4 text-sm font-black shadow-[var(--tn-shadow-soft)]',
                       selected
-                        ? 'border-[var(--tn-accent)] bg-[var(--tn-accent-soft)] text-[var(--tn-accent)]'
+                        ? 'border-[var(--tn-text)] bg-[var(--tn-tag-bg)] text-[var(--tn-text)]'
                         : 'border-[var(--tn-border)]',
                     ].join(' ')}
                   >
@@ -110,16 +110,16 @@ export default function IngredientsSearch() {
 
 function RelationCard({ relation }: { relation: NearbyRelation }) {
   return (
-    <article className="rounded-2xl border border-[var(--tn-border)] bg-white p-3 shadow-[var(--tn-shadow-soft)]">
-      <p className="text-lg font-black">{getDishName(relation.target)}</p>
-      <p className="mt-1 text-sm font-bold text-[var(--tn-text-sub)]">
+    <article className="rounded-2xl border border-[var(--tn-border)] bg-white p-4 shadow-[var(--tn-shadow-soft)]">
+      <p className="tn-dish-title">{getDishName(relation.target)}</p>
+      <p className="tn-meta mt-1 font-bold">
         {getDishName(relation.source)}から →
       </p>
-      <p className="mt-2 text-sm leading-6 text-[var(--tn-text-sub)]">
+      <p className="mt-2 text-[15px] leading-7 text-[var(--tn-text)]">
         {relation.description_line1}
       </p>
       {relation.new_ingredients.length > 0 && (
-        <p className="mt-1 text-xs text-[var(--tn-text-sub)]">
+        <p className="tn-meta mt-1">
           新食材: {relation.new_ingredients.join('、')}
         </p>
       )}

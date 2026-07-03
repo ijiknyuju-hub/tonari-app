@@ -83,7 +83,7 @@ export function LevelUpScreen() {
 
       {/* Stats */}
       <div className="flex flex-col items-center px-5 py-4">
-        <p className="text-5xl font-black" style={{ color: 'var(--tn-accent)' }}>
+        <p className="text-5xl font-black" style={{ color: 'var(--tn-text)' }}>
           {repertoireCount}品
         </p>
         <p className="mt-1 text-sm" style={{ color: 'var(--tn-text-sub)' }}>
@@ -99,11 +99,11 @@ export function LevelUpScreen() {
         >
           <div
             className="h-full rounded-full transition-all"
-            style={{ width: `${progressPct}%`, background: 'var(--tn-accent)' }}
+            style={{ width: `${progressPct}%`, background: 'var(--tn-text)' }}
           />
         </div>
         {remaining > 0 && (
-          <p className="mt-1 text-right text-xs font-bold" style={{ color: 'var(--tn-accent)' }}>
+          <p className="mt-1 text-right text-xs font-bold" style={{ color: 'var(--tn-text-sub)' }}>
             あと{remaining}品で{nextMilestone}品
           </p>
         )}
@@ -126,7 +126,7 @@ export function LevelUpScreen() {
                   style={{
                     height: `${(count / maxMonthly) * 100}%`,
                     minHeight: '4px',
-                    background: 'var(--tn-accent)',
+                    background: 'var(--tn-text)',
                   }}
                 />
                 <span className="text-xs" style={{ color: 'var(--tn-text-sub)' }}>
@@ -175,7 +175,7 @@ export function LevelUpScreen() {
         <Link
           href="/map"
           className="text-sm font-bold"
-          style={{ color: 'var(--tn-accent)' }}
+          style={{ color: 'var(--tn-text-sub)' }}
         >
           マップを見る →
         </Link>
