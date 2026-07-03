@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>concept: ホーム（HTML実物・midトーン）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: #E8E2D8; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+    background: #FBF7F1; color: #33302C; max-width: 375px; margin: 0 auto;
+    min-height: 100vh; padding-bottom: 84px;
+    -webkit-font-smoothing: antialiased;
+  }
+  header { padding: 26px 20px 0; text-align: center; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.02em; }
+  .greet { font-size: 13px; color: rgba(51,48,44,.58); margin-top: 6px; }
+
+  .tabs {
+    display: flex; gap: 8px; margin: 16px 16px 0; background: #F1EAE0;
+    border-radius: 999px; padding: 4px;
+  }
+  .tabs button {
+    flex: 1; border: none; background: transparent; border-radius: 999px;
+    padding: 9px 0; font-size: 13px; font-weight: 700; color: rgba(51,48,44,.55);
+    font-family: inherit;
+  }
+  .tabs button.on {
+    background: #E05A1E; color: #fff; box-shadow: 0 2px 8px rgba(224,90,30,.28);
+  }
+
+  .fromline {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 22px 20px 0;
+  }
+  .fromline h2 { font-size: 15px; font-weight: 700; }
+  .fromline h2 b { color: #E05A1E; }
+  .fromline a { font-size: 12.5px; color: rgba(51,48,44,.55); text-decoration: none; }
+
+  .featured {
+    margin: 12px 16px 0; background: #fff; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 6px 22px rgba(70,55,40,.10);
+  }
+  .featured .photo { position: relative; }
+  .featured .photo img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .featured .bookmark {
+    position: absolute; top: 12px; right: 12px; width: 38px; height: 38px;
+    background: rgba(255,255,255,.92); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+  .featured .body { padding: 16px 18px 18px; }
+  .difftag {
+    display: inline-block; font-size: 11.5px; font-weight: 700; color: #B4481A;
+    background: #FBE9DE; border-radius: 999px; padding: 4px 11px;
+  }
+  .featured h1 { font-size: 23px; font-weight: 800; letter-spacing: -0.01em; margin-top: 9px; }
+  .featured .desc { font-size: 13.5px; line-height: 1.75; color: rgba(51,48,44,.72); margin-top: 8px; }
+  .featured .need {
+    margin-top: 12px; font-size: 12.5px; color: rgba(51,48,44,.6);
+    background: #F8F1E8; border-radius: 10px; padding: 9px 12px;
+  }
+  .featured .need b { color: #E05A1E; font-weight: 700; }
+
+  .others { margin: 26px 0 0; }
+  .others h3 { font-size: 15px; font-weight: 700; margin: 0 20px 12px; }
+  .rail { display: flex; gap: 12px; overflow-x: auto; padding: 2px 16px 8px; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+  .mini {
+    flex: 0 0 138px; background: #fff; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 3px 12px rgba(70,55,40,.08);
+  }
+  .mini img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+  .mini .mb { padding: 10px 12px 12px; }
+  .mini .difftag { font-size: 10px; padding: 3px 8px; }
+  .mini .difftag.easy { color: #2E7D4F; background: #E4F2E9; }
+  .mini .difftag.full { color: #2F5AA8; background: #E5EDF9; }
+  .mini h4 { font-size: 14.5px; font-weight: 800; margin-top: 6px; }
+  .mini p { font-size: 11.5px; line-height: 1.6; color: rgba(51,48,44,.6); margin-top: 4px; }
+
+  nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 375px;
+    background: rgba(255,255,255,.96); backdrop-filter: blur(8px);
+    border-top: 1px solid #EEE6DA; display: flex; height: 62px; padding-bottom: 6px;
+  }
+  nav div {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10.5px; color: rgba(51,48,44,.45); gap: 3px;
+  }
+  nav div.on { color: #E05A1E; font-weight: 700; }
+  nav .ic { font-size: 20px; line-height: 1; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">となりごはん</div>
+    <div class="greet">こんにちは。今日のおすすめはこちら</div>
+  </header>
+
+  <div class="tabs">
+    <button>かんたん</button>
+    <button class="on">少し広げる</button>
+    <button>しっかり作る</button>
+  </div>
+
+  <div class="fromline">
+    <h2>この前作った<b>『チャーハン』</b>から広げる</h2>
+    <a href="#">他の起点にする ›</a>
+  </div>
+
+  <div class="featured">
+    <div class="photo">
+      <img src="photo-ref-gapao.png" alt="ガパオライス">
+      <div class="bookmark">🔖</div>
+    </div>
+    <div class="body">
+      <span class="difftag">少し広げる</span>
+      <h1>ガパオライス</h1>
+      <div class="desc">バジルとナンプラーの香りで食欲直撃、タイの甘辛炒めごはん。<br>目玉焼きを崩して混ぜる瞬間が主役。</div>
+      <div class="need">新しく必要: <b>ナンプラー・バジル</b></div>
+    </div>
+  </div>
+
+  <div class="others">
+    <h3>他にもこんな広げ方があります</h3>
+    <div class="rail">
+      <div class="mini">
+        <img src="photo-ref-pho.png" alt="フォー">
+        <div class="mb">
+          <span class="difftag easy">かんたん</span>
+          <h4>フォー</h4>
+          <p>あっさり香る、やさしい米麺ごはん。</p>
+        </div>
+      </div>
+      <div class="mini">
+        <img src="photo-ref-yurinchi.png" alt="油淋鶏">
+        <div class="mb">
+          <span class="difftag">少し広げる</span>
+          <h4>油淋鶏</h4>
+          <p>カリッと香ばしい、ねぎだれが決め手。</p>
+        </div>
+      </div>
+      <div class="mini">
+        <img src="photo-ref-nikujaga.png" alt="肉じゃが">
+        <div class="mb">
+          <span class="difftag full">しっかり作る</span>
+          <h4>肉じゃが</h4>
+          <p>じっくり煮込んで、深い味わいに。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div><span class="ic">🔍</span>探す</div>
+    <div class="on"><span class="ic">🏠</span>ホーム</div>
+    <div><span class="ic">📖</span>料理帳</div>
+  </nav>
+</body>
+</html>
