@@ -34,6 +34,23 @@ export type MadeRecord = {
   photo_url?: string
 }
 
+export type DishOverride = {
+  dish_id: string
+  ingredients_override?: string[]
+  steps_override?: string[]
+  memo?: string
+  updated_at: string
+}
+
+export type CustomDish = {
+  id: `custom-${string}`
+  name: string
+  ingredients: string[]
+  steps: string[]
+  attached_base_dish_id?: string
+  created_at: string
+}
+
 export type UserState = {
   selected_dishes: string[]
   bookmarked: string[]

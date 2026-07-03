@@ -1,11 +1,5 @@
-import { LevelUpScreen } from '@/components/mvp/LevelUpScreen'
-import BottomNav from '@/components/mvp/BottomNav'
+import { redirect } from 'next/navigation'
 
 export default function LevelUpPage() {
-  return (
-    <>
-      <LevelUpScreen />
-      <BottomNav />
-    </>
-  )
+  redirect('/repertoire')
 }

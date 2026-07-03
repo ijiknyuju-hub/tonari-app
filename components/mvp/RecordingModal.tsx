@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { dishes } from '@/data/v3'
 import { trackEvent } from '@/lib/mvp/analytics'
+import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
 import { todaysPick } from '@/lib/mvp/todaysPick'
 import { useUserState } from '@/lib/mvp/useUserState'
 import type { HomeMode } from '@/lib/mvp/todaysPick'
@@ -26,6 +27,7 @@ const RATING_OPTIONS: { rating: MadeRecord['rating']; emoji: string; label: stri
 
 export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) {
   const { state, recordMade } = useUserState()
+  const { customDishes } = useDishLibrary()
   const [step, setStep] = useState<Step>('select')
   const [selectedDishId, setSelectedDishId] = useState<string | null>(null)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -63,15 +65,19 @@ export function RecordingModal({ onClose, dateISO, mode }: RecordingModalProps) 
   }, [state.bookmarked])
 
   const filteredDishes = useMemo(() => {
-    if (!searchQuery) return dishes
+    const allDishes = [
+      ...customDishes.map((dish) => ({ id: dish.id, name: dish.name })),
+      ...dishes,
+    ]
+    if (!searchQuery) return allDishes
     const q = searchQuery.toLowerCase()
-    return dishes.filter((d) => d.name.toLowerCase().includes(q) || d.id.includes(q))
-  }, [searchQuery])
+    return allDishes.filter((d) => d.name.toLowerCase().includes(q) || d.id.includes(q))
+  }, [customDishes, searchQuery])
 
   const selectedDishName = useMemo(() => {
     if (!selectedDishId) return ''
-    return dishes.find((d) => d.id === selectedDishId)?.name ?? selectedDishId
-  }, [selectedDishId])
+    return customDishes.find((d) => d.id === selectedDishId)?.name ?? dishes.find((d) => d.id === selectedDishId)?.name ?? selectedDishId
+  }, [customDishes, selectedDishId])
 
   const repertoireCount = useMemo(
     () => new Set(state.made_records.map((r) => r.dish_id)).size,

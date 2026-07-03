@@ -1,11 +1,5 @@
-import BottomNav from '@/components/mvp/BottomNav'
-import IslandMap from '@/components/mvp/IslandMap'
+import { redirect } from 'next/navigation'
 
 export default function MapPage() {
-  return (
-    <main className="tn-screen">
-      <IslandMap />
-      <BottomNav />
-    </main>
-  )
+  redirect('/repertoire')
 }

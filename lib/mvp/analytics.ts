@@ -18,6 +18,10 @@ export type EventName =
   | 'nudge_dismiss'
   | 'open_level_up'
   | 'ingredient_filter_toggle'
+  | 'dish_edit_save'
+  | 'custom_dish_create'
+  | 'cookbook_view_toggle'
+  | 'open_repertoire'
 
 export type EventParams = {
   dishId?: string

@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const ITEMS = [
+  { href: '/ingredients', label: '食材', icon: BasketIcon },
   { href: '/home', label: 'ホーム', icon: HomeIcon },
-  { href: '/ingredients', label: '食材から探す', icon: BasketIcon },
-  { href: '/map', label: '広がりマップ', icon: MapIcon },
+  { href: '/repertoire', label: 'レパートリー', icon: RepertoireIcon },
 ] as const
 
 export default function BottomNav() {
@@ -15,11 +15,11 @@ export default function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--tn-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
       <p className="py-1 text-center text-[10px] font-bold" style={{ color: 'var(--tn-text-sub)' }}>
-        試作版です — ご意見お待ちしています
+        試作版です。ご意見お待ちしています。
       </p>
       <div className="mx-auto grid max-w-md grid-cols-3">
         {ITEMS.map((item) => {
-          const active = pathname === item.href
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
           const Icon = item.icon
 
           return (
@@ -50,15 +50,7 @@ function HomeIcon() {
   )
 }
 
-function LevelUpIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 20V10M12 20V4M18 20v-6" />
-    </svg>
-  )
-}
-
-function MapIcon() {
+function RepertoireIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="6" cy="7" r="2.5" />

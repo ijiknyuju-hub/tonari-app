@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import { relations, dishes } from '@/data/v3'
 import DishDetailScreen from '@/components/mvp/DishDetailScreen'
 import BottomNav from '@/components/mvp/BottomNav'
@@ -12,17 +11,16 @@ export default async function DishDetailPage({ params }: Props) {
 
   // Find the relation where this dish is the target
   const relation = relations.find((r) => r.target === id)
-  if (!relation) notFound()
-
   const targetDish = dishes.find((d) => d.id === id)
-  const sourceDish = dishes.find((d) => d.id === relation.source)
+  const sourceDish = relation ? dishes.find((d) => d.id === relation.source) : undefined
 
   return (
     <>
       <DishDetailScreen
         relation={relation}
+        dishId={id}
         targetName={targetDish?.name ?? id}
-        sourceName={sourceDish?.name ?? relation.source}
+        sourceName={sourceDish?.name ?? relation?.source}
       />
       <BottomNav />
     </>
