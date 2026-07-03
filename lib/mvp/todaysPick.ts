@@ -16,7 +16,7 @@ export function todaysPick(
   return candidates[index] ?? null
 }
 
-function stableHash(value: string): number {
+export function stableHash(value: string): number {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
     hash = (hash * 31 + value.charCodeAt(i)) >>> 0

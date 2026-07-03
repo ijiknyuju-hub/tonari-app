@@ -1,0 +1,30 @@
+{
+  "project": "tonari-app",
+  "label": "となりごはん",
+  "updated": "2026-06-24",
+  "items": [
+    {"id": "t-now-1", "title": "Vercel deploy → production URL確認", "status": "now", "goal": "018", "note": "Phase1 rebuild"},
+    {"id": "t-now-2", "title": "広告キャンペーン設定（少額・複数クリエイティブ）", "status": "now", "goal": "018"},
+    {"id": "t-next-1", "title": "ファネル指標をGo/No-Go閾値と照合", "status": "next", "note": "広告結果が出てから"},
+    {"id": "t-next-2", "title": "フィードバック分析 → 次改善仕様", "status": "next"},
+    {"id": "t-done-01", "title": "Swipe match flow", "status": "done", "goal": "002"},
+    {"id": "t-done-02", "title": "Recipe detail modal", "status": "done", "goal": "003"},
+    {"id": "t-done-03", "title": "Profile page", "status": "done", "goal": "004"},
+    {"id": "t-done-04", "title": "Matching system", "status": "done", "goal": "005"},
+    {"id": "t-done-05", "title": "Chat system", "status": "done", "goal": "006"},
+    {"id": "t-done-06", "title": "Onboarding flow", "status": "done", "goal": "007"},
+    {"id": "t-done-07", "title": "Notifications", "status": "done", "goal": "008"},
+    {"id": "t-done-08", "title": "Settings page", "status": "done", "goal": "009"},
+    {"id": "t-done-09", "title": "Supabase auth", "status": "done", "goal": "012"},
+    {"id": "t-done-10", "title": "Recipe DB schema", "status": "done", "goal": "013"},
+    {"id": "t-done-11", "title": "Recipe swipe UI v2", "status": "done", "goal": "014"},
+    {"id": "t-done-12", "title": "AI recipe suggestion", "status": "done", "goal": "015"},
+    {"id": "t-done-13", "title": "Bookmark feature", "status": "done", "goal": "016"},
+    {"id": "t-done-14", "title": "Home design polish", "status": "done", "goal": "017"},
+    {"id": "t-done-15", "title": "Recipe input flow", "status": "done", "goal": "019"},
+    {"id": "t-done-16", "title": "Repertoire view", "status": "done", "goal": "020"},
+    {"id": "t-archived-1", "title": "Phase0 LP", "status": "archived", "goal": "001", "note": "superseded by goal-018"},
+    {"id": "t-archived-2", "title": "Phase0 ad-ready polish", "status": "archived", "goal": "010", "note": "superseded by goal-018"},
+    {"id": "t-archived-3", "title": "Phase0 release check", "status": "archived", "goal": "011", "note": "superseded by goal-018"}
+  ]
+}

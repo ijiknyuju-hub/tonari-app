@@ -1,15 +1,44 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNav from '@/components/mvp/BottomNav'
+import { IngredientChipFilter } from '@/components/mvp/IngredientChipFilter'
 import { FeaturedCard, CompactCard } from '@/components/mvp/NearbyDishCard'
+import { RecordingModal } from '@/components/mvp/RecordingModal'
+import { ReturnNudge } from '@/components/mvp/ReturnNudge'
 import { dishes, relations } from '@/data/v3'
 import { trackEvent } from '@/lib/mvp/analytics'
 import { useIsClient } from '@/lib/mvp/useIsClient'
 import { todaysPick, type HomeMode } from '@/lib/mvp/todaysPick'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
+
+const INGREDIENT_CATEGORIES: Record<string, string> = {
+  '鶏もも肉': '鶏肉', '手羽先': '鶏肉', '鶏ひき肉': '鶏肉',
+  '合い挽き肉': 'ひき肉',
+  'むきエビ（冷凍）': 'エビ', 'シーフードミックス': 'シーフード',
+  'あさり（砂抜き済み）': 'シーフード',
+  '鮭フレーク': '魚',
+  '卵': '卵',
+  '玉ねぎ': '玉ねぎ', '長ねぎ': 'ねぎ', 'にんにく': 'にんにく',
+  'じゃがいも': 'じゃがいも', 'れんこん': '根菜', 'ごぼう': '根菜',
+  'キャベツ': 'キャベツ', '白菜': '白菜', 'ブロッコリー': 'ブロッコリー',
+  'ナス': 'ナス', 'パプリカ': 'パプリカ', 'もやし': 'もやし',
+  'キムチ': 'キムチ', '春菊': '葉物',
+  'トマト缶': 'トマト缶', 'デミグラスソース缶': '缶詰ソース',
+  'アンチョビ缶': '缶詰ソース',
+  'シュレッドチーズ': 'チーズ', 'パルメザンチーズ': 'チーズ',
+  '牛乳': '乳製品', '生クリーム': '乳製品', 'ヨーグルト': '乳製品',
+  '食パン': 'パン', 'コッペパン': 'パン',
+  'うどん': '麺', '中華麺': '麺', '春雨': '麺', 'ビーフン': '麺', '米麺': '麺',
+  'カレー（市販ルー）': 'カレールー', '鍋スープ': '鍋スープ',
+  'こんにゃく': 'こんにゃく',
+}
+
+function toCategory(ingredient: string): string | null {
+  return INGREDIENT_CATEGORIES[ingredient] ?? null
+}
 
 const MODES: Array<{ id: HomeMode; label: string; description: string }> = [
   { id: 'easy', label: 'かんたん', description: 'すぐ作れる・工程少なめ' },
@@ -31,9 +60,50 @@ function greeting(): string {
 export default function HomeScreen({ dateISO }: { dateISO: string }) {
   const router = useRouter()
   const [mode, setMode] = useState<HomeMode>('easy')
+  const [nudgeDismissed, setNudgeDismissed] = useState(false)
+  const [showRecordModal, setShowRecordModal] = useState(false)
   const isClient = useIsClient()
   const { selectedBaseDishIds, setSelectedBaseDishIds } = useSelectedBaseDishes()
-  const { recordMade } = useUserState()
+  const { state, recordMade, toggleIngredient, updateLastActiveDate } = useUserState()
+
+  // Update last active date on mount
+  useEffect(() => {
+    if (isClient) updateLastActiveDate(dateISO)
+  }, [isClient, dateISO, updateLastActiveDate])
+
+  // Yesterday's date for nudge
+  const yesterday = useMemo(() => {
+    const d = new Date(dateISO)
+    d.setDate(d.getDate() - 1)
+    return d.toISOString().slice(0, 10)
+  }, [dateISO])
+
+  // Return nudge logic
+  const yesterdayPick = useMemo(
+    () => todaysPick(selectedBaseDishIds, mode, yesterday),
+    [selectedBaseDishIds, mode, yesterday],
+  )
+  const showNudge =
+    !nudgeDismissed &&
+    state.last_active_date !== '' &&
+    state.last_active_date < dateISO &&
+    yesterdayPick != null
+
+  const handleNudgeRecord = useCallback(() => {
+    if (!yesterdayPick) return
+    recordMade({
+      dish_id: yesterdayPick.target,
+      made_at: new Date().toISOString(),
+      rating: 'ok',
+    })
+    trackEvent('nudge_record', { dishId: yesterdayPick.target })
+    setNudgeDismissed(true)
+  }, [yesterdayPick, recordMade])
+
+  const handleNudgeDismiss = useCallback(() => {
+    trackEvent('nudge_dismiss')
+    setNudgeDismissed(true)
+  }, [])
 
   // The featured (today's pick) relation
   const featured = useMemo(
@@ -41,17 +111,64 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
     [mode, selectedBaseDishIds, dateISO],
   )
 
-  // All other matching relations (same mode, same selected base dishes, not featured)
+  // Other cards: same source as featured, all difficulties, max 3
   const otherCards = useMemo(() => {
+    if (!featured) return []
     const candidates = relations.filter(
+      (r) =>
+        r.source === featured.source &&
+        r.target !== featured.target,
+    )
+    return candidates.slice().sort((a, b) => b.proximity - a.proximity).slice(0, 3)
+  }, [featured])
+
+  // Ingredient category filter
+  const activeCategories = state.available_ingredients
+  const hasFilter = activeCategories.length > 0
+
+  const matchesFilter = useCallback(
+    (r: { new_ingredients: string[] }) => {
+      if (!hasFilter) return true
+      const needed = r.new_ingredients.map(toCategory).filter((c): c is string => c != null)
+      return needed.every((c) => activeCategories.includes(c))
+    },
+    [hasFilter, activeCategories],
+  )
+
+  const filteredFeatured = useMemo(() => {
+    if (!featured) return null
+    if (matchesFilter(featured)) return featured
+    const fallback = relations.find(
       (r) =>
         r.tab === mode &&
         selectedBaseDishIds.includes(r.source) &&
-        r.target !== featured?.target,
+        matchesFilter(r),
     )
-    // Sort by proximity descending
-    return candidates.slice().sort((a, b) => b.proximity - a.proximity)
-  }, [mode, selectedBaseDishIds, featured])
+    return fallback ?? null
+  }, [featured, mode, selectedBaseDishIds, matchesFilter])
+
+  const filteredOtherCards = useMemo(
+    () => otherCards.filter(matchesFilter),
+    [otherCards, matchesFilter],
+  )
+
+  // Unique food categories from current relations
+  const availableIngredients = useMemo(() => {
+    const cats = relations
+      .filter((r) => selectedBaseDishIds.includes(r.source))
+      .flatMap((r) => r.new_ingredients)
+      .map(toCategory)
+      .filter((c): c is string => c != null)
+    return [...new Set(cats)]
+  }, [selectedBaseDishIds])
+
+  const handleIngredientToggle = useCallback(
+    (category: string) => {
+      toggleIngredient(category)
+      trackEvent('ingredient_filter_toggle', { ingredient: category, active: !activeCategories.includes(category) })
+    },
+    [toggleIngredient, activeCategories],
+  )
 
   // Switch base dish context to a random different dish
   function handleSwitchBase() {
@@ -63,9 +180,9 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
   }
 
   function handleMadeIt() {
-    if (!featured) return
+    if (!filteredFeatured) return
     recordMade({
-      dish_id: featured.target,
+      dish_id: filteredFeatured.target,
       made_at: new Date().toISOString(),
       rating: 'ok',
     })
@@ -88,7 +205,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
     return <div className="tn-screen" />
   }
 
-  const sourceName = featured ? getDishName(featured.source) : ''
+  const sourceName = filteredFeatured ? getDishName(filteredFeatured.source) : ''
 
   return (
     <main className="tn-screen">
@@ -126,6 +243,15 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
       </header>
 
       <div className="tn-container tn-bottom-safe pt-6">
+        {/* Return nudge */}
+        {showNudge && yesterdayPick && (
+          <ReturnNudge
+            dishName={getDishName(yesterdayPick.target)}
+            onRecord={handleNudgeRecord}
+            onDismiss={handleNudgeDismiss}
+          />
+        )}
+
         {/* Greeting */}
         <section className="mb-5">
           <p className="text-xl font-black" style={{ color: 'var(--tn-text)' }}>
@@ -170,7 +296,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
         </div>
 
         {/* Section header */}
-        {featured && (
+        {filteredFeatured && (
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm font-black" style={{ color: 'var(--tn-text)' }}>
               この前作った『{sourceName}』から広げる
@@ -187,26 +313,32 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
         )}
 
         {/* Featured card */}
-        {featured && (
+        {filteredFeatured && (
           <FeaturedCard
-            relation={featured}
-            targetName={getDishName(featured.target)}
+            relation={filteredFeatured}
+            targetName={getDishName(filteredFeatured.target)}
             onMadeIt={handleMadeIt}
           />
         )}
 
+        {/* No results after filtering */}
+        {hasFilter && !filteredFeatured && (
+          <p className="py-8 text-center text-sm" style={{ color: 'var(--tn-text-sub)' }}>
+            もう少し食材を追加してみてください
+          </p>
+        )}
+
         {/* Other cards section */}
-        {otherCards.length > 0 && (
+        {filteredOtherCards.length > 0 && (
           <section className="mt-7">
             <p className="mb-3 text-sm font-black" style={{ color: 'var(--tn-text)' }}>
               他にもこんな広げ方があります
             </p>
-            {/* Horizontal scroll row */}
             <div
               className="flex gap-3 overflow-x-auto pb-2"
               style={{ scrollbarWidth: 'none' }}
             >
-              {otherCards.map((rel) => (
+              {filteredOtherCards.map((rel) => (
                 <CompactCard
                   key={rel.target}
                   relation={rel}
@@ -216,7 +348,41 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
             </div>
           </section>
         )}
+
+        {/* Ingredient chip filter */}
+        <IngredientChipFilter
+          ingredients={availableIngredients}
+          active={activeCategories}
+          onToggle={handleIngredientToggle}
+        />
       </div>
+
+      {/* FAB */}
+      <button
+        type="button"
+        onClick={() => setShowRecordModal(true)}
+        className="fixed z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg"
+        style={{
+          bottom: '5.5rem',
+          right: '1.25rem',
+          background: 'var(--tn-accent)',
+          color: '#fff',
+        }}
+        aria-label="料理を記録する"
+      >
+        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+
+      {/* Recording modal */}
+      {showRecordModal && (
+        <RecordingModal
+          onClose={() => setShowRecordModal(false)}
+          dateISO={dateISO}
+          mode={mode}
+        />
+      )}
 
       <BottomNav />
     </main>

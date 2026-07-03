@@ -31,6 +31,7 @@ export type MadeRecord = {
   made_at: string
   rating: 'great' | 'ok' | 'meh'
   memo?: string
+  photo_url?: string
 }
 
 export type UserState = {
@@ -38,4 +39,6 @@ export type UserState = {
   bookmarked: string[]
   made_records: MadeRecord[]
   promoted_variations: string[]
+  available_ingredients: string[]
+  last_active_date: string
 }

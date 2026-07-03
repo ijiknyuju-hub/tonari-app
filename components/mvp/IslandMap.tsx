@@ -1,9 +1,12 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { dishes, relations } from '@/data/v3'
+import { trackEvent } from '@/lib/mvp/analytics'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
+
+const MILESTONES = [5, 10, 15, 20, 30, 50, 75, 100]
 
 type NodeState = 'made' | 'bookmarked' | 'base' | 'unexplored'
 
@@ -11,12 +14,23 @@ export default function IslandMap() {
   const { selectedBaseDishIds } = useSelectedBaseDishes()
   const { state } = useUserState()
 
+  useEffect(() => { trackEvent('open_level_up') }, [])
+
   const selectedBaseSet = useMemo(() => new Set(selectedBaseDishIds), [selectedBaseDishIds])
   const bookmarkedSet = useMemo(() => new Set(state.bookmarked), [state.bookmarked])
   const madeSet = useMemo(
     () => new Set(state.made_records.map((r) => r.dish_id)),
     [state.made_records],
   )
+
+  const repertoireCount = madeSet.size
+  const cumulativeDays = useMemo(
+    () => new Set(state.made_records.map((r) => r.made_at.slice(0, 10))).size,
+    [state.made_records],
+  )
+  const nextMilestone = MILESTONES.find((m) => m > repertoireCount) ?? 100
+  const remaining = nextMilestone - repertoireCount
+  const progressPct = Math.min((repertoireCount / nextMilestone) * 100, 100)
 
   const allDishIds = useMemo(() => {
     const ids = new Set(dishes.map((d) => d.id))
@@ -55,6 +69,24 @@ export default function IslandMap() {
           </p>
         </div>
       </header>
+
+      {/* Level-up stats */}
+      <div className="mt-5 flex items-center gap-4 rounded-2xl bg-[var(--tn-surface)] p-4" style={{ border: '1px solid var(--tn-border)' }}>
+        <div className="text-center">
+          <p className="text-2xl font-black" style={{ color: 'var(--tn-accent)' }}>{repertoireCount}品</p>
+          <p className="text-xs" style={{ color: 'var(--tn-text-sub)' }}>累計{cumulativeDays}日</p>
+        </div>
+        <div className="flex-1">
+          <div className="h-2.5 overflow-hidden rounded-full" style={{ background: 'var(--tn-surface-soft)' }}>
+            <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: 'var(--tn-accent)' }} />
+          </div>
+          {remaining > 0 && (
+            <p className="mt-1 text-right text-xs font-bold" style={{ color: 'var(--tn-accent)' }}>
+              あと{remaining}品で{nextMilestone}品
+            </p>
+          )}
+        </div>
+      </div>
 
       <div className="mt-5 flex gap-2 overflow-x-auto rounded-2xl border border-[var(--tn-border)] bg-[var(--tn-surface)] p-2">
         <LegendDot label="作った" className="bg-[var(--tn-accent)]" />

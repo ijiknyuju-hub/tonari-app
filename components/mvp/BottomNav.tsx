@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const ITEMS = [
-  { href: '/home', label: '今日のおすすめ', icon: HomeIcon },
-  { href: '/map', label: '広がりマップ', icon: MapIcon },
+  { href: '/home', label: 'ホーム', icon: HomeIcon },
   { href: '/ingredients', label: '食材から探す', icon: BasketIcon },
+  { href: '/map', label: '広がりマップ', icon: MapIcon },
 ] as const
 
 export default function BottomNav() {
@@ -46,6 +46,14 @@ function HomeIcon() {
       <path d="M3 11.5 12 4l9 7.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M5.5 10.5V20h13v-9.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M9.5 20v-5h5v5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function LevelUpIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 20V10M12 20V4M18 20v-6" />
     </svg>
   )
 }

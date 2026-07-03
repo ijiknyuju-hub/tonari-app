@@ -11,6 +11,8 @@ const EMPTY_STATE: UserState = {
   bookmarked: [],
   made_records: [],
   promoted_variations: [],
+  available_ingredients: [],
+  last_active_date: '',
 }
 
 const EMPTY_SNAPSHOT = JSON.stringify(EMPTY_STATE)
@@ -54,6 +56,25 @@ export function useUserState() {
     [state],
   )
 
+  const toggleIngredient = useCallback(
+    (ingredient: string) => {
+      const current = state.available_ingredients
+      const next = current.includes(ingredient)
+        ? current.filter((i) => i !== ingredient)
+        : [...current, ingredient]
+      writeState({ ...state, available_ingredients: next })
+    },
+    [state],
+  )
+
+  const updateLastActiveDate = useCallback(
+    (dateISO: string) => {
+      if (state.last_active_date === dateISO) return
+      writeState({ ...state, last_active_date: dateISO })
+    },
+    [state],
+  )
+
   return {
     state,
     isBookmarked,
@@ -61,6 +82,8 @@ export function useUserState() {
     bookmark,
     unbookmark,
     recordMade,
+    toggleIngredient,
+    updateLastActiveDate,
   }
 }
 
@@ -93,7 +116,10 @@ function parseState(raw: string): UserState {
   try {
     const parsed = JSON.parse(raw)
     if (typeof parsed === 'object' && parsed !== null && Array.isArray(parsed.bookmarked)) {
-      return parsed as UserState
+      return {
+        ...EMPTY_STATE,
+        ...parsed,
+      }
     }
     return EMPTY_STATE
   } catch {

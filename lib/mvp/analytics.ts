@@ -13,12 +13,20 @@ export type EventName =
   | 'open_map'
   | 'open_ingredients'
   | 'return_visit'
+  | 'fab_record'
+  | 'nudge_record'
+  | 'nudge_dismiss'
+  | 'open_level_up'
+  | 'ingredient_filter_toggle'
 
 export type EventParams = {
   dishId?: string
   count?: number
   tab?: string
   daysBucket?: string
+  rating?: string
+  ingredient?: string
+  active?: boolean
 }
 
 export function trackEvent(name: EventName, params?: EventParams) {
