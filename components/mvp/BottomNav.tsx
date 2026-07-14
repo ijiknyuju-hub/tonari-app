@@ -4,20 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const ITEMS = [
-  { href: '/ingredients', label: '食材', icon: BasketIcon },
   { href: '/home', label: 'ホーム', icon: HomeIcon },
-  { href: '/repertoire', label: 'レパートリー', icon: RepertoireIcon },
+  { href: '/search', label: '探す', icon: SearchIcon },
+  { href: '/repertoire', label: '料理帳', icon: RepertoireIcon },
 ] as const
 
 export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--tn-border)] bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
-      <p className="py-1 text-center text-[10px] font-bold" style={{ color: 'var(--tn-text-sub)' }}>
-        試作版です。ご意見お待ちしています。
-      </p>
-      <div className="mx-auto grid max-w-md grid-cols-3">
+    <nav
+      aria-label="メインナビゲーション"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-[#FFFFFF]"
+      style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}
+    >
+      <div
+        className="mx-auto grid max-w-[402px] grid-cols-3"
+        style={{ padding: '9px 14px calc(24px + env(safe-area-inset-bottom))' }}
+      >
         {ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
           const Icon = item.icon
@@ -27,11 +31,13 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-extrabold"
-              style={{ color: active ? 'var(--tn-text)' : 'var(--tn-text-sub)' }}
+              className="flex min-h-[38px] flex-col items-center justify-start gap-1"
+              style={{ color: active ? '#DE5528' : '#7A7570' }}
             >
               <Icon />
-              <span>{item.label}</span>
+              <span className="text-[10.5px]" style={{ fontWeight: active ? 700 : 600 }}>
+                {item.label}
+              </span>
             </Link>
           )
         })}
@@ -42,31 +48,28 @@ export default function BottomNav() {
 
 function HomeIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M3 11.5 12 4l9 7.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5.5 10.5V20h13v-9.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9.5 20v-5h5v5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none">
+      <path d="M3.5 11 12 4l8.5 7" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 9.5V20h13V9.5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 20v-5h4v5" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+      <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   )
 }
 
 function RepertoireIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="6" cy="7" r="2.5" />
-      <circle cx="18" cy="8" r="2.5" />
-      <circle cx="12" cy="17" r="2.5" />
-      <path d="m8.2 8.2 7.5 5.8M15.8 9.4l-2.6 5.3M8 8.9l2.6 5.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function BasketIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M6 10h12l-1.2 9H7.2L6 10Z" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 10 12 4l3 6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 14v2.5M12 14v2.5M15 14v2.5" strokeLinecap="round" />
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none">
+      <path d="M4 4.5h6c1.5 0 2 1 2 2V20c0-1-.5-2-2-2H4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M20 4.5h-6c-1.5 0-2 1-2 2V20c0-1 .5-2 2-2h6z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
     </svg>
   )
 }

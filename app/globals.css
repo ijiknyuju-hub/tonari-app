@@ -1,61 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --tn-bg: #faf6ef;
-  --tn-surface: #ffffff;
-  --tn-surface-soft: #f7f0e6;
-  --tn-text: #2b2725;
-  --tn-text-sub: rgba(43, 39, 37, 0.6);
-  --tn-accent: #c8531c;
-  --tn-accent-soft: #f5e3d7;
-  --tn-tag-bg: #f3eee8;
-  --tn-tag-text: rgba(43, 39, 37, 0.68);
-  --tn-border: #e8ddd2;
-  --tn-shadow-soft: 0 2px 2px rgba(0, 0, 0, 0.08);
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  --tn-bg: #FFFFFF;
+  --tn-surface: #FFFFFF;
+  --tn-surface-soft: #FBF8F4;
+  --tn-text: #1A1A1A;
+  --tn-text-sub: #7A7570;
+  --tn-accent: #DE5528;
+  --tn-accent-soft: #FCF0EA;
+  --tn-tag-bg: #F1EEEA;
+  --tn-tag-text: #5A554F;
+  --tn-border: rgba(26, 26, 26, 0.14);
+  --tn-shadow-soft: 0 1px 3px rgba(26, 26, 26, 0.06);
+  --font-heading: "Zen Maru Gothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  --font-body: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: #FFFFFF;
 }
 
 body {
+  overflow-x: hidden;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer base {
-  html {
-    background: #f7f8f5;
-  }
-
-  body {
-    overflow-x: hidden;
-  }
+  font-family: var(--font-body);
 }
 
 @layer components {
   .phase0-screen {
     min-height: 100svh;
-    background:
-      radial-gradient(circle at top left, rgba(232, 97, 26, 0.1), transparent 34rem),
-      #f7f8f5;
-    color: #09090b;
+    background: #FFFFFF;
+    color: #1A1A1A;
   }
 
-  .phase0-container {
+  .phase0-container,
+  .tn-container {
     width: 100%;
     max-width: 28rem;
     margin-inline: auto;
@@ -66,18 +55,19 @@ body {
     padding-bottom: calc(env(safe-area-inset-bottom) + 5.75rem);
   }
 
-  .phase0-card {
-    border: 1px solid rgba(228, 228, 231, 0.95);
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 14px 34px rgba(24, 24, 27, 0.08);
+  .phase0-card,
+  .tn-card {
+    border: 1px solid var(--tn-border);
+    border-radius: 1rem;
+    background: var(--tn-surface);
+    box-shadow: var(--tn-shadow-soft);
   }
 
-  .phase0-primary-button {
-    min-height: 3.75rem;
-    border-radius: 1rem;
+  .phase0-primary-button,
+  .tn-primary-cta {
     background: var(--tn-accent);
-    color: white;
-    box-shadow: 0 16px 34px rgba(232, 97, 26, 0.28);
+    color: #FFFFFF;
+    box-shadow: 0 6px 16px rgba(222, 85, 40, 0.28);
   }
 
   .tn-screen {
@@ -86,22 +76,8 @@ body {
     color: var(--tn-text);
   }
 
-  .tn-container {
-    width: 100%;
-    max-width: 28rem;
-    margin-inline: auto;
-    padding-inline: 1.25rem;
-  }
-
   .tn-bottom-safe {
     padding-bottom: calc(env(safe-area-inset-bottom) + 6.25rem);
-  }
-
-  .tn-card {
-    border: 1px solid var(--tn-border);
-    border-radius: 1rem;
-    background: var(--tn-surface);
-    box-shadow: var(--tn-shadow-soft);
   }
 
   .tn-surface-soft {
@@ -124,31 +100,19 @@ body {
     color: var(--tn-text);
   }
 
-  .tn-tag {
+  .tn-tag,
+  .tn-tag-easy,
+  .tn-tag-stretch,
+  .tn-tag-full {
     display: inline-flex;
     min-height: 1.75rem;
     align-items: center;
     border-radius: 9999px;
     padding-inline: 0.75rem;
+    background: var(--tn-tag-bg);
+    color: var(--tn-tag-text);
     font-size: 0.75rem;
     font-weight: 800;
-    background: var(--tn-tag-bg);
-    color: var(--tn-tag-text);
-  }
-
-  .tn-tag-easy {
-    background: var(--tn-tag-bg);
-    color: var(--tn-tag-text);
-  }
-
-  .tn-tag-stretch {
-    background: var(--tn-tag-bg);
-    color: var(--tn-tag-text);
-  }
-
-  .tn-tag-full {
-    background: var(--tn-tag-bg);
-    color: var(--tn-tag-text);
   }
 
   .tn-feature-card {
@@ -157,6 +121,7 @@ body {
 
   .tn-dish-title {
     color: var(--tn-text);
+    font-family: var(--font-heading);
     font-size: 1.375rem;
     font-weight: 800;
     letter-spacing: 0;
@@ -167,12 +132,6 @@ body {
     color: var(--tn-text-sub);
     font-size: 0.8125rem;
     line-height: 1.6;
-  }
-
-  .tn-primary-cta {
-    background: var(--tn-accent);
-    color: #fff;
-    box-shadow: var(--tn-shadow-soft);
   }
 
   .tn-neutral-chip {
