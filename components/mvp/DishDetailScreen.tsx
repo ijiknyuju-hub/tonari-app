@@ -1,336 +1,195 @@
-﻿'use client'
+'use client'
 
-import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import type { CustomDish, NearbyRelation } from '@/types/dish'
-import { trackEvent } from '@/lib/mvp/analytics'
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { dishes } from '@/data/v3'
+import type { NearbyRelation } from '@/types/dish'
+import { deriveRank, madeCountForDish, type DishRank } from '@/lib/mvp/rank'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
+import { sourceHostname, useRecipeSources, type RecipeSource } from '@/lib/mvp/useRecipeSources'
 import { useUserState } from '@/lib/mvp/useUserState'
+import CharTile from './CharTile'
+import DishArt from './DishArt'
+import RankChip from './RankChip'
 
-const DIFFICULTY_LABEL: Record<string, string> = {
-  easy: 'かんたん',
-  stretch: '少し広げる',
-  full: 'しっかり作る',
-}
+type Ingredient = { name: string; amount: string }
 
-interface DishDetailScreenProps {
+type DishDetailScreenProps = {
   relation?: NearbyRelation
   dishId: string
   targetName: string
   sourceName?: string
 }
 
-export default function DishDetailScreen({ relation, dishId, targetName, sourceName }: DishDetailScreenProps) {
-  const { isBookmarked, bookmark, unbookmark, madeRecordsFor, recordMade } = useUserState()
-  const { overrides, customDishes, saveDishOverride, resetDishOverride } = useDishLibrary()
-  const [editing, setEditing] = useState(false)
+export default function DishDetailScreen({ relation, dishId, targetName }: DishDetailScreenProps) {
+  const router = useRouter()
+  const { state, recordMade } = useUserState()
+  const { overrides, customDishes, saveDishOverride } = useDishLibrary()
+  const { sourcesByDish, addSource, removeSource } = useRecipeSources()
+  const [showUrlForm, setShowUrlForm] = useState(false)
+  const [draftUrl, setDraftUrl] = useState('')
+  const [urlError, setUrlError] = useState('')
+  const [editingDraft, setEditingDraft] = useState(false)
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
 
   const customDish = customDishes.find((dish) => dish.id === dishId)
-  const override = overrides[dishId]
-  const saved = isBookmarked(dishId)
-  const madeCount = madeRecordsFor(dishId).length
-
-  const content = useMemo(() => {
-    return mergedDishContent(relation, customDish, override)
-  }, [customDish, override, relation])
-
   const displayName = customDish?.name ?? targetName
+  const override = overrides[dishId]
+  const sources = sourcesByDish[dishId] ?? []
+  const videos = sources.filter((source) => source.kind === 'youtube')
+  const sites = sources.filter((source) => source.kind === 'site')
+  const activeVideo = videos.find((source) => source.id === selectedVideoId) ?? videos[0]
+  const sourceState: 'none' | 'youtube' | 'site' = videos.length ? 'youtube' : sites.length ? 'site' : 'none'
+  const madeCount = madeCountForDish(state.made_records, dishId)
+  const rank = deriveRank(madeCount)
+  const ingredients = useMemo(() => recipeIngredients(relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, override?.ingredients_override, relation])
+  const steps = useMemo(() => recipeSteps(relation, override?.steps_override, customDish?.steps), [customDish?.steps, override?.steps_override, relation])
+  const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && /soup|side/.test(dish.id)).slice(0, 3), [dishId])
 
-  useEffect(() => {
-    trackEvent('open_dish_card', { dishId })
-  }, [dishId])
-
-  function handleMadeIt() {
-    recordMade({
-      dish_id: dishId,
-      made_at: new Date().toISOString(),
-      rating: 'ok',
-    })
-  }
-
-  if (!relation && !customDish) {
-    return (
-      <main className="tn-screen">
-        <div className="tn-container pt-6">
-          <Link href="/repertoire" className="text-sm font-bold text-[var(--tn-text-sub)]">
-            ← 戻る
-          </Link>
-          <p className="mt-8 text-sm font-bold text-[var(--tn-text-sub)]">
-            この料理はこの端末には保存されていません。
-          </p>
-        </div>
-      </main>
-    )
-  }
-
-  if (editing) {
-    return (
-      <DishEditForm
-        dishId={dishId}
-        title={displayName}
-        initialIngredients={content.ingredients}
-        initialSteps={content.steps}
-        initialMemo={content.memo}
-        onCancel={() => setEditing(false)}
-        onSave={(ingredients, steps, memo) => {
-          saveDishOverride(dishId, {
-            ingredients_override: cleanLines(ingredients),
-            steps_override: cleanLines(steps),
-            memo: memo.trim(),
-          })
-          trackEvent('dish_edit_save', { dishId })
-          setEditing(false)
-        }}
-        onReset={() => {
-          resetDishOverride(dishId)
-          setEditing(false)
-        }}
-      />
-    )
+  function saveUrl(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!addSource(dishId, draftUrl)) {
+      setUrlError('https:// から始まるURLを入力してください。')
+      return
+    }
+    setDraftUrl('')
+    setUrlError('')
+    setShowUrlForm(false)
   }
 
   return (
     <main className="tn-screen">
-      <div className="tn-container tn-bottom-safe pt-4">
-        <div className="flex items-center justify-between">
-          <Link href="/repertoire" className="inline-flex items-center gap-1 text-sm font-bold text-[var(--tn-text-sub)]">
-            ← 戻る
-          </Link>
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--tn-border)] bg-white text-[var(--tn-text-sub)]"
-            aria-label="編集"
-          >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z" />
-              <path d="m14 6 4 4" />
-            </svg>
-          </button>
-        </div>
+      <header className="mx-auto flex max-w-[402px] items-center justify-between px-4 pb-2 pt-[56px]">
+        <button type="button" onClick={() => router.back()} aria-label="戻る" className="flex h-[38px] w-[38px] items-center justify-center rounded-full border bg-white text-[26px] leading-none text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.10)' }}>‹</button>
+        <button type="button" onClick={() => setEditingDraft((current) => !current)} className="rounded-full border bg-white px-[13px] py-2 text-[13px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.14)' }}>{editingDraft ? '閉じる' : '下書きを整える'}</button>
+      </header>
 
-        <div className="mt-4">
-          {relation && <DifficultyTag difficulty={relation.tab} />}
-          {customDish && <span className="tn-tag tn-tag-easy">自作</span>}
-          {override && (
-            <span className="tn-neutral-chip ml-2 rounded-full px-3 py-1 text-xs font-black">
-              自分流に編集済み
-            </span>
-          )}
-          <h1 className="mt-2 text-[1.625rem] font-black leading-snug text-[var(--tn-text)]">{displayName}</h1>
-          {sourceName && <p className="mt-1 text-sm font-bold text-[var(--tn-text-sub)]">{sourceName} から広げる</p>}
-        </div>
+      <div className="mx-auto max-w-[402px] px-5 pb-[106px] pt-1">
+        {sourceState === 'youtube' ? <VideoHero name={displayName} activeVideo={activeVideo} /> : <PhotoHero name={displayName} source={sites[0]} />}
+        <h1 className="mt-4 text-[25px] font-bold leading-snug tracking-[.3px] text-[#1A1A1A]" style={{ fontFamily: 'var(--font-heading)' }}>{displayName}</h1>
+        <p className="mt-[9px] text-[14px] leading-[1.75] text-[#7A7570]">{relation?.description_line1 ?? 'いつもの材料で、気負わずつくれる一皿です。'}</p>
 
-        {relation && (
-          <div className="tn-card mt-5 p-4">
-            <p className="text-sm leading-6 text-[var(--tn-text)]">{relation.description_line1}</p>
-            <p className="text-sm leading-6 text-[var(--tn-text)]">{relation.description_line2}</p>
-          </div>
+        <RecipeCard
+          ingredients={ingredients}
+          steps={steps}
+          source={sourceState === 'site' ? sites[0] : undefined}
+          showNotice={sourceState === 'none'}
+          editing={editingDraft}
+          onSave={(nextIngredients, nextSteps) => {
+            saveDishOverride(dishId, { ingredients_override: nextIngredients, steps_override: nextSteps, memo: override?.memo ?? '' })
+            setEditingDraft(false)
+          }}
+        />
+
+        {sourceState === 'youtube' ? (
+          <VideoSources videos={videos} activeVideo={activeVideo} onSelect={setSelectedVideoId} onRemove={(source) => removeSource(dishId, source.id)} />
+        ) : (
+          <SavedSourceSection sites={sites} onRemove={(source) => removeSource(dishId, source.id)} />
         )}
 
-        {content.ingredients.length > 0 && (
-          <section className="mt-5">
-            <h2 className="text-sm font-black text-[var(--tn-text)]">材料</h2>
-            <ul className="mt-2 space-y-2">
-              {content.ingredients.map((ingredient) => (
-                <li
-                  key={ingredient}
-                  className="tn-neutral-chip flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-bold"
-                >
-                  <span>•</span>
-                  <span>{ingredient}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        <UrlForm open={showUrlForm} value={draftUrl} error={urlError} onOpen={() => setShowUrlForm(true)} onCancel={() => { setShowUrlForm(false); setUrlError('') }} onChange={setDraftUrl} onSubmit={saveUrl} label={sourceState === 'youtube' ? '＋動画・URLを追加' : '＋URLを追加'} />
 
-        {content.steps.length > 0 && (
-          <section className="mt-5">
-            <h2 className="text-sm font-black text-[var(--tn-text)]">ざっくり手順</h2>
-            <ol className="mt-2 space-y-2">
-              {content.steps.map((step, i) => (
-                <li key={i} className="flex items-start gap-3 rounded-2xl bg-[var(--tn-surface-soft)] px-4 py-2 text-sm text-[var(--tn-text)]">
-                  <span className="shrink-0 font-black text-[var(--tn-text-sub)]">{i + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
-
-        {content.memo && (
-          <section className="tn-card mt-5 p-4">
-            <h2 className="text-sm font-black text-[var(--tn-text)]">メモ</h2>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[var(--tn-text)]">{content.memo}</p>
-          </section>
-        )}
-
-        {relation?.cooking_time_minutes != null && (
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--tn-surface-soft)] px-4 py-1.5 text-sm font-bold text-[var(--tn-text-sub)]">
-            調理時間 約{relation.cooking_time_minutes}分
-          </div>
-        )}
-
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          {!customDish && (
-            <button
-              type="button"
-              onClick={() => {
-                if (saved) {
-                  unbookmark(dishId)
-                } else {
-                  bookmark(dishId)
-                  trackEvent('bookmark', { dishId })
-                }
-              }}
-              className="tn-pill-button flex items-center justify-center gap-2 py-3 text-sm font-bold"
-              style={saved ? { background: 'var(--tn-tag-bg)', borderColor: 'var(--tn-text)' } : undefined}
-            >
-              {saved ? '保存済み' : '作りたい'}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handleMadeIt}
-            className={customDish ? 'tn-primary-cta col-span-2 rounded-2xl py-3 text-sm font-bold' : 'tn-primary-cta rounded-2xl py-3 text-sm font-bold'}
-          >
-            {madeCount > 0 ? `${madeCount}回作った` : '作った'}
-          </button>
-        </div>
+        <SideDishes dishes={sideDishes} />
+        <RankAndRecord rank={rank} madeCount={madeCount} onMade={() => recordMade({ dish_id: dishId, made_at: new Date().toISOString(), rating: 'ok' })} />
       </div>
     </main>
   )
 }
 
-function DifficultyTag({ difficulty }: { difficulty: string }) {
-  const className =
-    difficulty === 'easy'
-      ? 'tn-tag tn-tag-easy'
-      : difficulty === 'stretch'
-        ? 'tn-tag tn-tag-stretch'
-        : 'tn-tag tn-tag-full'
-  return <span className={className}>{DIFFICULTY_LABEL[difficulty] ?? difficulty}</span>
-}
-
-function DishEditForm({
-  dishId,
-  title,
-  initialIngredients,
-  initialSteps,
-  initialMemo,
-  onCancel,
-  onSave,
-  onReset,
-}: {
-  dishId: string
-  title: string
-  initialIngredients: string[]
-  initialSteps: string[]
-  initialMemo: string
-  onCancel: () => void
-  onSave: (ingredients: string[], steps: string[], memo: string) => void
-  onReset: () => void
-}) {
-  const [ingredients, setIngredients] = useState(initialIngredients.length > 0 ? initialIngredients : [''])
-  const [steps, setSteps] = useState(initialSteps.length > 0 ? initialSteps : [''])
-  const [memo, setMemo] = useState(initialMemo)
-
+function PhotoHero({ name, source }: { name: string; source?: RecipeSource }) {
   return (
-    <main className="tn-screen">
-      <form
-        className="tn-container tn-bottom-safe space-y-5 pt-4"
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSave(ingredients, steps, memo)
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <button type="button" onClick={onCancel} className="text-sm font-bold text-[var(--tn-text-sub)]">
-            ← 戻る
-          </button>
-          <button type="submit" className="tn-primary-cta rounded-full px-4 py-2 text-sm font-black">
-            保存
-          </button>
-        </div>
-        <div>
-          <p className="text-xs font-bold text-[var(--tn-text-sub)]">編集中</p>
-          <h1 className="text-2xl font-black text-[var(--tn-text)]">{title}</h1>
-        </div>
-        <EditableLines title="材料" values={ingredients} onChange={setIngredients} />
-        <EditableLines title="手順" values={steps} onChange={setSteps} />
-        <label className="block">
-          <span className="text-sm font-black text-[var(--tn-text)]">メモ</span>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            className="mt-2 min-h-28 w-full rounded-2xl border border-[var(--tn-border)] bg-white px-4 py-3 text-sm text-[var(--tn-text)]"
-            placeholder="自分用のコツや分量メモ"
-          />
-        </label>
-        <button
-          type="button"
-          onClick={onReset}
-          className="w-full rounded-2xl border border-[var(--tn-border)] bg-white py-3 text-sm font-black text-[var(--tn-text-sub)]"
-        >
-          元に戻す
-        </button>
-        <input type="hidden" value={dishId} readOnly />
-      </form>
-    </main>
+    <div className="relative aspect-[16/10] overflow-hidden rounded-[12px]">
+      <DishArt dish={name} seed={name} radius={12} />
+      {source ? <a href={source.url} target="_blank" rel="noreferrer" className="absolute bottom-3 right-3 rounded-full bg-[#1A1A1A]/70 px-[10px] py-[5px] text-[11px] font-bold text-white">{sourceHostname(source.url)} を開く</a> : null}
+    </div>
   )
 }
 
-function EditableLines({
-  title,
-  values,
-  onChange,
-}: {
-  title: string
-  values: string[]
-  onChange: (values: string[]) => void
-}) {
+function VideoHero({ name, activeVideo }: { name: string; activeVideo?: RecipeSource }) {
   return (
-    <section>
-      <p className="text-sm font-black text-[var(--tn-text)]">{title}</p>
-      <div className="mt-2 space-y-2">
-        {values.map((value, index) => (
-          <div key={index} className="flex gap-2">
-            <input
-              value={value}
-              onChange={(e) => onChange(values.map((item, i) => (i === index ? e.target.value : item)))}
-              className="min-w-0 flex-1 rounded-2xl border border-[var(--tn-border)] bg-white px-4 py-3 text-sm text-[var(--tn-text)]"
-            />
-            <button
-              type="button"
-              onClick={() => onChange(values.filter((_, i) => i !== index))}
-              className="h-12 w-12 rounded-2xl border border-[var(--tn-border)] bg-white text-sm font-black text-[var(--tn-text-sub)]"
-              aria-label={`${title}を削除`}
-            >
-              x
-            </button>
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange([...values, ''])}
-        className="mt-2 rounded-full border border-[var(--tn-border)] bg-white px-4 py-2 text-xs font-black text-[var(--tn-text-sub)]"
-      >
-        + 追加
-      </button>
+    <div className="flex snap-x snap-mandatory overflow-x-auto rounded-[12px] [scrollbar-width:none]">
+      <div className="relative aspect-[16/10] w-full shrink-0 snap-center overflow-hidden"><DishArt dish={name} seed={name} radius={0} /><span className="absolute bottom-3 right-3 rounded-full bg-[#1A1A1A]/70 px-[10px] py-[5px] text-[11px] font-bold text-white">動画へスワイプ</span></div>
+      <a href={activeVideo?.url} target="_blank" rel="noreferrer" className="relative aspect-[16/10] w-full shrink-0 snap-center overflow-hidden bg-[#1A1A1A]" aria-label="メイン動画を開く">
+        <DishArt dish={`${name}-video`} seed={activeVideo?.id} radius={0} style={{ opacity: .62 }} />
+        <span className="absolute left-3 top-3 rounded-full bg-[#1A1A1A]/70 px-[9px] py-1 text-[11px] font-bold text-white">作り方の動画</span>
+        <span className="absolute inset-0 flex items-center justify-center text-[34px] text-white">▶</span>
+        <span className="absolute bottom-3 left-3 right-3 text-[13px] font-bold text-white">{activeVideo ? sourceHostname(activeVideo.url) : 'メイン動画'}</span>
+      </a>
+    </div>
+  )
+}
+
+function RecipeCard({ ingredients, steps, source, showNotice, editing, onSave }: { ingredients: Ingredient[]; steps: string[]; source?: RecipeSource; showNotice: boolean; editing: boolean; onSave: (ingredients: string[], steps: string[]) => void }) {
+  return (
+    <section className="mt-[20px] rounded-[12px] border p-4" style={{ borderColor: 'rgba(26,26,26,.12)' }}>
+      <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">レシピ（下書き）</h2>{source ? <a href={source.url} target="_blank" rel="noreferrer" className="ml-auto text-[11px] font-bold text-[#DE5528]">出典: {sourceHostname(source.url)} ↗</a> : null}</div>
+      {editing ? <DraftEditor key={`${ingredients.map((item) => item.name).join('|')}-${steps.join('|')}`} ingredients={ingredients} steps={steps} onSave={onSave} /> : (
+        <>
+          {showNotice ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">動画やレシピURLを貼って、あなたのレシピに育てましょう。作り方はいつでも整えられます。</p> : source ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">要点を自分用の下書きにまとめています。分量やコツは出典のページも確認できます。</p> : null}
+          <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">材料 <span className="ml-1 text-[11px] font-normal text-[#B7B2AC]">2人分</span></p>
+          <div className="mt-[10px] space-y-2">{ingredients.map((ingredient) => <div key={`${ingredient.name}-${ingredient.amount}`} className="flex items-baseline gap-2 text-[12.5px]"><span className="font-semibold text-[#1A1A1A]">{ingredient.name}</span><span className="relative top-[-3px] flex-1 border-b border-dotted" style={{ borderColor: 'rgba(26,26,26,.22)' }} /><span className="whitespace-nowrap text-[#7A7570]">{ingredient.amount}</span></div>)}</div>
+          <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">作り方</p>
+          <ol className="mt-[11px] space-y-[11px]">{steps.map((step, index) => <li key={`${step}-${index}`} className="flex gap-[10px]"><span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FBEBDD] text-[11px] font-bold text-[#C25A20]">{index + 1}</span><p className="m-0 text-[12.5px] leading-[1.65] text-[#5A554F]">{step}</p></li>)}</ol>
+        </>
+      )}
     </section>
   )
 }
 
-function mergedDishContent(relation?: NearbyRelation, customDish?: CustomDish, override?: { ingredients_override?: string[]; steps_override?: string[]; memo?: string }) {
-  return {
-    ingredients: override?.ingredients_override ?? customDish?.ingredients ?? relation?.new_ingredients ?? [],
-    steps: override?.steps_override ?? customDish?.steps ?? relation?.rough_steps ?? [],
-    memo: override?.memo ?? '',
-  }
+function DraftEditor({ ingredients, steps, onSave }: { ingredients: Ingredient[]; steps: string[]; onSave: (ingredients: string[], steps: string[]) => void }) {
+  const [ingredientText, setIngredientText] = useState(() => ingredients.map((item) => `${item.name} ${item.amount}`).join('\n'))
+  const [stepText, setStepText] = useState(() => steps.join('\n'))
+
+  return <form className="mt-3" onSubmit={(event) => { event.preventDefault(); onSave(lines(ingredientText), lines(stepText)) }}>
+    <label className="block text-[12px] font-bold text-[#1A1A1A]">材料（1行ずつ）<textarea value={ingredientText} onChange={(event) => setIngredientText(event.target.value)} className="mt-1 min-h-24 w-full rounded-[9px] border p-2 text-[12px] text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.16)' }} /></label>
+    <label className="mt-3 block text-[12px] font-bold text-[#1A1A1A]">作り方（1行ずつ）<textarea value={stepText} onChange={(event) => setStepText(event.target.value)} className="mt-1 min-h-24 w-full rounded-[9px] border p-2 text-[12px] text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.16)' }} /></label>
+    <button type="submit" className="mt-3 rounded-[9px] border bg-white px-[14px] py-2 text-[12px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.16)' }}>下書きを保存</button>
+  </form>
 }
 
-function cleanLines(lines: string[]) {
-  return lines.map((line) => line.trim()).filter(Boolean)
+function SavedSourceSection({ sites, onRemove }: { sites: RecipeSource[]; onRemove: (source: RecipeSource) => void }) {
+  return (
+    <section className="mt-[22px]"><SectionHeading>保存したレシピURL</SectionHeading>{sites.length ? <div className="mt-3 space-y-[9px]">{sites.map((source) => <div key={source.id} className="flex items-center gap-[11px] rounded-[11px] border p-[9px_11px]" style={{ borderColor: 'rgba(26,26,26,.12)' }}><CharTile name={sourceHostname(source.url)} size={38} radius={7} /><a href={source.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1"><div className="truncate text-[13px] font-bold text-[#1A1A1A]">{sourceHostname(source.url)}</div><div className="mt-0.5 truncate text-[11px] text-[#7A7570]">レシピサイトを開く ↗</div></a><button type="button" onClick={() => onRemove(source)} className="text-[11px] font-bold text-[#7A7570]">削除</button></div>)}</div> : <div className="mt-3 flex flex-col items-center gap-[6px] rounded-[12px] border border-dashed bg-[#FBFAF8] p-[18px] text-center" style={{ borderColor: 'rgba(26,26,26,.20)' }}><p className="m-0 text-[13px] font-bold text-[#7A7570]">まだURLはありません</p><p className="m-0 text-[11.5px] leading-[1.5] text-[#B7B2AC]">YouTubeやレシピサイトのURLを残すと、いつもの料理ページにまとまります。</p></div>}</section>
+  )
+}
+
+function VideoSources({ videos, activeVideo, onSelect, onRemove }: { videos: RecipeSource[]; activeVideo?: RecipeSource; onSelect: (id: string) => void; onRemove: (source: RecipeSource) => void }) {
+  return (
+    <section className="mt-[22px]"><SectionHeading>作り方の動画</SectionHeading><p className="mt-2 text-[11.5px] text-[#7A7570]">タップしてメイン動画を切り替えられます。</p><div className="mt-3 space-y-[9px]">{videos.map((source) => { const active = activeVideo?.id === source.id; return <div key={source.id} className="flex items-center gap-[11px] rounded-[11px] border p-[9px_11px]" style={{ background: active ? '#FFF6F2' : '#FFFFFF', borderColor: active ? '#DE5528' : 'rgba(26,26,26,.12)', borderWidth: active ? 1.5 : 1 }}><button type="button" onClick={() => onSelect(source.id)} className="flex min-w-0 flex-1 items-center gap-[11px] text-left"><div className="relative h-[42px] w-[66px] shrink-0 overflow-hidden rounded-[7px] bg-[#1A1A1A]"><DishArt dish={source.url} seed={source.id} radius={7} style={{ opacity: .7 }} /><span className="absolute inset-0 flex items-center justify-center text-white">▶</span></div><span className="min-w-0"><span className="block truncate text-[13px] font-bold text-[#1A1A1A]">{sourceHostname(source.url)}</span><span className="mt-0.5 block text-[11px] text-[#7A7570]">YouTube</span></span></button><a href={source.url} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-[#DE5528]">開く</a><button type="button" onClick={() => onRemove(source)} className="text-[11px] font-bold text-[#7A7570]">削除</button></div> })}</div></section>
+  )
+}
+
+function UrlForm({ open, value, error, onOpen, onCancel, onChange, onSubmit, label }: { open: boolean; value: string; error: string; onOpen: () => void; onCancel: () => void; onChange: (value: string) => void; onSubmit: (event: React.FormEvent<HTMLFormElement>) => void; label: string }) {
+  if (!open) return <button type="button" onClick={onOpen} className="mt-3 flex w-full items-center justify-center rounded-[12px] border border-dashed bg-[#FFF6F2] py-3 text-[13px] font-bold text-[#DE5528]" style={{ borderColor: 'rgba(222,85,40,.50)' }}>{label}</button>
+  return <form onSubmit={onSubmit} className="mt-3 rounded-[12px] border p-3" style={{ borderColor: 'rgba(26,26,26,.12)' }}><label className="block text-[12px] font-bold text-[#1A1A1A]">URL<input autoFocus value={value} onChange={(event) => onChange(event.target.value)} placeholder="https://..." inputMode="url" className="mt-2 w-full rounded-[9px] border px-3 py-2 text-[13px] outline-none" style={{ borderColor: 'rgba(26,26,26,.16)' }} /></label>{error ? <p className="mt-2 text-[11px] text-[#DE5528]">{error}</p> : null}<div className="mt-3 flex justify-end gap-2"><button type="button" onClick={onCancel} className="rounded-[9px] px-3 py-2 text-[12px] font-bold text-[#7A7570]">キャンセル</button><button type="submit" className="rounded-[9px] bg-[#DE5528] px-3 py-2 text-[12px] font-bold text-white">保存</button></div></form>
+}
+
+function SideDishes({ dishes: sideDishes }: { dishes: typeof dishes }) {
+  return <section className="mt-[22px]"><div className="flex items-baseline gap-2"><h2 className="m-0 text-[14px] font-bold text-[#1A1A1A]">あと一品</h2><span className="text-[12px] text-[#B7B2AC]">副菜・汁もの</span></div><div className="mt-3 flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none]">{sideDishes.map((dish) => <Link key={dish.id} href={`/dish/${dish.id}`} className="w-[116px] shrink-0"><div className="aspect-[4/3] overflow-hidden rounded-[10px]"><DishArt dish={dish.name} seed={dish.id} radius={10} /></div><div className="mt-2 line-clamp-2 text-[13px] font-bold leading-[1.3] text-[#1A1A1A]">{dish.name}</div></Link>)}</div></section>
+}
+
+function RankAndRecord({ rank, madeCount, onMade }: { rank: DishRank; madeCount: number; onMade: () => void }) {
+  return <section className="mb-2 mt-6 border-t pt-[18px]" style={{ borderColor: 'rgba(26,26,26,.09)' }}><div className="mb-[14px] flex items-center justify-between"><span className="text-[12px] text-[#7A7570]">いまのランク</span>{rank ? <span className="inline-flex overflow-hidden rounded-full border" style={{ borderColor: rank === 'regular' ? 'rgba(138,90,22,.22)' : 'rgba(26,26,26,.14)', background: rank === 'regular' ? '#FCF6EC' : '#FFFFFF' }}><RankChip rank={rank} style={{ border: 0, borderRadius: 0, padding: '5px 11px 5px 12px', width: 'auto', height: 'auto', transform: 'none', fontSize: 12.5 }} /><span className="border-l px-3 py-[5px] text-[12.5px] font-bold" style={{ borderColor: 'rgba(26,26,26,.12)', color: '#7A7570' }}>{madeCount}回</span></span> : <span className="rounded-full border px-3 py-[5px] text-[12px] font-bold text-[#7A7570]" style={{ borderColor: 'rgba(26,26,26,.14)' }}>はじめて</span>}</div><button type="button" onClick={onMade} className="w-full rounded-[12px] bg-[#DE5528] py-4 text-[17px] font-bold tracking-[1px] text-white" style={{ boxShadow: '0 6px 16px rgba(222,85,40,.28)' }}>作った</button></section>
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">{children}</h2><span className="h-px flex-1 bg-[rgba(26,26,26,.1)]" /></div>
+}
+
+function recipeIngredients(relation?: NearbyRelation, override?: string[], custom?: string[]): Ingredient[] {
+  const stored = override ?? custom
+  if (stored?.length) return stored.map((value) => ({ name: value, amount: '適量' }))
+  const names = relation?.new_ingredients?.length ? relation.new_ingredients : ['主な材料', '野菜', 'にんにく', '油', '塩', 'こしょう']
+  return names.map((name, index) => ({ name, amount: index === 0 ? '2人分' : '適量' }))
+}
+
+function recipeSteps(relation?: NearbyRelation, override?: string[], custom?: string[]) {
+  const stored = override ?? custom
+  if (stored?.length) return stored
+  return relation?.rough_steps?.length ? relation.rough_steps : ['材料を食べやすい大きさに切る。', 'フライパンで香りが立つまで炒める。', '味をととのえて、温かいうちに盛りつける。']
+}
+
+function lines(value: string) {
+  return value.split('\n').map((line) => line.trim()).filter(Boolean)
 }

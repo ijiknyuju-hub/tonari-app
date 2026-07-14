@@ -29,6 +29,5 @@ export default async function DishDetailPage({ params }: Props) {
 
 // Generate static params for all target dish ids
 export function generateStaticParams() {
-  const targetIds = [...new Set(relations.map((r) => r.target))]
-  return targetIds.map((id) => ({ id }))
+  return dishes.map((dish) => ({ id: dish.id }))
 }
