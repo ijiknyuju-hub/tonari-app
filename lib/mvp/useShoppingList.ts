@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
-import { dishes, relations } from '@/data/v3'
+import { BASE_DISH_INGREDIENTS, dishes, relations } from '@/data/v3'
 import type { CustomDish } from '@/types/dish'
 
 const STORAGE_KEY = 'tonari.v3.shoppingList'
@@ -44,9 +44,10 @@ export function shoppingDishesFromWeekSet(dishIds: readonly string[], customDish
 
     const dish = dishes.find((candidate) => candidate.id === dishId)
     if (!dish) return []
-    const ingredients = relations
+    const relationIngredients = relations
       .filter((relation) => relation.target === dishId)
       .flatMap((relation) => relation.new_ingredients)
+    const ingredients = relationIngredients.length ? relationIngredients : BASE_DISH_INGREDIENTS[dish.id] ?? []
     return [{ id: dish.id, name: dish.name, ingredients }]
   })
 }
@@ -117,54 +118,46 @@ export function useShoppingList(
     return [...derived, ...manual]
   }, [pantryIngredients, state, weekDishes])
 
-  const toggleChecked = useCallback(
-    (itemId: string) => {
-      const checkedIds = state.checkedIds.includes(itemId)
-        ? state.checkedIds.filter((id) => id !== itemId)
-        : [...state.checkedIds, itemId]
-      writeState({ ...state, checkedIds })
-    },
-    [state],
-  )
+  const toggleChecked = useCallback((itemId: string) => {
+    const current = currentState()
+    const checkedIds = current.checkedIds.includes(itemId)
+      ? current.checkedIds.filter((id) => id !== itemId)
+      : [...current.checkedIds, itemId]
+    writeState({ ...current, checkedIds })
+  }, [])
 
-  const addItem = useCallback(
-    (name: string, quantity?: string) => {
-      const item = parseIngredient({ name, quantity })
-      if (!item) return false
-      const added = state.added.some((entry) => ingredientId(entry.name) === item.id)
-        ? state.added
-        : [...state.added, { name: item.name, ...(item.quantity ? { quantity: item.quantity } : {}) }]
-      writeState({
-        ...state,
-        added,
-        hiddenIds: state.hiddenIds.filter((id) => id !== item.id),
-      })
-      return true
-    },
-    [state],
-  )
+  const addItem = useCallback((name: string, quantity?: string) => {
+    const item = parseIngredient({ name, quantity })
+    if (!item) return false
+    const current = currentState()
+    const added = current.added.some((entry) => ingredientId(entry.name) === item.id)
+      ? current.added
+      : [...current.added, { name: item.name, ...(item.quantity ? { quantity: item.quantity } : {}) }]
+    writeState({
+      ...current,
+      added,
+      hiddenIds: current.hiddenIds.filter((id) => id !== item.id),
+    })
+    return true
+  }, [])
 
-  const removeItem = useCallback(
-    (itemId: string) => {
-      writeState({
-        ...state,
-        added: state.added.filter((item) => ingredientId(item.name) !== itemId),
-        hiddenIds: state.hiddenIds.includes(itemId) ? state.hiddenIds : [...state.hiddenIds, itemId],
-        checkedIds: state.checkedIds.filter((id) => id !== itemId),
-      })
-    },
-    [state],
-  )
+  const removeItem = useCallback((itemId: string) => {
+    const current = currentState()
+    writeState({
+      ...current,
+      added: current.added.filter((item) => ingredientId(item.name) !== itemId),
+      hiddenIds: current.hiddenIds.includes(itemId) ? current.hiddenIds : [...current.hiddenIds, itemId],
+      checkedIds: current.checkedIds.filter((id) => id !== itemId),
+    })
+  }, [])
 
-  const restoreItem = useCallback(
-    (itemId: string) => {
-      if (!state.hiddenIds.includes(itemId)) return
-      writeState({ ...state, hiddenIds: state.hiddenIds.filter((id) => id !== itemId) })
-    },
-    [state],
-  )
+  const restoreItem = useCallback((itemId: string) => {
+    const current = currentState()
+    if (!current.hiddenIds.includes(itemId)) return
+    writeState({ ...current, hiddenIds: current.hiddenIds.filter((id) => id !== itemId) })
+  }, [])
 
-  const clearChecks = useCallback(() => writeState({ ...state, checkedIds: [] }), [state])
+  const clearChecks = useCallback(() => writeState({ ...currentState(), checkedIds: [] }), [])
 
   return {
     items,
@@ -201,6 +194,12 @@ function writeState(state: StoredShoppingState) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   window.dispatchEvent(new Event(STORAGE_EVENT))
+}
+
+// Mutators must read the freshest stored state at call time: the React state
+// snapshot goes stale between rapid taps, and spreading it would drop checks.
+function currentState(): StoredShoppingState {
+  return parseState(getSnapshot())
 }
 
 function parseState(raw: string): StoredShoppingState {

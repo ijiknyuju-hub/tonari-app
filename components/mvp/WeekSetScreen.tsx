@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import DishArt from '@/components/mvp/DishArt'
 import { dishes, relations } from '@/data/v3'
 import { formatLastMade, rankForDish } from '@/lib/mvp/rank'
-import { shoppingDishesFromWeekSet, useShoppingList } from '@/lib/mvp/useShoppingList'
+import { deriveShoppingList, shoppingDishesFromWeekSet, useShoppingList } from '@/lib/mvp/useShoppingList'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
@@ -82,7 +82,17 @@ export default function WeekSetScreen() {
         <div className="border-t" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
           {displayDishes.map((dish) => {
             const rank = rankForDish(state.made_records, dish.id)
-            const alternatives = candidatePool.filter((candidate) => candidate.id !== dish.id && !activeIds.includes(candidate.id)).slice(0, 3)
+            const alternatives = candidatePool
+              .filter((candidate) => candidate.id !== dish.id && !activeIds.includes(candidate.id))
+              .map((candidate) => ({
+                ...candidate,
+                diff: ingredientDiff(
+                  shoppingDishesFromWeekSet(activeIds.filter((id) => id !== dish.id), customDishes),
+                  shoppingDishesFromWeekSet([...activeIds.filter((id) => id !== dish.id), candidate.id], customDishes),
+                ),
+              }))
+              .sort((left, right) => left.diff - right.diff || left.name.localeCompare(right.name, 'ja'))
+              .slice(0, 3)
             const isOpen = openSwapId === dish.id
 
             return (
@@ -325,6 +335,12 @@ function resolveDish(id: string, customDishes: ReturnType<typeof useDishLibrary>
 
 function uniqueById<T extends { id: string }>(items: readonly T[]) {
   return items.filter((item, index) => items.findIndex((candidate) => candidate.id === item.id) === index)
+}
+
+function ingredientDiff(base: ReturnType<typeof shoppingDishesFromWeekSet>, candidate: ReturnType<typeof shoppingDishesFromWeekSet>) {
+  const baseItems = new Set(deriveShoppingList(base).map((item) => item.id))
+  const candidateItems = new Set(deriveShoppingList(candidate).map((item) => item.id))
+  return [...baseItems].filter((item) => !candidateItems.has(item)).length + [...candidateItems].filter((item) => !baseItems.has(item)).length
 }
 
 function latestMadeFor(records: ReturnType<typeof useUserState>['state']['made_records'], dishId: string) {

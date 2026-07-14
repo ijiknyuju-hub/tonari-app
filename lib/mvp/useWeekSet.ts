@@ -23,41 +23,37 @@ export function useWeekSet() {
     writeWeekSet({ dishIds: normalizeDishIds(dishIds), updatedAt: new Date().toISOString() })
   }, [])
 
-  const addDish = useCallback(
-    (dishId: string) => {
-      if (!dishId.trim() || state.dishIds.includes(dishId) || state.dishIds.length >= WEEK_SET_SIZE) return false
-      writeWeekSet({ dishIds: [...state.dishIds, dishId], updatedAt: new Date().toISOString() })
-      return true
-    },
-    [state],
-  )
+  // Mutators read the freshest stored state at call time: the React snapshot
+  // goes stale between rapid taps, and spreading it would drop earlier writes.
+  const addDish = useCallback((dishId: string) => {
+    const current = currentWeekSet()
+    if (!dishId.trim() || current.dishIds.includes(dishId) || current.dishIds.length >= WEEK_SET_SIZE) return false
+    writeWeekSet({ dishIds: [...current.dishIds, dishId], updatedAt: new Date().toISOString() })
+    return true
+  }, [])
 
-  const removeDish = useCallback(
-    (dishId: string) => {
-      if (!state.dishIds.includes(dishId)) return
-      writeWeekSet({ dishIds: state.dishIds.filter((id) => id !== dishId), updatedAt: new Date().toISOString() })
-    },
-    [state],
-  )
+  const removeDish = useCallback((dishId: string) => {
+    const current = currentWeekSet()
+    if (!current.dishIds.includes(dishId)) return
+    writeWeekSet({ dishIds: current.dishIds.filter((id) => id !== dishId), updatedAt: new Date().toISOString() })
+  }, [])
 
-  const replaceDish = useCallback(
-    (dishId: string, replacementDishId: string) => {
-      if (!replacementDishId.trim() || !state.dishIds.includes(dishId) || state.dishIds.includes(replacementDishId)) return
-      writeWeekSet({
-        dishIds: state.dishIds.map((id) => (id === dishId ? replacementDishId : id)),
-        updatedAt: new Date().toISOString(),
-      })
-    },
-    [state],
-  )
+  const replaceDish = useCallback((dishId: string, replacementDishId: string) => {
+    const current = currentWeekSet()
+    if (!replacementDishId.trim() || !current.dishIds.includes(dishId) || current.dishIds.includes(replacementDishId)) return
+    writeWeekSet({
+      dishIds: current.dishIds.map((id) => (id === dishId ? replacementDishId : id)),
+      updatedAt: new Date().toISOString(),
+    })
+  }, [])
 
   const replaceDishAt = useCallback(
     (index: number, replacementDishId: string) => {
-      const dishId = state.dishIds[index]
+      const dishId = currentWeekSet().dishIds[index]
       if (!dishId) return
       replaceDish(dishId, replacementDishId)
     },
-    [replaceDish, state.dishIds],
+    [replaceDish],
   )
 
   const clearWeekSet = useCallback(() => writeWeekSet(EMPTY_WEEK_SET), [])
@@ -99,6 +95,10 @@ function writeWeekSet(state: WeekSetState) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   window.dispatchEvent(new Event(STORAGE_EVENT))
+}
+
+function currentWeekSet(): WeekSetState {
+  return parseWeekSet(getSnapshot())
 }
 
 function parseWeekSet(raw: string): WeekSetState {

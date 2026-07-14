@@ -35,6 +35,12 @@ const DIFFICULTY_LABELS: Readonly<Record<DifficultyTab, string>> = {
   full: 'しっかり作る',
 }
 
+const DIFFICULTY_BADGES: Readonly<Record<DifficultyTab, { background: string; color: string }>> = {
+  easy: { background: '#E9EEE4', color: '#47613C' },
+  stretch: { background: '#F6ECD8', color: '#8A5A16' },
+  full: { background: '#F1E0D8', color: '#7A2A14' },
+}
+
 function greeting() {
   const hour = new Date().getHours()
   if (hour < 11) return 'おはようございます。今日は何にする？'
@@ -196,7 +202,11 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
               </div>
             </Link>
             <div className="mt-[14px]">
-              <div className="text-[12px] font-bold tracking-[.3px]" style={{ color: '#DE5528' }}>{hero.eyebrow}</div>
+              {hasCookableWeekSet ? (
+                <Link href="/weekset" className="text-[12px] font-bold tracking-[.3px]" style={{ color: '#DE5528' }}>{hero.eyebrow}</Link>
+              ) : (
+                <div className="text-[12px] font-bold tracking-[.3px]" style={{ color: '#DE5528' }}>{hero.eyebrow}</div>
+              )}
               <h1 className="mt-[7px] text-[27px] font-bold tracking-[.2px]" style={{ color: '#1A1A1A', fontFamily: 'var(--font-heading)' }}>
                 {hero.name}
               </h1>
@@ -234,22 +244,30 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
               {hasCookableWeekSet ? '今週のセット、ほかの料理' : '同じ難易度で、こんな料理も'}
             </h2>
             <div className="mt-[6px] border-t" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
-              {subDishes.map((dish) => (
-                <Link
-                  key={dish.id}
-                  href={`/dish/${dish.id}`}
-                  className="flex items-center gap-4 border-b py-[18px]"
-                  style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}
-                >
-                  <div className="w-[100px] shrink-0 aspect-[4/3] overflow-hidden rounded-[8px]" style={{ background: '#F2F2F2' }}>
-                    <DishArt dish={dish.name} seed={dish.id} radius={8} />
+              {subDishes.map((dish) => {
+                const difficulty = relations.find((relation) => relation.target === dish.id)?.tab ?? activeTab
+                const badge = DIFFICULTY_BADGES[difficulty]
+                const bookmarked = state.bookmarked.includes(dish.id)
+                return (
+                  <div key={dish.id} className="flex items-center gap-4 border-b py-[18px]" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
+                    <Link href={`/dish/${dish.id}`} className="flex min-w-0 flex-1 items-center gap-4">
+                      <div className="w-[100px] shrink-0 aspect-[4/3] overflow-hidden rounded-[8px]" style={{ background: '#F2F2F2' }}>
+                        <DishArt dish={dish.name} seed={dish.id} radius={8} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[16.5px] font-bold" style={{ color: '#1A1A1A' }}>{dish.name}</div>
+                        <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.55]" style={{ color: '#7A7570' }}>{dish.intro}</p>
+                      </div>
+                    </Link>
+                    <div className="flex shrink-0 self-stretch flex-col items-end justify-between gap-[10px]">
+                      <span className="whitespace-nowrap rounded-full px-[9px] py-1 text-[11px] font-bold" style={{ background: badge.background, color: badge.color }}>{DIFFICULTY_LABELS[difficulty]}</span>
+                      <button type="button" aria-label={bookmarked ? `${dish.name}の保存を解除` : `${dish.name}を保存`} onClick={() => (bookmarked ? unbookmark(dish.id) : bookmark(dish.id))} className="p-0">
+                        <BookmarkIcon filled={bookmarked} color={bookmarked ? '#DE5528' : '#7A7570'} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[16.5px] font-bold" style={{ color: '#1A1A1A' }}>{dish.name}</div>
-                    <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.55]" style={{ color: '#7A7570' }}>{dish.intro}</p>
-                  </div>
-                </Link>
-              ))}
+                )
+              })}
             </div>
           </section>
         ) : null}
@@ -267,10 +285,10 @@ function ArrowRight({ color = '#DE5528' }: { color?: string }) {
   )
 }
 
-function BookmarkIcon({ filled }: { filled: boolean }) {
+function BookmarkIcon({ filled, color = '#DE5528' }: { filled: boolean; color?: string }) {
   return (
-    <svg aria-hidden="true" width="14" height="16" viewBox="0 0 16 18" fill={filled ? '#DE5528' : 'none'}>
-      <path d="M2.8 1.8h10.4v13.4L8 11.7l-5.2 3.5Z" stroke="#DE5528" strokeWidth="1.6" strokeLinejoin="round" />
+    <svg aria-hidden="true" width="14" height="16" viewBox="0 0 16 18" fill={filled ? color : 'none'}>
+      <path d="M2.8 1.8h10.4v13.4L8 11.7l-5.2 3.5Z" stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   )
 }

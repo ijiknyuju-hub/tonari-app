@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
 
 const STORAGE_KEY = 'tonari.v3.recipeSources'
+const MAIN_VIDEO_STORAGE_KEY = 'tonari.v3.recipeSources.mainVideo'
 const STORAGE_EVENT = 'tonari.v3.recipeSources.changed'
 
 export type RecipeSourceKind = 'youtube' | 'site'
@@ -20,7 +21,9 @@ const EMPTY_SNAPSHOT = '{}'
 
 export function useRecipeSources() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const mainVideoSnapshot = useSyncExternalStore(subscribe, getMainVideoSnapshot, getServerSnapshot)
   const sourcesByDish = useMemo(() => parseSources(snapshot), [snapshot])
+  const mainVideoIdsByDish = useMemo(() => parseMainVideos(mainVideoSnapshot), [mainVideoSnapshot])
 
   const addSource = useCallback(
     (dishId: string, rawUrl: string) => {
@@ -33,27 +36,49 @@ export function useRecipeSources() {
         kind: recipeSourceKind(url),
         addedAt: new Date().toISOString(),
       }
-      const current = sourcesByDish[dishId] ?? []
+      // Read the freshest stored map at call time — the React snapshot goes
+      // stale between rapid calls, and spreading it would drop earlier writes.
+      const allSources = parseSources(getSnapshot())
+      const current = allSources[dishId] ?? []
       if (current.some((item) => item.url === source.url)) return true
-      writeSources({ ...sourcesByDish, [dishId]: [source, ...current] })
+      writeSources({ ...allSources, [dishId]: [source, ...current] })
       return true
     },
-    [sourcesByDish],
+    [],
   )
 
   const removeSource = useCallback(
     (dishId: string, sourceId: string) => {
-      const next = (sourcesByDish[dishId] ?? []).filter((source) => source.id !== sourceId)
-      writeSources({ ...sourcesByDish, [dishId]: next })
+      const allSources = parseSources(getSnapshot())
+      const next = (allSources[dishId] ?? []).filter((source) => source.id !== sourceId)
+      writeSources({ ...allSources, [dishId]: next })
+      const mainVideoIds = parseMainVideos(getMainVideoSnapshot())
+      if (mainVideoIds[dishId] === sourceId) {
+        const nextMainVideoIds = { ...mainVideoIds }
+        delete nextMainVideoIds[dishId]
+        writeMainVideos(nextMainVideoIds)
+      }
     },
-    [sourcesByDish],
+    [],
   )
 
-  return { sourcesByDish, addSource, removeSource }
+  const setMainVideo = useCallback(
+    (dishId: string, sourceId: string) => {
+      writeMainVideos({ ...parseMainVideos(getMainVideoSnapshot()), [dishId]: sourceId })
+    },
+    [],
+  )
+
+  return { sourcesByDish, mainVideoIdsByDish, addSource, removeSource, setMainVideo }
 }
 
 export function recipeSourceKind(url: string): RecipeSourceKind {
-  return /(^|\.)youtube\.com|youtu\.be/i.test(url) ? 'youtube' : 'site'
+  try {
+    const hostname = new URL(url).hostname.toLowerCase()
+    return hostname === 'youtube.com' || hostname.endsWith('.youtube.com') || hostname === 'youtu.be' ? 'youtube' : 'site'
+  } catch {
+    return 'site'
+  }
 }
 
 export function sourceHostname(url: string) {
@@ -88,6 +113,11 @@ function getSnapshot() {
   return window.localStorage.getItem(STORAGE_KEY) ?? EMPTY_SNAPSHOT
 }
 
+function getMainVideoSnapshot() {
+  if (typeof window === 'undefined') return EMPTY_SNAPSHOT
+  return window.localStorage.getItem(MAIN_VIDEO_STORAGE_KEY) ?? EMPTY_SNAPSHOT
+}
+
 function getServerSnapshot() {
   return EMPTY_SNAPSHOT
 }
@@ -95,6 +125,12 @@ function getServerSnapshot() {
 function writeSources(value: RecipeSourceMap) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  window.dispatchEvent(new Event(STORAGE_EVENT))
+}
+
+function writeMainVideos(value: Record<string, string>) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(MAIN_VIDEO_STORAGE_KEY, JSON.stringify(value))
   window.dispatchEvent(new Event(STORAGE_EVENT))
 }
 
@@ -118,6 +154,16 @@ function parseSources(raw: string): RecipeSourceMap {
       })
     }
     return result
+  } catch {
+    return {}
+  }
+}
+
+function parseMainVideos(raw: string): Record<string, string> {
+  try {
+    const parsed = JSON.parse(raw) as unknown
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+    return Object.fromEntries(Object.entries(parsed).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
   } catch {
     return {}
   }

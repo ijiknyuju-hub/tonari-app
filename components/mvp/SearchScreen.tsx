@@ -28,6 +28,7 @@ const QUICK_DISH_IDS = new Set([
 ])
 
 const SEASONING_PATTERN = /(しょうゆ|醤油|みそ|味噌|塩|砂糖|こしょう|胡椒|油|酒|みりん|酢|ソース|だし|ルー|コンソメ|バター|ごま油|片栗粉|小麦粉)/
+const SEASONING_INGREDIENTS = new Set(['ナンプラー'])
 
 export default function SearchScreen() {
   const [tab, setTab] = useState<SearchTab>('made')
@@ -172,7 +173,7 @@ function deriveIngredientChips(dishesForSearch: readonly SearchDish[]) {
   const coverage = new Map<string, number>()
   for (const dish of dishesForSearch) {
     for (const ingredient of unique(dish.ingredients)) {
-      if (SEASONING_PATTERN.test(ingredient)) continue
+      if (SEASONING_PATTERN.test(ingredient) || SEASONING_INGREDIENTS.has(ingredient)) continue
       coverage.set(ingredient, (coverage.get(ingredient) ?? 0) + 1)
     }
   }

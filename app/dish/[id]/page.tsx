@@ -12,7 +12,6 @@ export default async function DishDetailPage({ params }: Props) {
   // Find the relation where this dish is the target
   const relation = relations.find((r) => r.target === id)
   const targetDish = dishes.find((d) => d.id === id)
-  const sourceDish = relation ? dishes.find((d) => d.id === relation.source) : undefined
 
   return (
     <>
@@ -20,7 +19,6 @@ export default async function DishDetailPage({ params }: Props) {
         relation={relation}
         dishId={id}
         targetName={targetDish?.name ?? id}
-        sourceName={sourceDish?.name ?? relation?.source}
       />
       <BottomNav />
     </>

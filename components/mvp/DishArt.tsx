@@ -47,14 +47,14 @@ export default function DishArt({
   const idSuffix = useId().replaceAll(':', '')
   const gradientId = `dish-art-${hash % 100000}-${idSuffix}`
 
-  const foods = Array.from({ length: 4 + Math.floor(random() * 2) }, () => {
+  const foods = Array.from({ length: 4 + Math.floor(random() * 2) }, (_, index) => {
     const angle = random() * Math.PI * 2
     const distance = random() * 22
     const centerX = 100 + Math.cos(angle) * distance
     const centerY = (selectedMotif === 'plate' ? 94 : 90) + Math.sin(angle) * distance * 0.5
     return {
       d: blobPath(random, centerX, centerY, 16 + random() * 13, 6 + Math.floor(random() * 3), 0.22, 0.85),
-      fill: selectedPalette.foods[Math.floor(random() * selectedPalette.foods.length)] ?? selectedPalette.foods[0],
+      fill: selectedPalette.foods[index % selectedPalette.foods.length] ?? selectedPalette.foods[0],
       highlighted: random() > 0.4,
     }
   })

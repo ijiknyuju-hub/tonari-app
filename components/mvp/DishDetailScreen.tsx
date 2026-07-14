@@ -7,6 +7,7 @@ import { dishes } from '@/data/v3'
 import type { NearbyRelation } from '@/types/dish'
 import { deriveRank, madeCountForDish, type DishRank } from '@/lib/mvp/rank'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
+import { genreForDish } from '@/lib/mvp/genre'
 import { sourceHostname, useRecipeSources, type RecipeSource } from '@/lib/mvp/useRecipeSources'
 import { useUserState } from '@/lib/mvp/useUserState'
 import CharTile from './CharTile'
@@ -19,19 +20,17 @@ type DishDetailScreenProps = {
   relation?: NearbyRelation
   dishId: string
   targetName: string
-  sourceName?: string
 }
 
 export default function DishDetailScreen({ relation, dishId, targetName }: DishDetailScreenProps) {
   const router = useRouter()
   const { state, recordMade } = useUserState()
   const { overrides, customDishes, saveDishOverride } = useDishLibrary()
-  const { sourcesByDish, addSource, removeSource } = useRecipeSources()
+  const { sourcesByDish, mainVideoIdsByDish, addSource, removeSource, setMainVideo } = useRecipeSources()
   const [showUrlForm, setShowUrlForm] = useState(false)
   const [draftUrl, setDraftUrl] = useState('')
   const [urlError, setUrlError] = useState('')
   const [editingDraft, setEditingDraft] = useState(false)
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
 
   const customDish = customDishes.find((dish) => dish.id === dishId)
   const displayName = customDish?.name ?? targetName
@@ -39,13 +38,13 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
   const sources = sourcesByDish[dishId] ?? []
   const videos = sources.filter((source) => source.kind === 'youtube')
   const sites = sources.filter((source) => source.kind === 'site')
-  const activeVideo = videos.find((source) => source.id === selectedVideoId) ?? videos[0]
+  const activeVideo = videos.find((source) => source.id === mainVideoIdsByDish[dishId]) ?? videos[0]
   const sourceState: 'none' | 'youtube' | 'site' = videos.length ? 'youtube' : sites.length ? 'site' : 'none'
   const madeCount = madeCountForDish(state.made_records, dishId)
   const rank = deriveRank(madeCount)
   const ingredients = useMemo(() => recipeIngredients(relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, override?.ingredients_override, relation])
   const steps = useMemo(() => recipeSteps(relation, override?.steps_override, customDish?.steps), [customDish?.steps, override?.steps_override, relation])
-  const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && /soup|side/.test(dish.id)).slice(0, 3), [dishId])
+  const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && (genreForDish(dish) === 'side' || genreForDish(dish) === 'soup')).slice(0, 3), [dishId])
 
   function saveUrl(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -83,7 +82,10 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
         />
 
         {sourceState === 'youtube' ? (
-          <VideoSources videos={videos} activeVideo={activeVideo} onSelect={setSelectedVideoId} onRemove={(source) => removeSource(dishId, source.id)} />
+          <>
+            <VideoSources videos={videos} activeVideo={activeVideo} onSelect={(sourceId) => setMainVideo(dishId, sourceId)} onRemove={(source) => removeSource(dishId, source.id)} />
+            {sites.length ? <SavedSourceSection sites={sites} onRemove={(source) => removeSource(dishId, source.id)} /> : null}
+          </>
         ) : (
           <SavedSourceSection sites={sites} onRemove={(source) => removeSource(dishId, source.id)} />
         )}
