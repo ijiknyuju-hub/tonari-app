@@ -1,385 +1,293 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import BottomNav from '@/components/mvp/BottomNav'
-import { IngredientChipFilter } from '@/components/mvp/IngredientChipFilter'
-import { FeaturedCard, CompactCard } from '@/components/mvp/NearbyDishCard'
-import { RecordingModal } from '@/components/mvp/RecordingModal'
-import { ReturnNudge } from '@/components/mvp/ReturnNudge'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import { dishes, relations } from '@/data/v3'
-import { trackEvent } from '@/lib/mvp/analytics'
+import BottomNav from '@/components/mvp/BottomNav'
+import DishArt from '@/components/mvp/DishArt'
+import { shoppingDishesFromWeekSet, useShoppingList } from '@/lib/mvp/useShoppingList'
+import { stableHash } from '@/lib/mvp/todaysPick'
+import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
 import { useIsClient } from '@/lib/mvp/useIsClient'
-import { todaysPick, type HomeMode } from '@/lib/mvp/todaysPick'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 import { useUserState } from '@/lib/mvp/useUserState'
+import { useWeekSet } from '@/lib/mvp/useWeekSet'
 
-const INGREDIENT_CATEGORIES: Record<string, string> = {
-  '鶏もも肉': '鶏肉', '手羽先': '鶏肉', '鶏ひき肉': '鶏肉',
-  '合い挽き肉': 'ひき肉',
-  'むきエビ（冷凍）': 'エビ', 'シーフードミックス': 'シーフード',
-  'あさり（砂抜き済み）': 'シーフード',
-  '鮭フレーク': '魚',
-  '卵': '卵',
-  '玉ねぎ': '玉ねぎ', '長ねぎ': 'ねぎ', 'にんにく': 'にんにく',
-  'じゃがいも': 'じゃがいも', 'れんこん': '根菜', 'ごぼう': '根菜',
-  'キャベツ': 'キャベツ', '白菜': '白菜', 'ブロッコリー': 'ブロッコリー',
-  'ナス': 'ナス', 'パプリカ': 'パプリカ', 'もやし': 'もやし',
-  'キムチ': 'キムチ', '春菊': '葉物',
-  'トマト缶': 'トマト缶', 'デミグラスソース缶': '缶詰ソース',
-  'アンチョビ缶': '缶詰ソース',
-  'シュレッドチーズ': 'チーズ', 'パルメザンチーズ': 'チーズ',
-  '牛乳': '乳製品', '生クリーム': '乳製品', 'ヨーグルト': '乳製品',
-  '食パン': 'パン', 'コッペパン': 'パン',
-  'うどん': '麺', '中華麺': '麺', '春雨': '麺', 'ビーフン': '麺', '米麺': '麺',
-  'カレー（市販ルー）': 'カレールー', '鍋スープ': '鍋スープ',
-  'こんにゃく': 'こんにゃく',
+type DifficultyTab = 'easy' | 'stretch' | 'full'
+
+type HeroDish = {
+  id: string
+  name: string
+  eyebrow: string
+  intro: string
+  palette?: number
 }
 
-function toCategory(ingredient: string): string | null {
-  return INGREDIENT_CATEGORIES[ingredient] ?? null
-}
-
-const MODES: Array<{ id: HomeMode; label: string; description: string }> = [
-  { id: 'easy', label: 'かんたん', description: 'すぐ作れる・工程少なめ' },
-  { id: 'stretch', label: '少し広げる', description: 'いつもと少し違う' },
-  { id: 'full', label: 'しっかり作る', description: '満足感のある一品' },
+const TABS: ReadonlyArray<{ id: DifficultyTab; label: string; background: string }> = [
+  { id: 'easy', label: 'かんたん', background: '#83A473' },
+  { id: 'stretch', label: '広げる', background: '#D3A051' },
+  { id: 'full', label: 'しっかり', background: '#C15436' },
 ]
 
-function getDishName(id: string): string {
-  return dishes.find((d) => d.id === id)?.name ?? id
+const DIFFICULTY_LABELS: Readonly<Record<DifficultyTab, string>> = {
+  easy: 'かんたん',
+  stretch: '少し広げる',
+  full: 'しっかり作る',
 }
 
-function greeting(): string {
+function greeting() {
   const hour = new Date().getHours()
-  if (hour < 11) return 'おはようございます'
-  if (hour < 18) return 'こんにちは'
-  return 'こんばんは'
+  if (hour < 11) return 'おはようございます。今日は何にする？'
+  if (hour < 18) return 'こんにちは。今日は何にする？'
+  return 'おかえりなさい。今日は何にする？'
+}
+
+function relationIntro(targetId: string) {
+  const relation = relations.find((candidate) => candidate.target === targetId)
+  return relation ? `${relation.description_line1}${relation.description_line2}` : '今週のセットから、今日の一皿を。'
 }
 
 export default function HomeScreen({ dateISO }: { dateISO: string }) {
-  const router = useRouter()
-  const [mode, setMode] = useState<HomeMode>('easy')
-  const [nudgeDismissed, setNudgeDismissed] = useState(false)
-  const [showRecordModal, setShowRecordModal] = useState(false)
+  const [activeTab, setActiveTab] = useState<DifficultyTab>('stretch')
   const isClient = useIsClient()
-  const { selectedBaseDishIds, setSelectedBaseDishIds } = useSelectedBaseDishes()
-  const { state, recordMade, toggleIngredient, updateLastActiveDate } = useUserState()
-
-  // Update last active date on mount
-  useEffect(() => {
-    if (isClient) updateLastActiveDate(dateISO)
-  }, [isClient, dateISO, updateLastActiveDate])
-
-  // Yesterday's date for nudge
-  const yesterday = useMemo(() => {
-    const d = new Date(dateISO)
-    d.setDate(d.getDate() - 1)
-    return d.toISOString().slice(0, 10)
-  }, [dateISO])
-
-  // Return nudge logic
-  const yesterdayPick = useMemo(
-    () => todaysPick(selectedBaseDishIds, mode, yesterday),
-    [selectedBaseDishIds, mode, yesterday],
+  const { selectedBaseDishIds } = useSelectedBaseDishes()
+  const { state, bookmark, unbookmark } = useUserState()
+  const { customDishes } = useDishLibrary()
+  const { dishIds: weekSetDishIds, hasWeekSet } = useWeekSet()
+  const shoppingDishes = useMemo(
+    () => shoppingDishesFromWeekSet(weekSetDishIds, customDishes),
+    [customDishes, weekSetDishIds],
   )
-  const showNudge =
-    !nudgeDismissed &&
-    state.last_active_date !== '' &&
-    state.last_active_date < dateISO &&
-    yesterdayPick != null
+  const { remainingCount } = useShoppingList(shoppingDishes)
 
-  const handleNudgeRecord = useCallback(() => {
-    if (!yesterdayPick) return
-    recordMade({
-      dish_id: yesterdayPick.target,
-      made_at: new Date().toISOString(),
-      rating: 'ok',
-    })
-    trackEvent('nudge_record', { dishId: yesterdayPick.target })
-    setNudgeDismissed(true)
-  }, [yesterdayPick, recordMade])
-
-  const handleNudgeDismiss = useCallback(() => {
-    trackEvent('nudge_dismiss')
-    setNudgeDismissed(true)
-  }, [])
-
-  // The featured (today's pick) relation
-  const featured = useMemo(
-    () => todaysPick(selectedBaseDishIds, mode, dateISO),
-    [mode, selectedBaseDishIds, dateISO],
-  )
-
-  // Other cards: same source as featured, all difficulties, max 3
-  const otherCards = useMemo(() => {
-    if (!featured) return []
-    const candidates = relations.filter(
-      (r) =>
-        r.source === featured.source &&
-        r.target !== featured.target,
-    )
-    return candidates.slice().sort((a, b) => b.proximity - a.proximity).slice(0, 3)
-  }, [featured])
-
-  // Ingredient category filter
-  const activeCategories = state.available_ingredients
-  const hasFilter = activeCategories.length > 0
-
-  const matchesFilter = useCallback(
-    (r: { new_ingredients: string[] }) => {
-      if (!hasFilter) return true
-      const needed = r.new_ingredients.map(toCategory).filter((c): c is string => c != null)
-      return needed.every((c) => activeCategories.includes(c))
-    },
-    [hasFilter, activeCategories],
-  )
-
-  const filteredFeatured = useMemo(() => {
-    if (!featured) return null
-    if (matchesFilter(featured)) return featured
-    const fallback = relations.find(
-      (r) =>
-        r.tab === mode &&
-        selectedBaseDishIds.includes(r.source) &&
-        matchesFilter(r),
-    )
-    return fallback ?? null
-  }, [featured, mode, selectedBaseDishIds, matchesFilter])
-
-  const filteredOtherCards = useMemo(
-    () => otherCards.filter(matchesFilter),
-    [otherCards, matchesFilter],
-  )
-
-  // Unique food categories from current relations
-  const availableIngredients = useMemo(() => {
-    const cats = relations
-      .filter((r) => selectedBaseDishIds.includes(r.source))
-      .flatMap((r) => r.new_ingredients)
-      .map(toCategory)
-      .filter((c): c is string => c != null)
-    return [...new Set(cats)]
-  }, [selectedBaseDishIds])
-
-  const handleIngredientToggle = useCallback(
-    (category: string) => {
-      toggleIngredient(category)
-      trackEvent('ingredient_filter_toggle', { ingredient: category, active: !activeCategories.includes(category) })
-    },
-    [toggleIngredient, activeCategories],
-  )
-
-  // Switch base dish context to a random different dish
-  function handleSwitchBase() {
-    const allIds = dishes.map((d) => d.id)
-    const others = allIds.filter((id) => !selectedBaseDishIds.includes(id))
-    if (others.length === 0) return
-    const pick = others[Math.floor(Math.random() * others.length)]
-    setSelectedBaseDishIds([...(selectedBaseDishIds ?? []), pick])
-  }
-
-  function handleMadeIt() {
-    if (!filteredFeatured) return
-    recordMade({
-      dish_id: filteredFeatured.target,
-      made_at: new Date().toISOString(),
-      rating: 'ok',
-    })
-  }
-
-  // Redirect first-time visitors to onboarding
   useEffect(() => {
     if (isClient && selectedBaseDishIds.length === 0) {
-      router.replace('/onboarding')
+      window.location.replace('/onboarding')
     }
-  }, [isClient, selectedBaseDishIds, router])
+  }, [isClient, selectedBaseDishIds.length])
 
-  useEffect(() => {
-    if (isClient && featured) {
-      trackEvent('show_recommendations', { count: selectedBaseDishIds.length })
-    }
-  }, [isClient, featured, selectedBaseDishIds.length])
+  const hasCookableWeekSet = hasWeekSet && remainingCount === 0
+
+  const recommendationDishes = useMemo(() => {
+    const candidates = relations.filter(
+      (relation) => relation.tab === activeTab && selectedBaseDishIds.includes(relation.source),
+    )
+    if (candidates.length === 0) return []
+
+    const start = stableHash(`${dateISO}:${activeTab}:${selectedBaseDishIds.join(',')}`) % candidates.length
+    return candidates.slice(start).concat(candidates.slice(0, start)).map((relation) => {
+      const dish = dishes.find((candidate) => candidate.id === relation.target)
+      return {
+        id: relation.target,
+        name: dish?.name ?? relation.target,
+        eyebrow: `${dishes.find((candidate) => candidate.id === relation.source)?.name ?? 'いつもの料理'}から広げる`,
+        intro: `${relation.description_line1}${relation.description_line2}`,
+      }
+    })
+  }, [activeTab, dateISO, selectedBaseDishIds])
+
+  const weekSetDishes = useMemo<HeroDish[]>(() => {
+    return weekSetDishIds.flatMap((id) => {
+      const dish = dishes.find((candidate) => candidate.id === id)
+      if (dish) {
+        return [{ id: dish.id, name: dish.name, eyebrow: '今週のセットから', intro: relationIntro(dish.id) }]
+      }
+      const customDish = customDishes.find((candidate) => candidate.id === id)
+      return customDish
+        ? [{ id: customDish.id, name: customDish.name, eyebrow: '今週のセットから', intro: '今週のセットに入っている、あなたの一皿です。' }]
+        : []
+    })
+  }, [customDishes, weekSetDishIds])
+
+  const visibleDishes = hasCookableWeekSet ? weekSetDishes : recommendationDishes
+  const hero = visibleDishes[0]
+  const subDishes = visibleDishes.slice(1, 5)
 
   if (!isClient || selectedBaseDishIds.length === 0) {
-    return <div className="tn-screen" />
+    return <main className="tn-screen" />
   }
-
-  const sourceName = filteredFeatured ? getDishName(filteredFeatured.source) : ''
 
   return (
     <main className="tn-screen">
-      {/* Sticky header */}
-      <header
-        className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur"
-        style={{ borderColor: 'var(--tn-border)' }}
-      >
-        <div className="tn-container flex h-14 items-center justify-between">
-          <button
-            type="button"
-            aria-label="メニュー"
-            className="flex h-9 w-9 items-center justify-center rounded-full"
-            style={{ color: 'var(--tn-text)' }}
-          >
-            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <span className="text-lg font-black" style={{ color: 'var(--tn-text)' }}>
-            となりごはん
+      <header style={{ padding: '58px 22px 8px', background: '#FFFFFF' }}>
+        <div className="mx-auto flex max-w-[402px] items-center justify-between">
+          <div className="flex items-center gap-[9px]">
+            <span
+              aria-hidden="true"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px]"
+              style={{ background: '#DE5528' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 11h16c0 4-3.6 7-8 7s-8-3-8-7Z" fill="#FFFFFF" />
+                <path d="m14.5 4.2-3 6.2m6.3-5.3-3.2 5.3" stroke="#FFFFFF" strokeWidth="1.7" strokeLinecap="round" />
+              </svg>
+            </span>
+            <span className="text-[17px] font-bold tracking-[.5px]" style={{ color: '#1A1A1A', fontFamily: 'var(--font-heading)' }}>
+              となりごはん
+            </span>
+          </div>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-bold" style={{ background: '#F2F2F2', color: '#7A7570' }}>
+            か
           </span>
-          <button
-            type="button"
-            aria-label="通知"
-            className="flex h-9 w-9 items-center justify-center rounded-full"
-            style={{ color: 'var(--tn-text)' }}
-          >
-            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 10a6 6 0 0 1 12 0c0 4 2 5 2 5H4s2-1 2-5Z" />
-              <path d="M10 21a2 2 0 0 0 4 0" />
-            </svg>
-          </button>
         </div>
+        <p className="mx-auto mt-[10px] max-w-[402px] text-[14px] font-medium" style={{ color: '#7A7570' }}>
+          {greeting()}
+        </p>
       </header>
 
-      <div className="tn-container tn-bottom-safe pt-6">
-        {/* Return nudge */}
-        {showNudge && yesterdayPick && (
-          <ReturnNudge
-            dishName={getDishName(yesterdayPick.target)}
-            onRecord={handleNudgeRecord}
-            onDismiss={handleNudgeDismiss}
-          />
-        )}
+      <div className="mx-auto max-w-[402px] px-[22px] pb-[104px] pt-2">
+        {!hasWeekSet ? (
+          <Link
+            href="/weekset"
+            className="mb-4 flex items-center justify-between rounded-[10px] border px-3 py-[11px] text-[13px] font-bold"
+            style={{ borderColor: 'rgba(26, 26, 26, 0.14)', color: '#1A1A1A', background: '#FFFFFF' }}
+          >
+            <span>今週のセットを組む</span>
+            <ArrowRight />
+          </Link>
+        ) : !hasCookableWeekSet ? (
+          <Link
+            href="/shopping"
+            className="mb-4 inline-flex items-center gap-[7px] rounded-[9px] border px-3 py-[9px] text-[13px] font-bold"
+            style={{ borderColor: 'rgba(26, 26, 26, 0.14)', color: '#1A1A1A', background: '#FFFFFF' }}
+          >
+            <ShoppingIcon />
+            買い物リスト のこり {remainingCount}品
+          </Link>
+        ) : null}
 
-        {/* Greeting */}
-        <section className="mb-5">
-          <p className="text-xl font-black" style={{ color: 'var(--tn-text)' }}>
-            {greeting()}
-          </p>
-          <p className="mt-1 text-sm font-bold" style={{ color: 'var(--tn-text-sub)' }}>
-            今日のおすすめはこちら
-          </p>
-        </section>
-
-        {/* Difficulty tabs */}
-        <div className="mb-5 grid grid-cols-3 gap-2">
-          {MODES.map((item) => {
-            const selected = item.id === mode
+        <div className="flex gap-[6px]">
+          {TABS.map((tab) => {
+            const selected = activeTab === tab.id
             return (
               <button
-                key={item.id}
+                key={tab.id}
                 type="button"
                 aria-pressed={selected}
-                onClick={() => setMode(item.id)}
-                className="min-h-[4.5rem] rounded-2xl border px-2 text-center shadow-[var(--tn-shadow-soft)] transition"
-                style={{
-                  borderColor: selected ? 'var(--tn-text)' : 'var(--tn-border)',
-                  background: selected ? 'var(--tn-tag-bg)' : 'var(--tn-surface)',
-                }}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-1 rounded-[9px] px-1 py-[10px] text-[13px]"
+                style={{ background: selected ? tab.background : '#F0EDE8', color: selected ? '#FFFFFF' : '#7A7570', fontWeight: selected ? 700 : 500 }}
               >
-                <span
-                  className="block text-sm font-black"
-                  style={{ color: 'var(--tn-text)' }}
-                >
-                  {item.label}
-                </span>
-                <span
-                  className="mt-1 block text-xs font-bold leading-5"
-                  style={{ color: 'var(--tn-text-sub)' }}
-                >
-                  {item.description}
-                </span>
+                {tab.label}
               </button>
             )
           })}
         </div>
 
-        {/* Section header */}
-        {filteredFeatured && (
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-black" style={{ color: 'var(--tn-text)' }}>
-              この前作った『{sourceName}』から広げる
-            </p>
-            <button
-              type="button"
-              onClick={handleSwitchBase}
-              className="shrink-0 rounded-full border px-3 py-1 text-xs font-bold"
-              style={{ borderColor: 'var(--tn-border)', color: 'var(--tn-text-sub)', background: 'var(--tn-surface)' }}
-            >
-              他の起点にする
-            </button>
+        {!hasCookableWeekSet ? (
+          <div className="mt-4 flex justify-end">
+            <span className="flex items-center gap-[5px] text-[12px] font-semibold" style={{ color: '#7A7570' }}>
+              <RefreshIcon /> 他の起点にする
+            </span>
           </div>
-        )}
+        ) : null}
 
-        {/* Featured card */}
-        {filteredFeatured && (
-          <FeaturedCard
-            relation={filteredFeatured}
-            targetName={getDishName(filteredFeatured.target)}
-            onMadeIt={handleMadeIt}
-          />
-        )}
-
-        {/* No results after filtering */}
-        {hasFilter && !filteredFeatured && (
-          <p className="py-8 text-center text-sm" style={{ color: 'var(--tn-text-sub)' }}>
-            もう少し食材を追加してみてください
-          </p>
-        )}
-
-        {/* Other cards section */}
-        {filteredOtherCards.length > 0 && (
-          <section className="mt-7">
-            <p className="mb-3 text-sm font-black" style={{ color: 'var(--tn-text)' }}>
-              他にもこんな広げ方があります
-            </p>
-            <div
-              className="flex gap-3 overflow-x-auto pb-2"
-              style={{ scrollbarWidth: 'none' }}
-            >
-              {filteredOtherCards.map((rel) => (
-                <CompactCard
-                  key={rel.target}
-                  relation={rel}
-                  targetName={getDishName(rel.target)}
-                />
-              ))}
+        {hero ? (
+          <section className={hasCookableWeekSet ? 'mt-4' : 'mt-4'}>
+            <Link href={`/dish/${hero.id}`} className="block">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[10px]" style={{ background: '#F2F2F2' }}>
+                <DishArt dish={hero.name} seed={hero.id} radius={10} />
+                <span
+                  className="absolute left-3 top-3 rounded-[6px] px-[9px] py-1 text-[11px] font-bold"
+                  style={{ background: '#FBEBDD', color: '#C25A20' }}
+                >
+                  {hasCookableWeekSet ? '今週の一皿' : DIFFICULTY_LABELS[activeTab]}
+                </span>
+              </div>
+            </Link>
+            <div className="mt-[14px]">
+              <div className="text-[12px] font-bold tracking-[.3px]" style={{ color: '#DE5528' }}>{hero.eyebrow}</div>
+              <h1 className="mt-[7px] text-[27px] font-bold tracking-[.2px]" style={{ color: '#1A1A1A', fontFamily: 'var(--font-heading)' }}>
+                {hero.name}
+              </h1>
+              <p className="mt-[9px] line-clamp-2 text-[14px] leading-[1.7]" style={{ color: '#7A7570' }}>{hero.intro}</p>
+              <div className="mt-4 flex gap-2">
+                <Link
+                  href={`/dish/${hero.id}`}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-[10px] py-[14px] text-[15px] font-bold"
+                  style={{ background: '#DE5528', color: '#FFFFFF', boxShadow: '0 6px 16px rgba(222, 85, 40, 0.28)' }}
+                >
+                  作り方を見る <ArrowRight color="#FFFFFF" />
+                </Link>
+                <button
+                  type="button"
+                  aria-label={state.bookmarked.includes(hero.id) ? `${hero.name}の保存を解除` : `${hero.name}を保存`}
+                  onClick={() => (state.bookmarked.includes(hero.id) ? unbookmark(hero.id) : bookmark(hero.id))}
+                  className="flex h-[46px] w-[46px] items-center justify-center rounded-full border"
+                  style={{ borderColor: 'rgba(26, 26, 26, 0.14)', color: '#DE5528', background: '#FFFFFF' }}
+                >
+                  <BookmarkIcon filled={state.bookmarked.includes(hero.id)} />
+                </button>
+              </div>
             </div>
+          </section>
+        ) : (
+          <section className="py-16 text-center">
+            <p className="text-[14px] font-bold" style={{ color: '#7A7570' }}>おすすめを用意しています</p>
+            <p className="mt-2 text-[12px]" style={{ color: '#B7B2AC' }}>よく作る料理を追加すると、近い一皿が見つかります。</p>
           </section>
         )}
 
-        {/* Ingredient chip filter */}
-        <IngredientChipFilter
-          ingredients={availableIngredients}
-          active={activeCategories}
-          onToggle={handleIngredientToggle}
-        />
+        {subDishes.length > 0 ? (
+          <section className="mt-7">
+            <h2 className="text-[12.5px] font-bold tracking-[.3px]" style={{ color: '#1A1A1A' }}>
+              {hasCookableWeekSet ? '今週のセット、ほかの料理' : '同じ難易度で、こんな料理も'}
+            </h2>
+            <div className="mt-[6px] border-t" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
+              {subDishes.map((dish) => (
+                <Link
+                  key={dish.id}
+                  href={`/dish/${dish.id}`}
+                  className="flex items-center gap-4 border-b py-[18px]"
+                  style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}
+                >
+                  <div className="w-[100px] shrink-0 aspect-[4/3] overflow-hidden rounded-[8px]" style={{ background: '#F2F2F2' }}>
+                    <DishArt dish={dish.name} seed={dish.id} radius={8} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[16.5px] font-bold" style={{ color: '#1A1A1A' }}>{dish.name}</div>
+                    <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.55]" style={{ color: '#7A7570' }}>{dish.intro}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
-
-      {/* FAB */}
-      <button
-        type="button"
-        onClick={() => setShowRecordModal(true)}
-        className="tn-primary-cta fixed z-40 flex h-14 w-14 items-center justify-center rounded-full"
-        style={{ bottom: '5.5rem', right: '1.25rem' }}
-        aria-label="料理を記録する"
-      >
-        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-      </button>
-
-      {/* Recording modal */}
-      {showRecordModal && (
-        <RecordingModal
-          onClose={() => setShowRecordModal(false)}
-          dateISO={dateISO}
-          mode={mode}
-        />
-      )}
-
       <BottomNav />
     </main>
+  )
+}
+
+function ArrowRight({ color = '#DE5528' }: { color?: string }) {
+  return (
+    <svg aria-hidden="true" width="15" height="15" viewBox="0 0 20 20" fill="none">
+      <path d="M4 10h11m-4-5 5 5-5 5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function BookmarkIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg aria-hidden="true" width="14" height="16" viewBox="0 0 16 18" fill={filled ? '#DE5528' : 'none'}>
+      <path d="M2.8 1.8h10.4v13.4L8 11.7l-5.2 3.5Z" stroke="#DE5528" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function RefreshIcon() {
+  return (
+    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 14 14" fill="none">
+      <path d="M12 7a5 5 0 1 1-1.5-3.6M12 1v3H9" stroke="#7A7570" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function ShoppingIcon() {
+  return (
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M5 7.5h14l-1.2 10.8a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7L5 7.5Z" stroke="#7A7570" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="m8.7 7.5 2.2-3.8m4.4 3.8-2.2-3.8" stroke="#7A7570" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
   )
 }
