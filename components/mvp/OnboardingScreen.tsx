@@ -11,7 +11,7 @@ const ONBOARDING_IDS = [
   'thai-basil-rice', 'fried-rice', 'nikujaga', 'curry',
   'mapo-tofu', 'karaage', 'oyakodon', 'yakisoba',
   'omurice', 'napolitan', 'peperoncino', 'tonjiru',
-  'tatsuta-age', 'chicken-nanban', 'pad-thai', 'beef-stew',
+  'tatsuta-age', 'chicken-nanban', 'beef-stew',
 ] as const
 
 const INITIAL_SELECTION = ['fried-rice', 'karaage', 'nikujaga']
