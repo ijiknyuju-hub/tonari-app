@@ -192,8 +192,9 @@
   "section": "A",
   "box": "主菜(卵・豆腐)+汁もの",
   "judgment": "◯",
-  "name": "卵焼き／だし巻き卵",
-  "tier": "S"
+  "name": "卵焼き",
+  "tier": "S",
+  "renamed_from": "卵焼き／だし巻き卵"
  },
  {
   "section": "A",
@@ -1082,13 +1083,6 @@
   "box": "主菜(魚介)",
   "judgment": "",
   "name": "えびマカロニグラタン",
-  "tier": "B"
- },
- {
-  "section": "B",
-  "box": "主菜(魚介)",
-  "judgment": "",
-  "name": "八宝菜（エビ入り）",
   "tier": "B"
  },
  {

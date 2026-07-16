@@ -1,11 +1,11 @@
-# spec-032 Phase A-1 verification: run the v2 proximity model over the full 282.
+# spec-032 Phase A-1 verification: run the v2 proximity model over the full catalog.
 #
 # Mechanism is unchanged from scripts/proximity_pilot.py (v2):
 #   IDF weighting / role-tagged same-role-only ingredient matching / pool split /
 #   mains<->rice-noodle damping
 # New in this run: role 'とじ' (owner ruling 2026-07-17); `steps` axis removed.
 #
-# Outputs docs/proximity-282-report.md with:
+# Outputs docs/proximity-281-report.md with:
 #   1. regression pairs   (v2 good pairs must hold)
 #   2. suppression pairs  (v1 違和感 pairs must stay down)
 #   3. scale bets         (things v2 bet would resolve at 282 — a failed bet must SHOW)
@@ -56,15 +56,36 @@ def pool_of(name, box, methods):
 
 
 def build():
-    dishes = load('dish-v4-282.json')
-    cat = {r['name']: r for r in load('catalog-282.json', DOCS)}
+    """Load the dish records and attach the SCORING view of their vocabulary.
+
+    dish-v4 holds display truth (豚バラ肉(ブロック)); the alias fold is applied
+    here, at scoring time, into separate `seas_c` / `ing_c` fields. The display
+    fields are never overwritten — a recipe must say 豚バラ肉, not 豚肉, and the
+    fridge match and cost tier need the cut too. (The pilot did it this way;
+    baking the fold into the data destroyed what the app needs.)
+    """
+    dishes = load('dish-v4-281.json')
+    cat = {r['name']: r for r in load('catalog-281.json', DOCS)}
     fill = load('boxes-missing.json')['boxes']
+    A = load('aliases.json')
+    s_map, s_split, i_map = A['seasonings'], A['seasonings_split'], A['ingredients']
+
     for d in dishes:
         box = cat[d['name']]['box'] or fill.get(d['name'])
         if not box:
             raise SystemExit('no box for ' + d['name'])
         d['box'] = box
         d['pool'] = pool_of(d['name'], box, d['methods'])
+
+        seas_c = []
+        for s in d['seasonings']:
+            if s in s_split:       # 塩こしょう is one token to a cook, two to the score
+                seas_c.extend(s_split[s])
+            else:
+                seas_c.append(s_map.get(s, s))
+        d['seas_c'] = sorted(set(seas_c))
+        d['ing_c'] = [{'name': i_map.get(g['name'], g['name']), 'role': g['role']}
+                      for g in d['ingredients']]
     return dishes
 
 
@@ -72,9 +93,9 @@ def idf(dishes):
     N = len(dishes)
     sd, idd = {}, {}
     for d in dishes:
-        for s in set(d['seasonings']):
+        for s in set(d['seas_c']):
             sd[s] = sd.get(s, 0) + 1
-        for n in {g['name'] for g in d['ingredients']}:
+        for n in {g['name'] for g in d['ing_c']}:
             idd[n] = idd.get(n, 0) + 1
     return ({k: math.log((N + 1) / v) for k, v in sd.items()},
             {k: math.log((N + 1) / v) for k, v in idd.items()})
@@ -101,8 +122,8 @@ def evidence(a, b):
     ingredient. Both accrue between dishes that share no technique at all.
     """
     ev = []
-    main_a = {g['name'] for g in a['ingredients'] if g['role'] == 'main'}
-    main_b = {g['name'] for g in b['ingredients'] if g['role'] == 'main'}
+    main_a = {g['name'] for g in a['ing_c'] if g['role'] == 'main'}
+    main_b = {g['name'] for g in b['ing_c'] if g['role'] == 'main'}
     if main_a & main_b:
         ev.append('main:' + '/'.join(sorted(main_a & main_b)))
 
@@ -112,7 +133,7 @@ def evidence(a, b):
 
     # flavour x technique: the pattern, not the token. 塩焼き魚どうし share
     # 塩 x 焼く and genuinely transfer; コンソメ alone across 煮込む/煮る does not.
-    shared_seas = set(a['seasonings']) & set(b['seasonings'])
+    shared_seas = set(a['seas_c']) & set(b['seas_c'])
     if same_method and shared_seas:
         ev.append('pattern:%s×%s' % ('/'.join(sorted(shared_seas)), a['primary_method']))
     return ev
@@ -139,13 +160,13 @@ def main():
     SI, II = idf(dishes)
 
     def sw(d):
-        return {s: SI[s] for s in d['seasonings']}
+        return {s: SI[s] for s in d['seas_c']}
 
     def iw(d):
         # (name, role) key => same-role matching only; a dish may hold one
         # ingredient in two roles (酢豚: 片栗粉 coat+thicken), which is intended
         return {(g['name'], g['role']): II[g['name']] * ROLE_W[g['role']]
-                for g in d['ingredients']}
+                for g in d['ing_c']}
 
     def comp(a, b):
         s = wdice(sw(a), sw(b))
@@ -172,8 +193,8 @@ def main():
     L = []
     W = L.append
     W('# 近さスコア 282皿 全量検証 — 2026-07-17\n')
-    W('spec-032 Phase A-1。機構はパイロットv2のまま、語彙を凍結し `とじ` 役割を追加して282皿で再実行。')
-    W('再現: `python scripts/proximity_282.py`（入力 `data/vocab/dish-v4-282.json` + `aliases.json`）\n')
+    W('spec-032 Phase A-1。機構はパイロットv2のまま、語彙を凍結し `とじ` 役割を追加して281皿で再実行。')
+    W('再現: `python scripts/proximity_281.py`（入力 `data/vocab/dish-v4-282.json` + `aliases.json`）\n')
 
     W('## 0. オーナー裁定の検証: 親子丼 ↔ 他人丼\n')
     W('「親子丼と他人丼こそつながるべき」(2026-07-17) に対する実測。\n')
@@ -297,7 +318,7 @@ def main():
     W('> spec-032のVerificationはtop-1目視までで、top-5の盲検レビューは未実施。')
     W('> このゲートはまだUIを駆動していない。\n')
 
-    p = os.path.join(DOCS, 'proximity-282-report.md')
+    p = os.path.join(DOCS, 'proximity-281-report.md')
     with open(p, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(L))
     print('wrote', p)

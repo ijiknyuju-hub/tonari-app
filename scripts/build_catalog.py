@@ -62,6 +62,15 @@ CLEANUP_X += ['豚キムチ野菜炒め']
 
 # 07-17 owner ruling: revived from CLEANUP_X
 REVIVED = ['アマトリチャーナ', 'あんかけチャーハン']
+
+# 07-17 owner ruling, from the duplicate sweep (docs/a1-verification-2026-07-17.md).
+# 八宝菜（エビ入り） is 八宝菜 minus 豚肉/いか — a strict subset, i.e. a 変奏 the
+# cleanup pass should have cut. Missed then, cut now.
+HYGIENE_X = ['八宝菜（エビ入り）']
+# 「卵焼き／だし巻き卵」 bundled two genuinely different dishes under one name while
+# 「だし巻き卵」 also existed separately in section A. Owner ruling: keep both dishes,
+# rename the bundle to the dish it actually describes (the sweet, sugared one).
+RENAME = {'卵焼き／だし巻き卵': '卵焼き'}
 # 07-17 owner ruling: all pending -> excluded
 PENDING_X = ['焼肉', 'ジンギスカン', 'ハムカツ', 'チキンナゲット', 'イカ焼き（屋台の味）']
 # counted in A2, not in C
@@ -107,7 +116,7 @@ def base_name(name):
 
 def main():
     rows = parse_sheet()
-    excluded = set(OWNER_X) | set(CLEANUP_X) | set(PENDING_X)
+    excluded = set(OWNER_X) | set(CLEANUP_X) | set(PENDING_X) | set(HYGIENE_X)
     excluded -= set(REVIVED)
 
     kept, dropped, unmatched = [], [], []
@@ -121,6 +130,9 @@ def main():
         elif r['judgment'] in ('×', '△'):
             dropped.append(r)
         else:
+            if r['name'] in RENAME:
+                r['renamed_from'] = r['name']
+                r['name'] = RENAME[r['name']]
             kept.append(r)
 
     # exclusion names that matched nothing in the sheet -> stale list
@@ -132,14 +144,14 @@ def main():
         by_section[r['section']] = by_section.get(r['section'], 0) + 1
 
     print('sheet rows       :', len(rows))
-    print('kept             :', len(kept), '(target 282: A71+A2 4+B175+C32)')
+    print('kept             :', len(kept), '(target 281: 282 - 八宝菜（エビ入り）)')
     print('dropped          :', len(dropped))
     print('by section       :', by_section)
     print('unmatched excl.  :', len(unmatched))
     for n in unmatched:
         print('   NOT IN SHEET :', n)
 
-    out = os.path.join(DOCS, 'catalog-282.json')
+    out = os.path.join(DOCS, 'catalog-281.json')
     with open(out, 'w', encoding='utf-8') as f:
         json.dump(kept, f, ensure_ascii=False, indent=1)
     print('wrote            :', out)
