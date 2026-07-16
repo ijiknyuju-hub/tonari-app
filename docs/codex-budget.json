@@ -1,0 +1,30 @@
+[
+ {
+  "date": "2026-07-03",
+  "goal": "tonari-app/docs/goals/029-web-v29-features.md",
+  "action": "exec",
+  "duration_sec": 900,
+  "note": "web v2.9 features"
+ },
+ {
+  "date": "2026-07-03",
+  "goal": "tonari-app/docs/goals/030-web-v29-ui-overhaul.md",
+  "action": "exec",
+  "duration_sec": 800,
+  "note": "spec-029 UI overhaul"
+ },
+ {
+  "date": "2026-07-04",
+  "goal": "ad-hoc experiment (no goal file)",
+  "action": "exec",
+  "duration_sec": 240,
+  "note": "text-only 5-screen UI mockup test, abstract placeholders, isolated to design/codex-test-5screens/"
+ },
+ {
+  "date": "2026-07-04",
+  "goal": "ad-hoc experiment (no goal file)",
+  "action": "exec (image_gen x4)",
+  "duration_sec": 600,
+  "note": "round4 illustration variants A/B/C/D via native image_gen.imagegen tool, gapao granular-mince test. Paused in favor of Gemini per owner call."
+ }
+]

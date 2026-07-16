@@ -1,0 +1,1976 @@
+[
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "唐揚げ",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "肉じゃが",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "とんかつ",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "すき焼き",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "鶏の照り焼き（照り焼きチキン）",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "豚の角煮",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "チンジャオロース（青椒肉絲）",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "回鍋肉（ホイコーロー）",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "酢豚",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "竜田揚げ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "豚キムチ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "手羽先の唐揚げ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "つくね",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "チキン南蛮",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "チキンカツ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "筑前煮",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "フライドチキン",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "油淋鶏（ユーリンチー）",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "ミートローフ",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "タンドリーチキン",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "豚バラ大根",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "ポークチャップ",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "チキンソテー",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(肉)",
+  "judgment": "◯",
+  "name": "よだれ鶏",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "主菜(魚介)",
+  "judgment": "◯",
+  "name": "ぶり大根",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(魚介)",
+  "judgment": "◯",
+  "name": "基本のえびチリ",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(魚介)",
+  "judgment": "◯",
+  "name": "えびフライ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "卵焼き／だし巻き卵",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "麻婆豆腐",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "肉豆腐",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "豚汁",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "クリームシチュー",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "おでん",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "ニラ玉",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "かに玉（かにたま）",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "茶碗蒸し",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "スンドゥブチゲ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "けんちん汁",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "◯",
+  "name": "ビーフシチュー",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "副菜・おとも",
+  "judgment": "◯",
+  "name": "だし巻き卵",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "親子丼",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "カツ丼",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "牛丼",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "カレーライス",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "チャーハン",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "オムライス",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "カルボナーラ",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ペペロンチーノ",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ナポリタン",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ミートソース（スパゲティ）",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "かけうどん",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "きつねうどん",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "天ぷらうどん",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ソース焼きそば",
+  "tier": "S"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ビビンバ（丼）",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "カツカレー",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "天津飯",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ガパオライス",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "明太子パスタ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "たらこパスタ",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ボンゴレ（ビアンコ/ロッソ）",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "カレーうどん",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "焼きうどん",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "担々麺",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "塩焼きそば",
+  "tier": "A"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "他人丼",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "キーマカレー",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "タコライス",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ビーフン",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "ジャージャー麺",
+  "tier": "B"
+ },
+ {
+  "section": "A",
+  "box": "ごはんもの+麺類",
+  "judgment": "◯",
+  "name": "チャプチェ",
+  "tier": "B"
+ },
+ {
+  "section": "A2",
+  "box": null,
+  "judgment": "◯",
+  "name": "ひじきの煮物",
+  "tier": "副菜・おとも（煮物）"
+ },
+ {
+  "section": "A2",
+  "box": null,
+  "judgment": "◯",
+  "name": "切り干し大根の煮物",
+  "tier": "副菜・おとも（煮物）"
+ },
+ {
+  "section": "A2",
+  "box": null,
+  "judgment": "◯",
+  "name": "かぼちゃの煮物",
+  "tier": "副菜・おとも（煮物）"
+ },
+ {
+  "section": "A2",
+  "box": null,
+  "judgment": "◯",
+  "name": "里芋の煮っころがし",
+  "tier": "副菜・おとも（煮物）"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "生姜焼き",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ハンバーグ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "餃子",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ステーキ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "しゃぶしゃぶ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ローストビーフ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "メンチカツ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "トンテキ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ピーマンの肉詰め",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "肉野菜炒め",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ロールキャベツ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "焼き鳥",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ポークソテー",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "肉団子（甘酢あん等）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "肉巻き（野菜の肉巻き等）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "レバニラ炒め",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "八宝菜",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ビーフストロガノフ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "スペアリブ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "プルコギ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "タッカルビ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "サムギョプサル",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ローストチキン",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "手羽元の照り焼き・さっぱり煮",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "牛肉コロッケ（ミートコロッケ）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "ローストポーク",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "バンバンジー（棒棒鶏）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "鶏肉のトマト煮込み",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "牛肉のたたき",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "チキンピカタ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "チキングラタン",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(肉)",
+  "judgment": "",
+  "name": "みそカツ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭の塩焼き",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さばの味噌煮",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ぶりの照り焼き",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さんまの塩焼き",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "あじフライ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "かれいの煮つけ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "えびマヨ（エビマヨ）",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "牡蠣フライ（カキフライ）",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "あさりの酒蒸し",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "あじの南蛮漬け",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さばの塩焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "たらのムニエル",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さわらの西京焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭のちゃんちゃん焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "真鯛のアクアパッツァ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭のホイル焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "カジキのソテー・ステーキ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "いわしの蒲焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭のムニエル",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "あじの塩焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "カツオのたたき",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "たらのホイル焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "金目鯛の煮付け",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鯛の塩焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ぶりの塩焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭の照り焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "えびのアヒージョ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ガーリックシュリンプ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "えびの天ぷら",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "あさりのバター醤油焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "牡蠣のバター焼き（ガーリックバター焼き）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ホタテのバター焼き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "いかと大根の煮物（いか大根）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "イカのマリネ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "いかと里芋の煮物",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "いわしの梅煮",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さばの竜田揚げ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ぶりの竜田揚げ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さわらの蒲焼き",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "赤魚の煮付け",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ホッケの開き（塩焼き）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "いわしのフライ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さんまの蒲焼",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "さばの幽庵焼き",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭の幽庵焼き",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "鮭の南蛮漬け",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "わかさぎの南蛮漬け",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "えびマカロニグラタン",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "八宝菜（エビ入り）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "イカのバターポン酢炒め",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "イカとじゃがいものガリバタ炒め",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "イカげその唐揚げ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(魚介)",
+  "judgment": "",
+  "name": "ホタテのカルパッチョ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "目玉焼き",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "オムレツ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "冷奴",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "豆腐チャンプルー",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "味噌汁（豆腐とわかめ）",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "コーンスープ／コーンポタージュ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "スクランブルエッグ／炒り卵",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "湯豆腐",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "揚げ出し豆腐",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "豆腐ハンバーグ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "厚揚げの煮物（厚揚げと大根等）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "味噌汁（大根・油揚げなど根菜系）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "すまし汁／お吸い物",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "卵とわかめの中華スープ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "クラムチャウダー",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "コンソメスープ（野菜スープ）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "ミネストローネ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "水炊き",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "卵とじ（肉・野菜の卵とじ）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "ゆで卵",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "温泉卵",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "炒り豆腐（いり豆腐）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "白和え",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "高野豆腐の含め煮",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "納豆（納豆そのもの／納豆和え）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "のっぺい汁",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "かぼちゃのポタージュ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "オニオングラタンスープ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "もつ鍋",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "主菜(卵・豆腐)+汁もの",
+  "judgment": "",
+  "name": "豆乳鍋",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "きんぴらごぼう",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "ほうれん草のおひたし",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "きゅうりの浅漬け",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "ポテトサラダ",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "もやしのナムル",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "冷やしトマト（おかかトマト）",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "ほうれん草の胡麻和え",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "紅白なます",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "枝豆",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "小松菜のおひたし",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "きゅうりとわかめの酢の物",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "中華春雨サラダ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "無限ピーマン",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "無限めんつゆキャベツ",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "にんじんしりしり",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "コールスロー",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "なすの焼き浸し",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "れんこんのきんぴら（ピリ辛れんこんのきんぴら）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "たたききゅうりとツナの甘酢和え",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "じゃがいものおかかバター",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "ちくわの磯辺焼き",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "かぶのおかかポン酢炒め",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "ごぼうのごまマヨサラダ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "オクラの塩昆布あえ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "れんこんの明太和え",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "副菜・おとも",
+  "judgment": "",
+  "name": "小松菜のナムル",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "天丼",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "炊き込みご飯",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ざるそば（もりそば）",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "醤油ラーメン",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "味噌ラーメン",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "冷やし中華",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "そうめん",
+  "tier": "S"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "海鮮丼",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "うな丼（うな重）",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "中華丼",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "手巻き寿司",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ちらし寿司",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ハヤシライス",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "肉うどん",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "釜玉うどん",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "かけそば",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "きつねそば",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "天ぷらそば",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "豚骨ラーメン",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "塩ラーメン",
+  "tier": "A"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "そぼろ丼（三色そぼろ丼）",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "豚丼",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ロコモコ丼",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ドリア",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "いなり寿司",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "雑炊",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "リゾット",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ピラフ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "パエリア",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "ジェノベーゼ",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "味噌煮込みうどん",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "鴨南蛮そば",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "つけ麺",
+  "tier": "B"
+ },
+ {
+  "section": "B",
+  "box": "ごはんもの+麺類",
+  "judgment": "",
+  "name": "にゅうめん",
+  "tier": "B"
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "あんかけチャーハン",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "あんかけ焼きそば",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "きのこのパスタ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ささみチーズフライ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ちゃんこ鍋",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "とん平焼き",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ぶっかけうどん",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "アマトリチャーナ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "アラビアータ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "キッシュ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "グリーンカレー",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ジャンバラヤ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ジャーマンポテト",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "スパニッシュオムレツ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ドライカレー",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ナシゴレン",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "バターチキンカレー",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "フレンチトースト",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "マカロニグラタン",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ヤンニョムチキン",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "ラザニア",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "厚揚げの中華炒め",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "春巻き",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "海南チキンライス",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "煮込みハンバーグ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "粕汁",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "豚しゃぶサラダ",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "鶏だんご鍋",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "鶏の黒酢あん",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "鶏天",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "麻婆ナス",
+  "tier": null
+ },
+ {
+  "section": "C",
+  "box": null,
+  "judgment": "",
+  "name": "麻婆春雨",
+  "tier": null
+ }
+]
