@@ -120,6 +120,19 @@ def evidence(a, b):
 
 MIN_EVIDENCE = 2  # a recommendation needs more than one ground
 
+# The evidence gate is a floor to clear, not a licence to promote. Filtering
+# alone let a 0.15 dish with two grounds take the slot of a 0.30 dish with none
+# (豚骨ラーメン: 醤油ラーメン 0.30 -> キーマカレー 0.15), which is worse than
+# showing nothing. Both conditions must hold, or the anchor recommends nothing.
+# 0.30 measured: kills every sub-0.30 promotion (27 -> 0) while all 10 flagship
+# bridges survive (lowest: さばの味噌煮↔肉じゃが 0.44). 45/282 dishes end with no
+# recommendable neighbour — a real answer, not a failure to hide.
+MIN_SCORE = 0.30
+
+
+def recommendable(anchor, other, score_value):
+    return score_value >= MIN_SCORE and len(evidence(anchor, other)) >= MIN_EVIDENCE
+
 
 def main():
     dishes = build()
@@ -230,9 +243,10 @@ def main():
             W('- **%s**: %s' % (anchor, ' / '.join('%s %.2f' % (n, s) for s, n in nb)))
     W('')
 
-    W('## 4. 全282皿の最近傍TOP1（過剰接続の検出用）\n')
+    W('## 4. 全282皿の最近傍TOP1（過剰接続の検出用・ゲート前）\n')
     W('既知ペアのチェックは「想定どおりか」しか見ない。語彙を畳みすぎたときに生まれる')
-    W('**新しい違和感ペア**はどのリストにも載らないので、全量を出して目視で拾う。\n')
+    W('**新しい違和感ペア**はどのリストにも載らないので、全量を出して目視で拾う。')
+    W('これは地図（無向・探索）が見る素の近さで、ホーム推薦が見るものではない。\n')
     W('箱をまたぐ組み合わせに `*` を付けた。\n')
     W('| 料理 | 箱 | 最近傍 | score | |')
     W('|---|---|---|---|---|')
@@ -247,17 +261,48 @@ def main():
     for n, b, nm, sc, c in rows:
         W('| %s | %s | %s | %.2f | %s |' % (n, b, nm, sc, c))
     W('')
-    lo = [r for r in rows if r[3] < 0.30]
-    W('最近傍スコアが0.30未満の皿（孤立気味 = 地図で行き止まり）: **%d皿**\n' % len(lo))
-    for n, b, nm, sc, c in sorted(lo, key=lambda x: x[3]):
-        W('- %s (%s) → %s %.2f' % (n, b, nm, sc))
+    W('## 5. ホーム推薦のゲート後 TOP1（score >= %.2f かつ 根拠 >= %d件）\n'
+      % (MIN_SCORE, MIN_EVIDENCE))
+    W('スコアは「どれだけ重なるか」、根拠は「腕が移る理由があるか」。両者は乖離する —')
+    W('ロールキャベツ `{コンソメ}` と かぼちゃのポタージュ `{コンソメ}` は Dice が比率で')
+    W('IDFが分子分母で相殺されるため調味料軸が満点1.00になるが、移る腕は無い（根拠0件）。\n')
+    W('根拠の文字列はそのまま「なぜこの皿か」チップの素になる。\n')
+    W('| 料理 | ゲート前TOP1 | ゲート後TOP1 | score | 根拠 |')
+    W('|---|---|---|---|---|')
+    keep = chg = none = 0
+    for d in sorted(dishes, key=lambda x: x['name']):
+        full = neighbours(d['name'], 999)
+        if not full:
+            continue
+        pre = full[0][1]
+        ok = [(s0, n0) for s0, n0 in full if recommendable(d, by[n0], s0)]
+        if not ok:
+            none += 1
+            W('| %s | %s | **出さない** | — | — |' % (d['name'], pre))
+            continue
+        s0, n0 = ok[0]
+        ev = ' / '.join(evidence(d, by[n0]))
+        if n0 == pre:
+            keep += 1
+            W('| %s | %s | (同じ) | %.2f | %s |' % (d['name'], pre, s0, ev))
+        else:
+            chg += 1
+            W('| %s | %s | **%s** | %.2f | %s |' % (d['name'], pre, n0, s0, ev))
+    W('')
+    W('TOP1が変わらない **%d** / 入れ替わる **%d** / 推薦を出さない **%d**\n' % (keep, chg, none))
+    W('「出さない」%d皿は、根拠2件以上かつ%.2f以上の相手がカタログに一皿も無い。' % (none, MIN_SCORE))
+    W('地図には出るが、ホームで「次はこれ」とは言えない皿。カタログの穴か、単独で完結する皿。\n')
+    W('> **未検証**: 入れ替わり%d件は人手で見ていない。ナポリタン→オムライス、他人丼→親子丼、' % chg)
+    W('> ぶり照り→鶏照り のように明らかに改善したものがある一方、全数の妥当性は未確認。')
+    W('> spec-032のVerificationはtop-1目視までで、top-5の盲検レビューは未実施。')
+    W('> このゲートはまだUIを駆動していない。\n')
 
     p = os.path.join(DOCS, 'proximity-282-report.md')
     with open(p, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(L))
     print('wrote', p)
     print('親子丼<->他人丼 = %.3f (seas %.2f / ing %.2f / meth %.2f)' % (t, s, i, m))
-    print('isolated (<0.30):', len(lo))
+    print('gate: keep %d / changed %d / no-recommendation %d' % (keep, chg, none))
 
 
 if __name__ == '__main__':
