@@ -2,8 +2,8 @@
 #
 # Mechanism is unchanged from scripts/proximity_pilot.py (v2):
 #   IDF weighting / role-tagged same-role-only ingredient matching / pool split /
-#   mains<->rice-noodle damping / weights 0.45 0.30 0.15 0.05
-# New in this run: role 'とじ' (owner ruling 2026-07-17).
+#   mains<->rice-noodle damping
+# New in this run: role 'とじ' (owner ruling 2026-07-17); `steps` axis removed.
 #
 # Outputs docs/proximity-282-report.md with:
 #   1. regression pairs   (v2 good pairs must hold)
@@ -19,8 +19,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, '..', 'data', 'vocab')
 DOCS = os.path.join(HERE, '..', 'docs')
 
-W_SEAS, W_ING, W_METH, W_STEPS = 0.45, 0.30, 0.15, 0.05
-STEP_RANGE = 6
+# 2026-07-17: `steps` dropped from the score (advisor call, verified).
+# It was a baseline that accrued between dishes sharing no technique at all:
+# ハンバーグ↔とんかつ scored 0.04 purely on step-count proximity, and went to
+# exactly 0.00 (rank 162 -> 208) once removed. It also never explained
+# "なぜ作れそうか", which is what the reason chip has to say.
+# Weights keep the pilot's relative split (45:30:15) and are renormalized to
+# sum to 1.00 — the old set summed to 0.95, so no score could reach 1.0 and a
+# raw-score display threshold would have been miscalibrated from the start.
+# The split itself is NOT validated at 282 and is still open (spec-032 Q2).
+W_SEAS, W_ING, W_METH = 0.45 / 0.90, 0.30 / 0.90, 0.15 / 0.90
 CROSS_DAMP = 0.75
 
 # とじ: same weight class as coat — a functional, dish-defining role (not a filler).
@@ -96,11 +104,10 @@ def main():
         s = wdice(sw(a), sw(b))
         i = wdice(iw(a), iw(b))
         m = wdice({x: 1.0 for x in a['methods']}, {x: 1.0 for x in b['methods']})
-        st = 1 - min(abs(a['steps'] - b['steps']), STEP_RANGE) / STEP_RANGE
-        t = W_SEAS * s + W_ING * i + W_METH * m + W_STEPS * st
+        t = W_SEAS * s + W_ING * i + W_METH * m
         if {a['pool'], b['pool']} == {'A', 'B'}:
             t *= CROSS_DAMP
-        return t, s, i, m, st
+        return t, s, i, m
 
     by = {d['name']: d for d in dishes}
 
@@ -123,10 +130,10 @@ def main():
 
     W('## 0. オーナー裁定の検証: 親子丼 ↔ 他人丼\n')
     W('「親子丼と他人丼こそつながるべき」(2026-07-17) に対する実測。\n')
-    t, s, i, m, st = comp(by['親子丼'], by['他人丼'])
-    W('| ペア | score | 調味料 | 食材 | 調理法 | 工程 |')
-    W('|---|---|---|---|---|---|')
-    W('| 親子丼 ↔ 他人丼 | **%.2f** | %.2f | %.2f | %.2f | %.2f |' % (t, s, i, m, st))
+    t, s, i, m = comp(by['親子丼'], by['他人丼'])
+    W('| ペア | score | 調味料 | 食材 | 調理法 |')
+    W('|---|---|---|---|---|')
+    W('| 親子丼 ↔ 他人丼 | **%.2f** | %.2f | %.2f | %.2f |' % (t, s, i, m))
     W('')
     W('親子丼の近傍TOP5:\n')
     W('| # | 料理 | score |')
