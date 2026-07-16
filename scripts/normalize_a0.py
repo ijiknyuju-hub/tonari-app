@@ -29,6 +29,7 @@ def main():
     m_map, m_drop = A['methods'], set(A['methods_drop'])
     force_role = A['roles']['force']
     fbm = A['roles'].get('force_by_method', {})
+    dom = A['method_dominance']['rank']
 
     used = set()
     before_s, before_i, before_m = Counter(), Counter(), Counter()
@@ -87,8 +88,8 @@ def main():
             if m in m_map:
                 used.add(m)
                 m = m_map[m]
-            meth.append(m)
-        meth = sorted(set(meth))
+            if m not in meth:
+                meth.append(m)  # keep A-0's order; sorting here destroyed sequence info
         if r['methods'] and not meth:
             emptied.append(r['name'])
 
@@ -111,8 +112,11 @@ def main():
         for x in meth:
             after_m[x] += 1
 
+        # primary method = the dish's dominant technique (lowest dominance rank).
+        # It is what decides the finished dish; everything else is a step passed through.
+        primary = min(meth, key=lambda x: dom[x]) if meth else None
         out.append({'name': r['name'], 'seasonings': seas, 'ingredients': ings,
-                    'methods': meth, 'steps': r['steps']})
+                    'methods': meth, 'primary_method': primary, 'steps': r['steps']})
 
     print('=== vocabulary size: raw -> normalized ===')
     print('  seasonings : %3d -> %3d' % (len(before_s), len(after_s)))
@@ -121,6 +125,18 @@ def main():
 
     print('\n=== methods emptied by normalization (would score 0.0 on the method axis) ===')
     print('  ', emptied if emptied else 'none')
+
+    missing_rank = sorted(after_m.keys() - set(dom))
+    print()
+    print('=== methods with no dominance rank (cannot pick a primary) ===')
+    print('  ', missing_rank if missing_rank else 'none')
+
+    from collections import Counter as _C
+    pc = _C(o['primary_method'] for o in out)
+    print()
+    print('=== primary_method distribution ===')
+    for k, v in pc.most_common():
+        print('  %3d  %s' % (v, k))
 
     all_keys = (set(s_map) | set(s_split) | s_drop | set(i_map) | set(m_map) | m_drop
                 | set(force_role))

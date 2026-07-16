@@ -87,6 +87,40 @@ def wdice(a, b):
     return 2 * inter / (sum(a.values()) + sum(b.values()))
 
 
+def evidence(a, b):
+    """Why is B within reach from A? Returns the list of transferable-skill grounds.
+
+    Separate from the score on purpose. The score says how much the two dishes
+    overlap; this says whether that overlap is a reason a cook could carry their
+    hands from one to the other. They come apart: ロールキャベツ{コンソメ} and
+    かぼちゃのポタージュ{コンソメ} score a perfect 1.00 on the seasoning axis
+    because Dice is a ratio and the IDF cancels — one shared stock cube buys a
+    top-1 neighbour. No skill transfers, so it must carry no evidence.
+
+    Deliberately NOT evidence: step-count proximity, a single shared sub
+    ingredient. Both accrue between dishes that share no technique at all.
+    """
+    ev = []
+    main_a = {g['name'] for g in a['ingredients'] if g['role'] == 'main'}
+    main_b = {g['name'] for g in b['ingredients'] if g['role'] == 'main'}
+    if main_a & main_b:
+        ev.append('main:' + '/'.join(sorted(main_a & main_b)))
+
+    same_method = a['primary_method'] and a['primary_method'] == b['primary_method']
+    if same_method:
+        ev.append('method:' + a['primary_method'])
+
+    # flavour x technique: the pattern, not the token. 塩焼き魚どうし share
+    # 塩 x 焼く and genuinely transfer; コンソメ alone across 煮込む/煮る does not.
+    shared_seas = set(a['seasonings']) & set(b['seasonings'])
+    if same_method and shared_seas:
+        ev.append('pattern:%s×%s' % ('/'.join(sorted(shared_seas)), a['primary_method']))
+    return ev
+
+
+MIN_EVIDENCE = 2  # a recommendation needs more than one ground
+
+
 def main():
     dishes = build()
     SI, II = idf(dishes)
