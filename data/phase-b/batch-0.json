@@ -1,0 +1,541 @@
+{
+  "batch": 0,
+  "style": "scene",
+  "dishes": [
+    {
+      "name": "唐揚げ",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "おろしにんにく",
+        "おろし生姜",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "鶏もも肉",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "肉じゃが",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "だし",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "牛薄切り肉",
+          "role": "main"
+        },
+        {
+          "name": "じゃがいも",
+          "role": "sub"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんじん",
+          "role": "sub"
+        },
+        {
+          "name": "しらたき",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "生姜焼き",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "しょうが",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "豚ロース肉",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "キャベツ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 4
+    },
+    {
+      "name": "ハンバーグ",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "ケチャップ",
+        "ナツメグ",
+        "中濃ソース"
+      ],
+      "ingredients": [
+        {
+          "name": "合いびき肉",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "パン粉",
+          "role": "bind"
+        },
+        {
+          "name": "卵",
+          "role": "bind"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 5
+    },
+    {
+      "name": "鶏の照り焼き（照り焼きチキン）",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "鶏もも肉",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "餃子",
+      "box": "主菜(肉)",
+      "tier": "S",
+      "seasonings": [
+        "ごま油",
+        "しょうが",
+        "にんにく",
+        "醤油",
+        "鶏がらスープの素"
+      ],
+      "ingredients": [
+        {
+          "name": "豚ひき肉",
+          "role": "main"
+        },
+        {
+          "name": "キャベツ",
+          "role": "sub"
+        },
+        {
+          "name": "にら",
+          "role": "sub"
+        },
+        {
+          "name": "餃子の皮",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "混ぜる",
+        "包む",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 5
+    },
+    {
+      "name": "鮭の塩焼き",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "生鮭（甘塩鮭）",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "さばの味噌煮",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "みりん",
+        "味噌",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "さば",
+          "role": "main"
+        },
+        {
+          "name": "しょうが",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "ぶりの照り焼き",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "ぶり",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "親子丼",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "だし",
+        "みりん",
+        "砂糖",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "鶏もも肉",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "卵",
+          "role": "とじ"
+        },
+        {
+          "name": "三つ葉",
+          "role": "sub"
+        },
+        {
+          "name": "ごはん",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "煮る",
+        "卵でとじる"
+      ],
+      "primary_method": "卵でとじる",
+      "steps": 4
+    },
+    {
+      "name": "牛丼",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "だし",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "牛バラ肉(薄切り)",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "ごはん",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 3
+    },
+    {
+      "name": "カレーライス",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "カレールウ"
+      ],
+      "ingredients": [
+        {
+          "name": "豚肉(角切り)",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんじん",
+          "role": "sub"
+        },
+        {
+          "name": "じゃがいも",
+          "role": "sub"
+        },
+        {
+          "name": "ごはん",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮込む"
+      ],
+      "primary_method": "煮込む",
+      "steps": 4
+    },
+    {
+      "name": "チャーハン",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "ごま油",
+        "塩こしょう",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "卵",
+          "role": "main"
+        },
+        {
+          "name": "ハム",
+          "role": "sub"
+        },
+        {
+          "name": "長ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "ごはん(冷やごはん)",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 4
+    },
+    {
+      "name": "オムライス",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "ケチャップ",
+        "塩こしょう"
+      ],
+      "ingredients": [
+        {
+          "name": "卵",
+          "role": "main"
+        },
+        {
+          "name": "鶏もも肉",
+          "role": "sub"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "ごはん(ケチャップライス)",
+          "role": "base"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "包む"
+      ],
+      "primary_method": "炒める",
+      "steps": 5
+    },
+    {
+      "name": "ナポリタン",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "トマトケチャップ",
+        "バター"
+      ],
+      "ingredients": [
+        {
+          "name": "パスタ",
+          "role": "base"
+        },
+        {
+          "name": "ウインナー",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "ピーマン",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "茹でる",
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 4
+    },
+    {
+      "name": "ミートソース（スパゲティ）",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "にんにく",
+        "ウスターソース",
+        "ケチャップ",
+        "トマト缶",
+        "赤ワイン"
+      ],
+      "ingredients": [
+        {
+          "name": "パスタ",
+          "role": "base"
+        },
+        {
+          "name": "合いびき肉",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんじん",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮込む",
+        "茹でる"
+      ],
+      "primary_method": "煮込む",
+      "steps": 5
+    },
+    {
+      "name": "ソース焼きそば",
+      "box": "ごはんもの+麺類",
+      "tier": "S",
+      "seasonings": [
+        "かつお節",
+        "中濃ソース",
+        "紅生姜",
+        "青のり"
+      ],
+      "ingredients": [
+        {
+          "name": "中華蒸し麺",
+          "role": "base"
+        },
+        {
+          "name": "豚バラ肉",
+          "role": "main"
+        },
+        {
+          "name": "キャベツ",
+          "role": "sub"
+        },
+        {
+          "name": "もやし",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 4
+    }
+  ]
+}

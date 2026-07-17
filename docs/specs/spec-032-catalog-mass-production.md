@@ -226,8 +226,20 @@ Codex出力`data/v4-intros.json`を`data/v4-dishes.json`に結合する前に、
 ### B-5. ブロッカー — **解消 (2026-07-18)**
 
 模範例は再著作しオーナー承認済み: `docs/decisions/2026-07-18-tonari-intro-exemplars.md`
-（基調6本+反例1本 → バッチ1〜6、場面型3本+反例1本 → バッチ0）。**Phase Bは着手可能**。
-残る前提は実行前の機械準備のみ: バッチ分割スクリプト、B-3ゲート4種+不変性チェックの実装、結合スクリプト。
+（基調6本+反例1本 → バッチ1〜6、場面型3本+反例1本 → バッチ0）。
+
+機械準備も実装・検証済み (2026-07-18):
+- `scripts/phase_b_split.py` → `data/phase-b/batch-{0..6}.json`（バッチ0=入り口17皿/場面型、1〜6=残り265皿を(box,name)順で連続分割 — 類似皿を同バッチに置き、書き分けを強制する設計）
+- `scripts/phase_b_gate.py` → B-3ゲート1〜4。ゲート3は自皿名をマスクした文字bigramのJaccard、`--gate3-threshold`（既定0.85）は運用ノブ。ゲート4はカタカナ列の語彙外検出＋allowlist
+- `scripts/phase_b_join.py` → ゲート再実行→結合→ゲート5（特徴量不変性）→`data/v4-dishes.json`。ゲート失敗時はファイルを書かない
+
+スモークテストで5ゲート全ての発火と、282件エンドツーエンドの結合・不変性を確認済み。
+Codexの出力先は `data/phase-b/intros-batch-{N}.json`（`[{name, intro_line1, intro_line2}]`）。
+
+**既知のギャップ**: 32皿にtierが未付与（07-17拾い直し分、`catalog-281.json`のtier空欄）。Phase Bの紹介文生成には影響しないが、
+`data/v4-dishes.json`のtierはこの32皿でnullになる。消費コード配線（Next 2）までにS/A/B裁定が必要。
+
+**Phase Bは実行可能**。残るのはバッチプロンプトの組み立て（模範例の逐語埋め込み＋バッチマニフェスト）と7回の`codex exec`のみ。
 
 ---
 

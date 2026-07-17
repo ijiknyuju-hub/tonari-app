@@ -1,0 +1,1264 @@
+{
+  "batch": 5,
+  "style": "substance",
+  "dishes": [
+    {
+      "name": "鶏天",
+      "box": "主菜(肉)",
+      "tier": null,
+      "seasonings": [
+        "しょうが",
+        "にんにく",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "鶏もも肉",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        },
+        {
+          "name": "卵",
+          "role": "coat"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "鶏肉のトマト煮込み",
+      "box": "主菜(肉)",
+      "tier": "B",
+      "seasonings": [
+        "コンソメ",
+        "トマト缶",
+        "ローリエ",
+        "塩こしょう"
+      ],
+      "ingredients": [
+        {
+          "name": "鶏もも肉",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        },
+        {
+          "name": "きのこ",
+          "role": "sub"
+        },
+        {
+          "name": "パプリカ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮込む"
+      ],
+      "primary_method": "煮込む",
+      "steps": 5
+    },
+    {
+      "name": "麻婆ナス",
+      "box": "主菜(肉)",
+      "tier": null,
+      "seasonings": [
+        "甜麺醤",
+        "豆板醤",
+        "醤油",
+        "鶏がらスープ"
+      ],
+      "ingredients": [
+        {
+          "name": "なす",
+          "role": "main"
+        },
+        {
+          "name": "豚ひき肉",
+          "role": "main"
+        },
+        {
+          "name": "長ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "片栗粉",
+          "role": "thicken"
+        }
+      ],
+      "methods": [
+        "素揚げする",
+        "炒める",
+        "煮る"
+      ],
+      "primary_method": "素揚げする",
+      "steps": 5
+    },
+    {
+      "name": "麻婆春雨",
+      "box": "主菜(肉)",
+      "tier": null,
+      "seasonings": [
+        "甜麺醤",
+        "豆板醤",
+        "醤油",
+        "鶏がらスープ"
+      ],
+      "ingredients": [
+        {
+          "name": "春雨",
+          "role": "main"
+        },
+        {
+          "name": "豚ひき肉",
+          "role": "main"
+        },
+        {
+          "name": "長ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にら",
+          "role": "sub"
+        },
+        {
+          "name": "片栗粉",
+          "role": "thicken"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "あさりのバター醤油焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "あさり",
+          "role": "main"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        },
+        {
+          "name": "万能ねぎ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "蒸す",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "あさりの酒蒸し",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "バター",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "あさり",
+          "role": "main"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        },
+        {
+          "name": "万能ねぎ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "蒸す"
+      ],
+      "primary_method": "蒸す",
+      "steps": 3
+    },
+    {
+      "name": "あじの南蛮漬け",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "だし",
+        "砂糖",
+        "赤唐辛子",
+        "酢",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "あじ",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんじん",
+          "role": "sub"
+        },
+        {
+          "name": "ピーマン",
+          "role": "sub"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる",
+        "漬け込む"
+      ],
+      "primary_method": "揚げる",
+      "steps": 5
+    },
+    {
+      "name": "あじの塩焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "あじ",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "あじフライ",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "塩こしょう"
+      ],
+      "ingredients": [
+        {
+          "name": "あじ",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        },
+        {
+          "name": "卵",
+          "role": "coat"
+        },
+        {
+          "name": "パン粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "いかと大根の煮物（いか大根）",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "だし",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いか",
+          "role": "main"
+        },
+        {
+          "name": "大根",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "煮込む"
+      ],
+      "primary_method": "煮込む",
+      "steps": 4
+    },
+    {
+      "name": "いかと里芋の煮物",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "だし",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いか",
+          "role": "main"
+        },
+        {
+          "name": "里芋",
+          "role": "main"
+        },
+        {
+          "name": "生姜",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "いわしのフライ",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [],
+      "ingredients": [
+        {
+          "name": "いわし",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        },
+        {
+          "name": "卵",
+          "role": "coat"
+        },
+        {
+          "name": "パン粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "いわしの梅煮",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "みりん",
+        "生姜",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いわし",
+          "role": "main"
+        },
+        {
+          "name": "梅干し",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "いわしの蒲焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いわし",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "えびのアヒージョ",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "オリーブオイル",
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        },
+        {
+          "name": "唐辛子",
+          "role": "sub"
+        },
+        {
+          "name": "マッシュルーム",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "オイル煮にする"
+      ],
+      "primary_method": "オイル煮にする",
+      "steps": 3
+    },
+    {
+      "name": "えびの天ぷら",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "天ぷら粉",
+          "role": "coat"
+        },
+        {
+          "name": "卵",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "えびフライ",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        },
+        {
+          "name": "卵",
+          "role": "coat"
+        },
+        {
+          "name": "パン粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 3
+    },
+    {
+      "name": "えびマカロニグラタン",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "チーズ",
+        "バター",
+        "塩こしょう",
+        "牛乳"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "マカロニ",
+          "role": "base"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "マッシュルーム",
+          "role": "sub"
+        },
+        {
+          "name": "小麦粉",
+          "role": "thicken"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "煮る",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 6
+    },
+    {
+      "name": "えびマヨ（エビマヨ）",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "マヨネーズ",
+        "塩こしょう",
+        "練乳"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "揚げる",
+        "和える"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "かれいの煮つけ",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "かれい",
+          "role": "main"
+        },
+        {
+          "name": "しょうが",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 3
+    },
+    {
+      "name": "さばの塩焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "さば",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "さばの幽庵焼き",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "みりん",
+        "ゆず",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "さば",
+          "role": "main"
+        },
+        {
+          "name": "ゆず",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "さばの竜田揚げ",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "にんにく",
+        "生姜",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "さば",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "さわらの蒲焼き",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "さわら",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "さわらの西京焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "みりん",
+        "西京味噌",
+        "酒"
+      ],
+      "ingredients": [
+        {
+          "name": "さわら",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "さんまの塩焼き",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "さんま",
+          "role": "main"
+        },
+        {
+          "name": "大根おろし",
+          "role": "sub"
+        },
+        {
+          "name": "すだち",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "さんまの蒲焼",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "さんま",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "たらのホイル焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "たら",
+          "role": "main"
+        },
+        {
+          "name": "しめじ",
+          "role": "sub"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "蒸し焼きにする"
+      ],
+      "primary_method": "蒸し焼きにする",
+      "steps": 3
+    },
+    {
+      "name": "たらのムニエル",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "レモン汁",
+        "塩こしょう"
+      ],
+      "ingredients": [
+        {
+          "name": "たら",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "ぶりの塩焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "ぶり",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "ぶりの竜田揚げ",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "生姜",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "ぶり",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "ぶり大根",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "しょうが",
+        "みりん",
+        "砂糖",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "ぶり(あら)",
+          "role": "main"
+        },
+        {
+          "name": "大根",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "下茹でする",
+        "煮る"
+      ],
+      "primary_method": "煮る",
+      "steps": 4
+    },
+    {
+      "name": "わかさぎの南蛮漬け",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "砂糖",
+        "赤唐辛子",
+        "酢",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "わかさぎ",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "にんじん",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "揚げる",
+        "漬け込む"
+      ],
+      "primary_method": "揚げる",
+      "steps": 5
+    },
+    {
+      "name": "イカげその唐揚げ",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "にんにく",
+        "生姜",
+        "酒",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いかげそ",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "揚げる"
+      ],
+      "primary_method": "揚げる",
+      "steps": 4
+    },
+    {
+      "name": "イカとじゃがいものガリバタ炒め",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "にんにく",
+        "バター",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "いか",
+          "role": "main"
+        },
+        {
+          "name": "じゃがいも",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 4
+    },
+    {
+      "name": "イカのバターポン酢炒め",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "にんにく",
+        "バター",
+        "ポン酢"
+      ],
+      "ingredients": [
+        {
+          "name": "いか",
+          "role": "main"
+        },
+        {
+          "name": "大葉",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 3
+    },
+    {
+      "name": "イカのマリネ",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "オリーブオイル",
+        "塩こしょう",
+        "酢"
+      ],
+      "ingredients": [
+        {
+          "name": "いか",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "パセリ",
+          "role": "sub"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "茹でる",
+        "漬け込む"
+      ],
+      "primary_method": "茹でる",
+      "steps": 4
+    },
+    {
+      "name": "カジキのソテー・ステーキ",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "塩こしょう",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "めかじき",
+          "role": "main"
+        },
+        {
+          "name": "小麦粉",
+          "role": "coat"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "カツオのたたき",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "ポン酢",
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "かつお（刺身用ブロック）",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "みょうが",
+          "role": "sub"
+        },
+        {
+          "name": "大葉",
+          "role": "sub"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "焼く",
+        "漬け込む"
+      ],
+      "primary_method": "焼く",
+      "steps": 4
+    },
+    {
+      "name": "ガーリックシュリンプ",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "レモン汁",
+        "塩こしょう",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "にんにく",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "漬け込む",
+        "炒める"
+      ],
+      "primary_method": "炒める",
+      "steps": 4
+    },
+    {
+      "name": "ホタテのカルパッチョ",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "こしょう",
+        "オリーブオイル",
+        "レモン汁",
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "ホタテ",
+          "role": "main"
+        },
+        {
+          "name": "玉ねぎ",
+          "role": "sub"
+        },
+        {
+          "name": "ベビーリーフ",
+          "role": "sub"
+        }
+      ],
+      "methods": [
+        "盛り付ける"
+      ],
+      "primary_method": "盛り付ける",
+      "steps": 3
+    },
+    {
+      "name": "ホタテのバター焼き",
+      "box": "主菜(魚介)",
+      "tier": "A",
+      "seasonings": [
+        "バター",
+        "塩こしょう",
+        "醤油"
+      ],
+      "ingredients": [
+        {
+          "name": "ホタテ",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 3
+    },
+    {
+      "name": "ホッケの開き（塩焼き）",
+      "box": "主菜(魚介)",
+      "tier": "B",
+      "seasonings": [
+        "塩"
+      ],
+      "ingredients": [
+        {
+          "name": "ホッケ",
+          "role": "main"
+        }
+      ],
+      "methods": [
+        "焼く"
+      ],
+      "primary_method": "焼く",
+      "steps": 2
+    },
+    {
+      "name": "基本のえびチリ",
+      "box": "主菜(魚介)",
+      "tier": "S",
+      "seasonings": [
+        "おろししょうが",
+        "おろしにんにく",
+        "ケチャップ",
+        "砂糖",
+        "豆板醤",
+        "酒",
+        "鶏がらスープ"
+      ],
+      "ingredients": [
+        {
+          "name": "えび",
+          "role": "main"
+        },
+        {
+          "name": "片栗粉",
+          "role": "coat"
+        },
+        {
+          "name": "片栗粉",
+          "role": "thicken"
+        }
+      ],
+      "methods": [
+        "炒める",
+        "とろみをつける"
+      ],
+      "primary_method": "炒める",
+      "steps": 5
+    }
+  ]
+}
