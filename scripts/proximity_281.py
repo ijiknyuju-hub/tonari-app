@@ -69,6 +69,7 @@ def build():
     fill = load('boxes-missing.json')['boxes']
     A = load('aliases.json')
     s_map, s_split, i_map = A['seasonings'], A['seasonings_split'], A['ingredients']
+    TG = load('technique-groups.json')
 
     for d in dishes:
         box = cat[d['name']]['box'] or fill.get(d['name'])
@@ -86,6 +87,15 @@ def build():
         d['seas_c'] = sorted(set(seas_c))
         d['ing_c'] = [{'name': i_map.get(g['name'], g['name']), 'role': g['role']}
                       for g in d['ingredients']]
+
+        # Evidence-only refinement (2026-07-17, advisor call): primary_method
+        # alone is too coarse for some buckets (72 dishes share '焼く', from
+        # egg-rolling to whole-fish salt-grilling to wok-fried-noodle-plus-
+        # starch-sauce). technique_group narrows the SAME-METHOD check used by
+        # evidence() to dishes whose hand-technique actually transfers; it does
+        # NOT touch score()/comp(), which still uses the full raw methods set.
+        group_map = TG.get(d['primary_method'], {})
+        d['technique_group'] = group_map.get(d['name'], d['primary_method'])
     return dishes
 
 
@@ -119,7 +129,19 @@ def evidence(a, b):
     top-1 neighbour. No skill transfers, so it must carry no evidence.
 
     Deliberately NOT evidence: step-count proximity, a single shared sub
-    ingredient. Both accrue between dishes that share no technique at all.
+    ingredient (below the technique-agreement threshold below). Both accrue
+    between dishes that share no technique at all.
+
+    2026-07-17 (advisor call): 'method:' + 'pattern:' both key off the SAME
+    same_method flag, so one shared common seasoning (醤油, 塩, ...) inside a
+    coarse method bucket used to buy 2 grounds for 1 real signal — that is how
+    だし巻き卵→ちくわの磯辺焼き (both '焼く', shared 醤油) cleared the gate.
+    same_method now compares technique_group, which subdivides '焼く' by
+    transferable hand-technique (see data/vocab/technique-groups.json); other
+    primary_method buckets are unaffected. Also added: 2+ shared sub-role
+    ingredients PLUS an identical full method set is its own ground — it
+    under-counted ポテトサラダ⇄中華春雨サラダ-shaped pairs (different main
+    ingredient, same prep track) that only 'main:' used to credit.
     """
     ev = []
     main_a = {g['name'] for g in a['ing_c'] if g['role'] == 'main'}
@@ -127,15 +149,21 @@ def evidence(a, b):
     if main_a & main_b:
         ev.append('main:' + '/'.join(sorted(main_a & main_b)))
 
-    same_method = a['primary_method'] and a['primary_method'] == b['primary_method']
+    same_method = a['technique_group'] and a['technique_group'] == b['technique_group']
     if same_method:
-        ev.append('method:' + a['primary_method'])
+        ev.append('method:' + a['technique_group'])
 
     # flavour x technique: the pattern, not the token. 塩焼き魚どうし share
     # 塩 x 焼く and genuinely transfer; コンソメ alone across 煮込む/煮る does not.
     shared_seas = set(a['seas_c']) & set(b['seas_c'])
     if same_method and shared_seas:
-        ev.append('pattern:%s×%s' % ('/'.join(sorted(shared_seas)), a['primary_method']))
+        ev.append('pattern:%s×%s' % ('/'.join(sorted(shared_seas)), a['technique_group']))
+
+    sub_a = {g['name'] for g in a['ing_c'] if g['role'] == 'sub'}
+    sub_b = {g['name'] for g in b['ing_c'] if g['role'] == 'sub'}
+    shared_sub = sub_a & sub_b
+    if len(shared_sub) >= 2 and set(a['methods']) == set(b['methods']):
+        ev.append('sub:' + '/'.join(sorted(shared_sub)))
     return ev
 
 

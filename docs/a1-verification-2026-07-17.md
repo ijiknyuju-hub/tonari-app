@@ -237,9 +237,26 @@ GPTの本題。**「どれだけ重なるか」と「腕が移る理由がある
 3. 八宝菜の重複疑い → 上記6
 4. 手羽元の分割 → 上記7
 
+## 追記: evidence()の技法粒度修正（未検証1の一部を消化）
+
+人手レビューで焼く括りが粗すぎる偽陽性4件（だし巻き卵/ちくわの磯辺焼き、サムギョプサル/鯛の塩焼き、
+あんかけ焼きそば/ガパオライス、ポテトサラダ/中華春雨サラダの根拠不足）を発見、advisorに診断を依頼した上で
+`evidence()`を修正。詳細: `docs/decisions/2026-07-17-tonari-evidence-technique-granularity.md`。
+ゲート統計: keep 162→154 / changed 75→71 / 出さない 44→56。§1回帰9ペア全維持を確認済み。
+再分類後の71件は `docs/gate-change-triage-2026-07-17.md`（C:18/B:9/A:44）。**この71件もまだ人手で全数は見ていない** —
+未検証1は継続。副作用として さわらの西京焼き↔さわらの蒲焼き（同じ魚種）がmain単独では2根拠に届かず脱落した件を確認済み、
+新規の未検証項目として追加（9番）。
+
+## 未検証（追加分）
+
+9. **さわらの西京焼き↔さわらの蒲焼き**（同じ魚種、main一致のみ）が技法細分化後にゲートを通らなくなった。
+   「主役食材が同じというだけでは2根拠に届かない」というゲート設計そのものの限界。対応は保留、Phase Bの前提にしない。
+
 ## Related
 
 - `docs/specs/spec-032-catalog-mass-production.md`
 - `docs/vocab-a0-2026-07-17.md`（A-0の生語彙分析）
 - `data/vocab/aliases.json`（凍結語彙。オーナーの拒否権はここ）
+- `data/vocab/technique-groups.json`（焼くの技法細分類、evidence()専用）
 - `docs/proximity-281-report.md`（自動生成の全量テーブル）
+- `docs/decisions/2026-07-17-tonari-evidence-technique-granularity.md`（evidence()修正の経緯）
