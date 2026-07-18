@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { dishes } from '@/data/v3'
+import { BASE_DISH_INGREDIENTS, dishes } from '@/data/v3'
 import type { NearbyRelation } from '@/types/dish'
 import { deriveRank, madeCountForDish, type DishRank } from '@/lib/mvp/rank'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
@@ -42,7 +42,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
   const sourceState: 'none' | 'youtube' | 'site' = videos.length ? 'youtube' : sites.length ? 'site' : 'none'
   const madeCount = madeCountForDish(state.made_records, dishId)
   const rank = deriveRank(madeCount)
-  const ingredients = useMemo(() => recipeIngredients(relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, override?.ingredients_override, relation])
+  const ingredients = useMemo(() => recipeIngredients(dishId, relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, dishId, override?.ingredients_override, relation])
   const steps = useMemo(() => recipeSteps(relation, override?.steps_override, customDish?.steps), [customDish?.steps, override?.steps_override, relation])
   const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && (genreForDish(dish) === 'side' || genreForDish(dish) === 'soup')).slice(0, 3), [dishId])
 
@@ -61,7 +61,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
     <main className="tn-screen">
       <header className="mx-auto flex max-w-[402px] items-center justify-between px-4 pb-2 pt-[56px]">
         <button type="button" onClick={() => router.back()} aria-label="戻る" className="flex h-[38px] w-[38px] items-center justify-center rounded-full border bg-white text-[26px] leading-none text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.10)' }}>‹</button>
-        <button type="button" onClick={() => setEditingDraft((current) => !current)} className="rounded-full border bg-white px-[13px] py-2 text-[13px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.14)' }}>{editingDraft ? '閉じる' : '下書きを整える'}</button>
+        <button type="button" onClick={() => setEditingDraft((current) => !current)} className="rounded-full border bg-white px-[13px] py-2 text-[13px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.14)' }}>{editingDraft ? '閉じる' : '作り方を整える'}</button>
       </header>
 
       <div className="mx-auto max-w-[402px] px-5 pb-[106px] pt-1">
@@ -125,11 +125,11 @@ function VideoHero({ name, activeVideo }: { name: string; activeVideo?: RecipeSo
 function RecipeCard({ ingredients, steps, source, showNotice, editing, onSave }: { ingredients: Ingredient[]; steps: string[]; source?: RecipeSource; showNotice: boolean; editing: boolean; onSave: (ingredients: string[], steps: string[]) => void }) {
   return (
     <section className="mt-[20px] rounded-[12px] border p-4" style={{ borderColor: 'rgba(26,26,26,.12)' }}>
-      <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">レシピ（下書き）</h2>{source ? <a href={source.url} target="_blank" rel="noreferrer" className="ml-auto text-[11px] font-bold text-[#DE5528]">出典: {sourceHostname(source.url)} ↗</a> : null}</div>
+      <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">作り方メモ</h2>{source ? <a href={source.url} target="_blank" rel="noreferrer" className="ml-auto text-[11px] font-bold text-[#DE5528]">出典: {sourceHostname(source.url)} ↗</a> : null}</div>
       {editing ? <DraftEditor key={`${ingredients.map((item) => item.name).join('|')}-${steps.join('|')}`} ingredients={ingredients} steps={steps} onSave={onSave} /> : (
         <>
-          {showNotice ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">動画やレシピURLを貼って、あなたのレシピに育てましょう。作り方はいつでも整えられます。</p> : source ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">要点を自分用の下書きにまとめています。分量やコツは出典のページも確認できます。</p> : null}
-          <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">材料 <span className="ml-1 text-[11px] font-normal text-[#B7B2AC]">2人分</span></p>
+          {showNotice ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">動画やレシピURLを貼って、あなたのレシピに育てましょう。作り方はいつでも整えられます。</p> : source ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">要点を自分用にまとめています。分量やコツは出典のページも確認できます。</p> : null}
+          <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">材料の目安</p>
           <div className="mt-[10px] space-y-2">{ingredients.map((ingredient) => <div key={`${ingredient.name}-${ingredient.amount}`} className="flex items-baseline gap-2 text-[12.5px]"><span className="font-semibold text-[#1A1A1A]">{ingredient.name}</span><span className="relative top-[-3px] flex-1 border-b border-dotted" style={{ borderColor: 'rgba(26,26,26,.22)' }} /><span className="whitespace-nowrap text-[#7A7570]">{ingredient.amount}</span></div>)}</div>
           <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">作り方</p>
           <ol className="mt-[11px] space-y-[11px]">{steps.map((step, index) => <li key={`${step}-${index}`} className="flex gap-[10px]"><span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FBEBDD] text-[11px] font-bold text-[#C25A20]">{index + 1}</span><p className="m-0 text-[12.5px] leading-[1.65] text-[#5A554F]">{step}</p></li>)}</ol>
@@ -146,7 +146,7 @@ function DraftEditor({ ingredients, steps, onSave }: { ingredients: Ingredient[]
   return <form className="mt-3" onSubmit={(event) => { event.preventDefault(); onSave(lines(ingredientText), lines(stepText)) }}>
     <label className="block text-[12px] font-bold text-[#1A1A1A]">材料（1行ずつ）<textarea value={ingredientText} onChange={(event) => setIngredientText(event.target.value)} className="mt-1 min-h-24 w-full rounded-[9px] border p-2 text-[12px] text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.16)' }} /></label>
     <label className="mt-3 block text-[12px] font-bold text-[#1A1A1A]">作り方（1行ずつ）<textarea value={stepText} onChange={(event) => setStepText(event.target.value)} className="mt-1 min-h-24 w-full rounded-[9px] border p-2 text-[12px] text-[#1A1A1A]" style={{ borderColor: 'rgba(26,26,26,.16)' }} /></label>
-    <button type="submit" className="mt-3 rounded-[9px] border bg-white px-[14px] py-2 text-[12px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.16)' }}>下書きを保存</button>
+    <button type="submit" className="mt-3 rounded-[9px] border bg-white px-[14px] py-2 text-[12px] font-bold text-[#5A554F]" style={{ borderColor: 'rgba(26,26,26,.16)' }}>変更を保存</button>
   </form>
 }
 
@@ -179,11 +179,13 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   return <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">{children}</h2><span className="h-px flex-1 bg-[rgba(26,26,26,.1)]" /></div>
 }
 
-function recipeIngredients(relation?: NearbyRelation, override?: string[], custom?: string[]): Ingredient[] {
+function recipeIngredients(dishId: string, relation?: NearbyRelation, override?: string[], custom?: string[]): Ingredient[] {
   const stored = override ?? custom
   if (stored?.length) return stored.map((value) => ({ name: value, amount: '適量' }))
-  const names = relation?.new_ingredients?.length ? relation.new_ingredients : ['主な材料', '野菜', 'にんにく', '油', '塩', 'こしょう']
-  return names.map((name, index) => ({ name, amount: index === 0 ? '2人分' : '適量' }))
+  const baseDishId = relation?.source ?? dishId
+  const names = [...new Set([...(BASE_DISH_INGREDIENTS[baseDishId] ?? []), ...(relation?.new_ingredients ?? [])])]
+  const visibleNames = names.length ? names : ['主な材料', '野菜', 'にんにく', '油', '塩', 'こしょう']
+  return visibleNames.map((name) => ({ name, amount: '適量' }))
 }
 
 function recipeSteps(relation?: NearbyRelation, override?: string[], custom?: string[]) {

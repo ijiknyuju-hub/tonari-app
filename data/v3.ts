@@ -4,6 +4,19 @@ import type { Dish, NearbyRelation } from '@/types/dish'
 // Base dishes (10) listed first, alphabetically by id.
 // Target dishes (52) follow, alphabetically by id.
 
+export const BASE_DISH_INGREDIENTS: Readonly<Record<string, readonly string[]>> = {
+  curry: ['豚肉', '玉ねぎ', 'じゃがいも', 'にんじん', 'カレールー'],
+  'fried-rice': ['ご飯', '卵', '長ねぎ', 'ハム'],
+  karaage: ['鶏もも肉', 'にんにく', 'しょうが', '片栗粉'],
+  'mapo-tofu': ['豆腐', '豚ひき肉', '長ねぎ', '豆板醤'],
+  napolitan: ['パスタ', 'ケチャップ', 'ピーマン', 'ウインナー'],
+  nikujaga: ['牛肉', 'じゃがいも', '玉ねぎ', 'にんじん'],
+  omurice: ['卵', 'ご飯', 'ケチャップ', '鶏肉'],
+  oyakodon: ['鶏もも肉', '卵', '玉ねぎ', 'ご飯'],
+  peperoncino: ['パスタ', 'にんにく', '唐辛子', 'オリーブオイル'],
+  yakisoba: ['焼きそば麺', '豚肉', 'キャベツ', 'もやし'],
+}
+
 export const dishes: Dish[] = [
   // Base dishes
   { id: 'curry', name: 'カレー', variations: [] },

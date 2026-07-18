@@ -105,7 +105,7 @@ export default function SearchScreen() {
             />
           </label>
           <div className="mt-[14px] flex gap-6 border-b" style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}>
-            <TabButton active={tab === 'made'} onClick={() => changeTab('made')} icon={<PanIcon active={tab === 'made'} />}>作った料理</TabButton>
+            <TabButton active={tab === 'made'} onClick={() => changeTab('made')} icon={<PanIcon active={tab === 'made'} />}>作れる料理</TabButton>
             <TabButton active={tab === 'bookmarked'} onClick={() => changeTab('bookmarked')} icon={<SmallBookmarkIcon active={tab === 'bookmarked'} />}>ブックマーク</TabButton>
           </div>
           <div className="mt-[13px] flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">

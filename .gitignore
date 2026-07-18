@@ -51,3 +51,11 @@ next-env.d.ts
 # python
 __pycache__/
 *.pyc
+
+# generated Cloudflare adapter output (not used by the Pages deploy)
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

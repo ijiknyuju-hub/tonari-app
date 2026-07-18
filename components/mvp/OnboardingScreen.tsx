@@ -62,6 +62,9 @@ export default function OnboardingScreen() {
           <p className="mt-[13px] text-[13.5px] leading-[1.75]" style={{ color: '#7A7570' }}>
             選んだ料理をもとに、近い料理をおすすめします。いつもの味から、無理なく広げていけます。
           </p>
+          <p className="mt-2 text-[12px] font-bold" style={{ color: '#DE5528' }}>
+            おすすめの3品を選んであります。自由に変えられます。
+          </p>
         </div>
       </header>
 

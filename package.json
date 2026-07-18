@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "next dev",
+    "start": "wrangler pages dev out",
+    "lint": "eslint",
+    "preview": "next build && wrangler pages dev out",
+    "deploy": "next build && wrangler pages deploy out --project-name tonari-gohan"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
@@ -28,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.112.0"
   }
 }
