@@ -76,6 +76,11 @@ export const GENRE_BY_DISH_ID: Readonly<Record<string, GenreId>> = {
   'yakisoba-omelette': 'noodles',
   'yannyom-chicken': 'main-meat',
   yurinchi: 'main-meat',
+  'cold-tofu': 'side',
+  'cucumber-sunomono': 'side',
+  'spinach-ohitashi': 'side',
+  'bean-sprout-namul': 'side',
+  'tomato-onion-marinade': 'side',
 }
 
 export function genreForDish(dish: Pick<Dish, 'id' | 'name'> | { id: string; name?: string } | string): GenreId {

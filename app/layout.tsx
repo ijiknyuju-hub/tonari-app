@@ -1,15 +1,24 @@
-import { Analytics } from '@vercel/analytics/next'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { VisitTracker } from '@/components/mvp/VisitTracker'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tonari-gohan.pages.dev'),
   title: 'となりごはん',
   description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
+  applicationName: 'となりごはん',
+  manifest: '/manifest.webmanifest',
+  icons: { icon: '/icon.svg' },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'となりごはん',
+  },
+  formatDetection: { telephone: false },
   openGraph: {
     title: 'となりごはん',
     description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
-    url: 'https://tonari-app-fawn.vercel.app',
+    url: 'https://tonari-gohan.pages.dev',
     siteName: 'となりごはん',
     type: 'website',
   },
@@ -18,6 +27,14 @@ export const metadata: Metadata = {
     title: 'となりごはん',
     description: '作れる料理を選ぶだけ。少し変えれば作れそうな料理を提案する試作版です。',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#FFFFFF',
+  colorScheme: 'light',
 }
 
 export default function RootLayout({
@@ -38,7 +55,6 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         <VisitTracker />
         {children}
-        <Analytics />
       </body>
     </html>
   )

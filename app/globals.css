@@ -26,14 +26,48 @@
 }
 
 html {
+  min-height: 100%;
+  overscroll-behavior-y: none;
   background: #FFFFFF;
 }
 
 body {
+  min-height: 100dvh;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
+button,
+nav,
+[role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (max-width: 28rem) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+@media (display-mode: standalone) {
+  body {
+    min-height: 100dvh;
+  }
 }
 
 @layer components {

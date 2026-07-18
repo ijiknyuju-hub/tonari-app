@@ -55,6 +55,7 @@ function relationIntro(targetId: string) {
 
 export default function HomeScreen({ dateISO }: { dateISO: string }) {
   const [activeTab, setActiveTab] = useState<DifficultyTab>('stretch')
+  const [sourceOffset, setSourceOffset] = useState(0)
   const isClient = useIsClient()
   const { selectedBaseDishIds } = useSelectedBaseDishes()
   const { state, bookmark, unbookmark } = useUserState()
@@ -74,13 +75,19 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
 
   const hasCookableWeekSet = hasWeekSet && remainingCount === 0
 
+  const availableSourceIds = useMemo(
+    () => selectedBaseDishIds.filter((id) => relations.some((relation) => relation.source === id)),
+    [selectedBaseDishIds],
+  )
+  const activeSourceId = availableSourceIds[sourceOffset % Math.max(availableSourceIds.length, 1)]
+
   const recommendationDishes = useMemo(() => {
     const candidates = relations.filter(
-      (relation) => relation.tab === activeTab && selectedBaseDishIds.includes(relation.source),
+      (relation) => relation.tab === activeTab && relation.source === activeSourceId,
     )
     if (candidates.length === 0) return []
 
-    const start = stableHash(`${dateISO}:${activeTab}:${selectedBaseDishIds.join(',')}`) % candidates.length
+    const start = stableHash(`${dateISO}:${activeTab}:${activeSourceId}`) % candidates.length
     return candidates.slice(start).concat(candidates.slice(0, start)).map((relation) => {
       const dish = dishes.find((candidate) => candidate.id === relation.target)
       return {
@@ -90,7 +97,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
         intro: `${relation.description_line1}${relation.description_line2}`,
       }
     })
-  }, [activeTab, dateISO, selectedBaseDishIds])
+  }, [activeSourceId, activeTab, dateISO])
 
   const weekSetDishes = useMemo<HeroDish[]>(() => {
     return weekSetDishIds.flatMap((id) => {
@@ -107,7 +114,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
 
   const visibleDishes = hasCookableWeekSet ? weekSetDishes : recommendationDishes
   const hero = visibleDishes[0]
-  const subDishes = visibleDishes.slice(1, 5)
+  const subDishes = visibleDishes.slice(1, 3)
 
   if (!isClient || selectedBaseDishIds.length === 0) {
     return <main className="tn-screen" />
@@ -115,7 +122,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
 
   return (
     <main className="tn-screen">
-      <header style={{ padding: '58px 22px 8px', background: '#FFFFFF' }}>
+      <header style={{ padding: 'max(58px, calc(env(safe-area-inset-top) + 18px)) 22px 8px', background: '#FFFFFF' }}>
         <div className="mx-auto flex max-w-[402px] items-center justify-between">
           <div className="flex items-center gap-[9px]">
             <span
@@ -182,9 +189,15 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
 
         {!hasCookableWeekSet ? (
           <div className="mt-4 flex justify-end">
-            <span className="flex items-center gap-[5px] text-[12px] font-semibold" style={{ color: '#7A7570' }}>
+            <button
+              type="button"
+              disabled={availableSourceIds.length < 2}
+              onClick={() => setSourceOffset((current) => (current + 1) % availableSourceIds.length)}
+              className="flex min-h-11 items-center gap-[5px] rounded-full px-3 text-[12px] font-semibold disabled:opacity-40"
+              style={{ color: '#7A7570', background: '#F7F5F2' }}
+            >
               <RefreshIcon /> 他の起点にする
-            </span>
+            </button>
           </div>
         ) : null}
 
@@ -210,7 +223,7 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
               <h1 className="mt-[7px] text-[27px] font-bold tracking-[.2px]" style={{ color: '#1A1A1A', fontFamily: 'var(--font-heading)' }}>
                 {hero.name}
               </h1>
-              <p className="mt-[9px] line-clamp-2 text-[14px] leading-[1.7]" style={{ color: '#7A7570' }}>{hero.intro}</p>
+              <p className="mt-[9px] text-[14px] leading-[1.7]" style={{ color: '#7A7570' }}>{hero.intro}</p>
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/dish/${hero.id}`}
@@ -249,22 +262,20 @@ export default function HomeScreen({ dateISO }: { dateISO: string }) {
                 const badge = DIFFICULTY_BADGES[difficulty]
                 const bookmarked = state.bookmarked.includes(dish.id)
                 return (
-                  <div key={dish.id} className="flex items-center gap-4 border-b py-[18px]" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
-                    <Link href={`/dish/${dish.id}`} className="flex min-w-0 flex-1 items-center gap-4">
+                  <div key={dish.id} className="flex items-start gap-2 border-b py-[18px]" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
+                    <Link href={`/dish/${dish.id}`} className="flex min-w-0 flex-1 items-start gap-4">
                       <div className="w-[100px] shrink-0 aspect-[4/3] overflow-hidden rounded-[8px]" style={{ background: '#F2F2F2' }}>
                         <DishArt dish={dish.name} seed={dish.id} radius={8} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-[16.5px] font-bold" style={{ color: '#1A1A1A' }}>{dish.name}</div>
-                        <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.55]" style={{ color: '#7A7570' }}>{dish.intro}</p>
+                        <p className="mt-1 break-words text-[12.5px] leading-[1.65]" style={{ color: '#7A7570' }}>{dish.intro}</p>
+                        <span className="mt-2 inline-flex whitespace-nowrap rounded-full px-[9px] py-1 text-[11px] font-bold" style={{ background: badge.background, color: badge.color }}>{DIFFICULTY_LABELS[difficulty]}</span>
                       </div>
                     </Link>
-                    <div className="flex shrink-0 self-stretch flex-col items-end justify-between gap-[10px]">
-                      <span className="whitespace-nowrap rounded-full px-[9px] py-1 text-[11px] font-bold" style={{ background: badge.background, color: badge.color }}>{DIFFICULTY_LABELS[difficulty]}</span>
-                      <button type="button" aria-label={bookmarked ? `${dish.name}の保存を解除` : `${dish.name}を保存`} onClick={() => (bookmarked ? unbookmark(dish.id) : bookmark(dish.id))} className="p-0">
-                        <BookmarkIcon filled={bookmarked} color={bookmarked ? '#DE5528' : '#7A7570'} />
-                      </button>
-                    </div>
+                    <button type="button" aria-label={bookmarked ? `${dish.name}の保存を解除` : `${dish.name}を保存`} onClick={() => (bookmarked ? unbookmark(dish.id) : bookmark(dish.id))} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full">
+                      <BookmarkIcon filled={bookmarked} color={bookmarked ? '#DE5528' : '#7A7570'} />
+                    </button>
                   </div>
                 )
               })}

@@ -3,15 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { dishes } from '@/data/v3'
-import CharTile from '@/components/mvp/CharTile'
+import DishArt from '@/components/mvp/DishArt'
 import { useIsClient } from '@/lib/mvp/useIsClient'
 import { useSelectedBaseDishes } from '@/lib/mvp/useSelectedBaseDishes'
 
-const ONBOARDING_IDS = [
-  'thai-basil-rice', 'fried-rice', 'nikujaga', 'curry',
-  'mapo-tofu', 'karaage', 'oyakodon', 'yakisoba',
-  'omurice', 'napolitan', 'peperoncino', 'tonjiru',
-  'tatsuta-age', 'chicken-nanban', 'beef-stew',
+const ONBOARDING_GROUPS = [
+  { label: '和食・おかず', ids: ['nikujaga', 'oyakodon', 'karaage'] },
+  { label: 'ごはんもの', ids: ['curry', 'fried-rice', 'omurice', 'mapo-tofu'] },
+  { label: '麺類', ids: ['napolitan', 'peperoncino', 'yakisoba'] },
 ] as const
 
 const INITIAL_SELECTION = ['fried-rice', 'karaage', 'nikujaga']
@@ -28,11 +27,6 @@ export default function OnboardingScreen() {
 
   if (!isClient || selectedBaseDishIds.length > 0) return <main className="tn-screen" />
 
-  const choices = ONBOARDING_IDS.flatMap((id) => {
-    const dish = dishes.find((candidate) => candidate.id === id)
-    return dish ? [{ id, name: dish.name }] : []
-  })
-
   function toggleDish(id: string) {
     setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
   }
@@ -45,7 +39,7 @@ export default function OnboardingScreen() {
 
   return (
     <main className="flex min-h-svh flex-col" style={{ background: '#FFFFFF', color: '#1A1A1A' }}>
-      <header style={{ padding: '58px 24px 14px' }}>
+      <header style={{ padding: 'max(58px, calc(env(safe-area-inset-top) + 18px)) 24px 14px' }}>
         <div className="mx-auto max-w-[402px]">
           <div className="flex items-center gap-[9px]">
             <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-[8px]" style={{ background: '#DE5528' }}>
@@ -73,36 +67,45 @@ export default function OnboardingScreen() {
           <span className="text-[12.5px] font-bold" style={{ color: '#7A7570' }}>よく作るものを、いくつでも</span>
           <span className="text-[11.5px] font-bold" style={{ color: '#DE5528' }}>{selectedIds.length} 品選択中</span>
         </div>
-        <div className="grid grid-cols-3 gap-[11px]">
-          {choices.map((dish) => {
-            const selected = selectedIds.includes(dish.id)
-            return (
-              <button
-                key={dish.id}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => toggleDish(dish.id)}
-                className="overflow-hidden rounded-[13px] text-center"
-                style={{ border: selected ? '2px solid #DE5528' : '1px solid rgba(26, 26, 26, 0.1)', boxShadow: selected ? '0 5px 14px rgba(222, 85, 40, 0.18)' : undefined }}
-              >
-                <div className="relative aspect-square">
-                  <CharTile name={dish.name} size="100%" radius={0} />
-                  {selected ? (
-                    <span className="absolute right-[6px] top-[6px] flex h-[22px] w-[22px] items-center justify-center rounded-full border-2" style={{ background: '#DE5528', borderColor: '#FFFFFF' }}>
-                      <svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="m2 7 3 3 6-7" stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </span>
-                  ) : null}
-                </div>
-                <div className="bg-[#FFFFFF] px-[5px] py-2">
-                  <span className="block text-[11.5px] leading-[1.2]" style={{ color: selected ? '#DE5528' : '#1A1A1A', fontWeight: selected ? 700 : 500 }}>{dish.name}</span>
-                </div>
-              </button>
-            )
-          })}
+        <div className="space-y-5">
+          {ONBOARDING_GROUPS.map((group) => (
+            <section key={group.label}>
+              <h2 className="mb-2 text-[12px] font-bold tracking-[.3px]" style={{ color: '#7A7570' }}>{group.label}</h2>
+              <div className="grid grid-cols-3 gap-[11px]">
+                {group.ids.map((id) => {
+                  const dish = dishes.find((candidate) => candidate.id === id)
+                  if (!dish) return null
+                  const selected = selectedIds.includes(dish.id)
+                  return (
+                    <button
+                      key={dish.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleDish(dish.id)}
+                      className="overflow-hidden rounded-[13px] text-center"
+                      style={{ border: selected ? '2px solid #DE5528' : '1px solid rgba(26, 26, 26, 0.1)', boxShadow: selected ? '0 5px 14px rgba(222, 85, 40, 0.18)' : undefined }}
+                    >
+                      <div className="relative aspect-[4/3]">
+                        <DishArt dish={dish.name} seed={dish.id} motif={onboardingMotif(dish.id)} radius={0} />
+                        {selected ? (
+                          <span className="absolute right-[6px] top-[6px] flex h-[22px] w-[22px] items-center justify-center rounded-full border-2" style={{ background: '#DE5528', borderColor: '#FFFFFF' }}>
+                            <svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="m2 7 3 3 6-7" stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="bg-[#FFFFFF] px-[5px] py-2">
+                        <span className="block text-[11.5px] leading-[1.2]" style={{ color: selected ? '#DE5528' : '#1A1A1A', fontWeight: selected ? 700 : 500 }}>{dish.name}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       </div>
 
-      <footer className="border-t bg-[#FFFFFF]" style={{ padding: '15px 24px 30px', borderColor: 'rgba(26, 26, 26, 0.09)' }}>
+      <footer className="border-t bg-[#FFFFFF]" style={{ padding: '15px 24px max(30px, calc(env(safe-area-inset-bottom) + 14px))', borderColor: 'rgba(26, 26, 26, 0.09)' }}>
         <div className="mx-auto max-w-[402px]">
           <div className="mb-[13px] flex items-center justify-between">
             <span className="text-[13px]" style={{ color: '#7A7570' }}>料理帳に <b className="text-[16px]" style={{ color: '#DE5528' }}>{selectedIds.length}</b> 品</span>
@@ -122,4 +125,10 @@ export default function OnboardingScreen() {
       </footer>
     </main>
   )
+}
+
+function onboardingMotif(dishId: string): 'bowl' | 'plate' | 'pan' {
+  if (['nikujaga', 'oyakodon', 'curry', 'fried-rice', 'mapo-tofu'].includes(dishId)) return 'bowl'
+  if (dishId === 'yakisoba') return 'pan'
+  return 'plate'
 }

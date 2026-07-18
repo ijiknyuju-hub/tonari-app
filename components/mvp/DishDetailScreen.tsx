@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BASE_DISH_INGREDIENTS, dishes } from '@/data/v3'
+import { estimatedAmount, RECIPE_DETAILS_BY_DISH_ID } from '@/data/recipes'
 import type { NearbyRelation } from '@/types/dish'
 import { deriveRank, madeCountForDish, type DishRank } from '@/lib/mvp/rank'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
@@ -15,6 +16,9 @@ import DishArt from './DishArt'
 import RankChip from './RankChip'
 
 type Ingredient = { name: string; amount: string }
+
+const RECIPE_IMPORT_ENABLED = false
+const SIDE_DISH_IDS = new Set(['cold-tofu', 'cucumber-sunomono', 'spinach-ohitashi', 'bean-sprout-namul', 'tomato-onion-marinade'])
 
 type DishDetailScreenProps = {
   relation?: NearbyRelation
@@ -43,8 +47,8 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
   const madeCount = madeCountForDish(state.made_records, dishId)
   const rank = deriveRank(madeCount)
   const ingredients = useMemo(() => recipeIngredients(dishId, relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, dishId, override?.ingredients_override, relation])
-  const steps = useMemo(() => recipeSteps(relation, override?.steps_override, customDish?.steps), [customDish?.steps, override?.steps_override, relation])
-  const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && (genreForDish(dish) === 'side' || genreForDish(dish) === 'soup')).slice(0, 3), [dishId])
+  const steps = useMemo(() => recipeSteps(relation, override?.steps_override, customDish?.steps, dishId), [customDish?.steps, dishId, override?.steps_override, relation])
+  const sideDishes = useMemo(() => dishes.filter((dish) => dish.id !== dishId && SIDE_DISH_IDS.has(dish.id) && genreForDish(dish) === 'side').slice(0, 3), [dishId])
 
   function saveUrl(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -65,7 +69,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
       </header>
 
       <div className="mx-auto max-w-[402px] px-5 pb-[106px] pt-1">
-        {sourceState === 'youtube' ? <VideoHero name={displayName} activeVideo={activeVideo} /> : <PhotoHero name={displayName} source={sites[0]} />}
+        {RECIPE_IMPORT_ENABLED && sourceState === 'youtube' ? <VideoHero name={displayName} activeVideo={activeVideo} /> : <PhotoHero name={displayName} source={RECIPE_IMPORT_ENABLED ? sites[0] : undefined} />}
         <h1 className="mt-4 text-[25px] font-bold leading-snug tracking-[.3px] text-[#1A1A1A]" style={{ fontFamily: 'var(--font-heading)' }}>{displayName}</h1>
         <p className="mt-[9px] text-[14px] leading-[1.75] text-[#7A7570]">{relation?.description_line1 ?? 'いつもの材料で、気負わずつくれる一皿です。'}</p>
 
@@ -81,16 +85,16 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
           }}
         />
 
-        {sourceState === 'youtube' ? (
+        {RECIPE_IMPORT_ENABLED && sourceState === 'youtube' ? (
           <>
             <VideoSources videos={videos} activeVideo={activeVideo} onSelect={(sourceId) => setMainVideo(dishId, sourceId)} onRemove={(source) => removeSource(dishId, source.id)} />
             {sites.length ? <SavedSourceSection sites={sites} onRemove={(source) => removeSource(dishId, source.id)} /> : null}
           </>
-        ) : (
+        ) : RECIPE_IMPORT_ENABLED ? (
           <SavedSourceSection sites={sites} onRemove={(source) => removeSource(dishId, source.id)} />
-        )}
+        ) : null}
 
-        <UrlForm open={showUrlForm} value={draftUrl} error={urlError} onOpen={() => setShowUrlForm(true)} onCancel={() => { setShowUrlForm(false); setUrlError('') }} onChange={setDraftUrl} onSubmit={saveUrl} label={sourceState === 'youtube' ? '＋動画・URLを追加' : '＋URLを追加'} />
+        {RECIPE_IMPORT_ENABLED ? <UrlForm open={showUrlForm} value={draftUrl} error={urlError} onOpen={() => setShowUrlForm(true)} onCancel={() => { setShowUrlForm(false); setUrlError('') }} onChange={setDraftUrl} onSubmit={saveUrl} label={sourceState === 'youtube' ? '＋動画・URLを追加' : '＋URLを追加'} /> : null}
 
         <SideDishes dishes={sideDishes} />
         <RankAndRecord rank={rank} madeCount={madeCount} onMade={() => recordMade({ dish_id: dishId, made_at: new Date().toISOString(), rating: 'ok' })} />
@@ -125,10 +129,10 @@ function VideoHero({ name, activeVideo }: { name: string; activeVideo?: RecipeSo
 function RecipeCard({ ingredients, steps, source, showNotice, editing, onSave }: { ingredients: Ingredient[]; steps: string[]; source?: RecipeSource; showNotice: boolean; editing: boolean; onSave: (ingredients: string[], steps: string[]) => void }) {
   return (
     <section className="mt-[20px] rounded-[12px] border p-4" style={{ borderColor: 'rgba(26,26,26,.12)' }}>
-      <div className="flex items-center gap-2"><h2 className="m-0 text-[13px] font-bold text-[#1A1A1A]">作り方メモ</h2>{source ? <a href={source.url} target="_blank" rel="noreferrer" className="ml-auto text-[11px] font-bold text-[#DE5528]">出典: {sourceHostname(source.url)} ↗</a> : null}</div>
+      <div className="flex items-center gap-2"><h2 className="m-0 text-[15px] font-bold text-[#1A1A1A]">レシピ（2人分）</h2>{source ? <a href={source.url} target="_blank" rel="noreferrer" className="ml-auto text-[11px] font-bold text-[#DE5528]">出典: {sourceHostname(source.url)} ↗</a> : null}</div>
       {editing ? <DraftEditor key={`${ingredients.map((item) => item.name).join('|')}-${steps.join('|')}`} ingredients={ingredients} steps={steps} onSave={onSave} /> : (
         <>
-          {showNotice ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">動画やレシピURLを貼って、あなたのレシピに育てましょう。作り方はいつでも整えられます。</p> : source ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">要点を自分用にまとめています。分量やコツは出典のページも確認できます。</p> : null}
+          {showNotice ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">分量は2人分の目安です。火加減や味つけは、使う道具や好みに合わせて調整してください。</p> : source ? <p className="mt-3 rounded-[10px] bg-[#F7F5F2] p-[10px_12px] text-[11.5px] leading-[1.55] text-[#7A7570]">要点を自分用にまとめています。分量やコツは出典のページも確認できます。</p> : null}
           <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">材料の目安</p>
           <div className="mt-[10px] space-y-2">{ingredients.map((ingredient) => <div key={`${ingredient.name}-${ingredient.amount}`} className="flex items-baseline gap-2 text-[12.5px]"><span className="font-semibold text-[#1A1A1A]">{ingredient.name}</span><span className="relative top-[-3px] flex-1 border-b border-dotted" style={{ borderColor: 'rgba(26,26,26,.22)' }} /><span className="whitespace-nowrap text-[#7A7570]">{ingredient.amount}</span></div>)}</div>
           <p className="mt-4 text-[12.5px] font-bold text-[#1A1A1A]">作り方</p>
@@ -181,17 +185,28 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 function recipeIngredients(dishId: string, relation?: NearbyRelation, override?: string[], custom?: string[]): Ingredient[] {
   const stored = override ?? custom
-  if (stored?.length) return stored.map((value) => ({ name: value, amount: '適量' }))
+  if (stored?.length) return stored.map(parseIngredientLine)
+  const directRecipe = RECIPE_DETAILS_BY_DISH_ID[dishId]
+  if (directRecipe) return directRecipe.ingredients.map((ingredient) => ({ ...ingredient }))
   const baseDishId = relation?.source ?? dishId
-  const names = [...new Set([...(BASE_DISH_INGREDIENTS[baseDishId] ?? []), ...(relation?.new_ingredients ?? [])])]
+  const detailedBaseNames = RECIPE_DETAILS_BY_DISH_ID[baseDishId]?.ingredients.map((ingredient) => ingredient.name)
+  const names = [...new Set([...(detailedBaseNames ?? BASE_DISH_INGREDIENTS[baseDishId] ?? []), ...(relation?.new_ingredients ?? [])])]
   const visibleNames = names.length ? names : ['主な材料', '野菜', 'にんにく', '油', '塩', 'こしょう']
-  return visibleNames.map((name) => ({ name, amount: '適量' }))
+  return visibleNames.map((name) => ({ name, amount: estimatedAmount(name) }))
 }
 
-function recipeSteps(relation?: NearbyRelation, override?: string[], custom?: string[]) {
+function recipeSteps(relation?: NearbyRelation, override?: string[], custom?: string[], dishId?: string) {
   const stored = override ?? custom
   if (stored?.length) return stored
-  return relation?.rough_steps?.length ? relation.rough_steps : ['材料を食べやすい大きさに切る。', 'フライパンで香りが立つまで炒める。', '味をととのえて、温かいうちに盛りつける。']
+  if (dishId && RECIPE_DETAILS_BY_DISH_ID[dishId]) return [...RECIPE_DETAILS_BY_DISH_ID[dishId].steps]
+  return relation?.rough_steps?.length
+    ? relation.rough_steps.map((step) => /[。！？]$/.test(step) ? step : `${step}。`)
+    : ['材料を食べやすい大きさに切る。', 'フライパンで香りが立つまで炒める。', '味をととのえて、温かいうちに盛りつける。']
+}
+
+function parseIngredientLine(value: string): Ingredient {
+  const match = value.trim().match(/^(.+?)\s+((?:約)?[0-9０-９].+|適量|少々)$/)
+  return match ? { name: match[1], amount: match[2] } : { name: value.trim(), amount: estimatedAmount(value) }
 }
 
 function lines(value: string) {

@@ -83,6 +83,13 @@ export const dishes: Dish[] = [
   { id: 'yakisoba-omelette', name: '焼きそばオムレツ', variations: [] },
   { id: 'yannyom-chicken', name: 'ヤンニョムチキン', variations: [] },
   { id: 'yurinchi', name: '油淋鶏', variations: [] },
+
+  // Side dishes used by the "あと一品" shelf.
+  { id: 'cold-tofu', name: '冷奴', variations: [] },
+  { id: 'cucumber-sunomono', name: 'きゅうりの酢の物', variations: [] },
+  { id: 'spinach-ohitashi', name: 'ほうれん草のおひたし', variations: [] },
+  { id: 'bean-sprout-namul', name: 'もやしのナムル', variations: [] },
+  { id: 'tomato-onion-marinade', name: 'トマトと玉ねぎのマリネ', variations: [] },
 ]
 
 // ─── Relations ───────────────────────────────────────────────────────────────

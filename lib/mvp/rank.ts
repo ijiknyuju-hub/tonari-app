@@ -11,8 +11,8 @@ export const RANK_LABELS: Readonly<Record<Exclude<DishRank, null>, string>> = {
 export function deriveRank(recordCount: number): DishRank {
   const count = Math.max(0, Math.floor(recordCount))
   if (count === 0) return null
-  if (count >= 12) return 'specialty'
-  if (count >= 5) return 'regular'
+  if (count >= 3) return 'specialty'
+  if (count >= 2) return 'regular'
   return 'made'
 }
 
