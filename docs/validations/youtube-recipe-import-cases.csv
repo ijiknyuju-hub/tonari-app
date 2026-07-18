@@ -1,0 +1,1 @@
+case_id,category,url,expected_dish_names,expected_dish_count,metadata_ok,dish_match_top1,dish_match_top3,ingredient_recall,quantity_hallucination,step_order_error,latency_seconds,estimated_cost_usd,outcome,failure_reason,notes

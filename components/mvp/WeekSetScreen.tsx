@@ -24,8 +24,10 @@ export default function WeekSetScreen() {
   const { selectedBaseDishIds } = useSelectedBaseDishes()
   const { state } = useUserState()
   const { customDishes } = useDishLibrary()
-  const { dishIds, hasWeekSet, setWeekSet, replaceDish } = useWeekSet()
+  const { dishIds, hasWeekSet, isDismissed, setWeekSet, replaceDish, clearWeekSet } = useWeekSet()
   const [openSwapId, setOpenSwapId] = useState<string | null>(null)
+  const [showSetActions, setShowSetActions] = useState(false)
+  const [draftRevision, setDraftRevision] = useState(0)
   const [addingItem, setAddingItem] = useState(false)
   const [draftItem, setDraftItem] = useState('')
 
@@ -41,13 +43,16 @@ export default function WeekSetScreen() {
     [customDishes, selectedBaseDishIds, state.bookmarked, state.made_records, state.selected_dishes],
   )
 
-  const draft = useMemo(() => buildDraft(knownIds, customDishes, state), [customDishes, knownIds, state])
+  const draft = useMemo(() => buildDraft(knownIds, customDishes, state, draftRevision), [customDishes, draftRevision, knownIds, state])
 
   useEffect(() => {
-    if (!hasWeekSet && draft.length > 0) setWeekSet(draft.map((dish) => dish.id))
-  }, [draft, hasWeekSet, setWeekSet])
+    if (!hasWeekSet && !isDismissed && draft.length > 0) setWeekSet(draft.map((dish) => dish.id))
+  }, [draft, hasWeekSet, isDismissed, setWeekSet])
 
-  const activeIds = hasWeekSet ? dishIds : draft.map((dish) => dish.id)
+  const activeIds = useMemo(
+    () => hasWeekSet ? dishIds : isDismissed ? [] : draft.map((dish) => dish.id),
+    [dishIds, draft, hasWeekSet, isDismissed],
+  )
   const displayDishes = useMemo(() => {
     const draftById = new Map(draft.map((dish) => [dish.id, dish]))
     return activeIds.flatMap((id) => {
@@ -67,6 +72,23 @@ export default function WeekSetScreen() {
   )
   const shopping = useShoppingList(shoppingDishes)
 
+  const rebuildWeekSet = () => {
+    const nextRevision = draftRevision + 1
+    const nextDraft = buildDraft(knownIds, customDishes, state, nextRevision)
+    setDraftRevision(nextRevision)
+    setWeekSet(nextDraft.map((dish) => dish.id))
+    shopping.clearChecks()
+    setOpenSwapId(null)
+    setShowSetActions(false)
+  }
+
+  const emptyWeekSet = () => {
+    clearWeekSet()
+    shopping.clearChecks()
+    setOpenSwapId(null)
+    setShowSetActions(false)
+  }
+
   const commitItem = () => {
     const name = draftItem.trim()
     if (name) shopping.addItem(name)
@@ -79,6 +101,18 @@ export default function WeekSetScreen() {
       <FlowHeader title="今週のセット" />
 
       <div className="flex-1 px-[22px] pb-5 pt-[2px]">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[12px] leading-[1.5]" style={{ color: '#7A7570' }}>{activeIds.length ? `${activeIds.length}皿を、順番を決めずに使えます。` : '今週のセットは空です。'}</p>
+          <button type="button" onClick={() => setShowSetActions((current) => !current)} className="min-h-11 rounded-full px-3 text-[12px] font-bold" style={{ color: '#DE5528', background: '#FFF6F2' }}>{showSetActions ? '閉じる' : 'セットを編集'}</button>
+        </div>
+        {showSetActions ? <div className="mb-4 rounded-[12px] border bg-[#FBFAF8] p-3" style={{ borderColor: 'rgba(26,26,26,.10)' }}>
+          <button type="button" onClick={rebuildWeekSet} className="flex min-h-12 w-full items-center justify-between rounded-[10px] bg-white px-3 text-left"><span><span className="block text-[13px] font-bold text-[#1A1A1A]">献立を組み直す</span><span className="mt-0.5 block text-[11px] text-[#7A7570]">履歴や保存料理は残したまま、5皿を選び直します</span></span><span className="text-[#DE5528]">↻</span></button>
+          {shopping.checkedCount > 0 ? <button type="button" onClick={() => shopping.clearChecks()} className="mt-2 flex min-h-11 w-full items-center rounded-[10px] bg-white px-3 text-[12px] font-bold text-[#5A554F]">買い物チェックをすべて外す</button> : null}
+          {activeIds.length ? <button type="button" onClick={emptyWeekSet} className="mt-2 flex min-h-11 w-full items-center rounded-[10px] px-3 text-[12px] font-bold text-[#7A7570]">今週のセットを空にする</button> : null}
+        </div> : null}
+
+        {!activeIds.length ? <section className="rounded-[14px] border border-dashed px-5 py-10 text-center" style={{ borderColor: 'rgba(26,26,26,.18)' }}><p className="text-[14px] font-bold text-[#1A1A1A]">今週のセットはまだありません</p><p className="mt-2 text-[12px] leading-[1.6] text-[#7A7570]">いつでも組み直せます。料理履歴や保存したレシピは消えません。</p><button type="button" onClick={rebuildWeekSet} className="mt-4 min-h-12 rounded-[10px] bg-[#DE5528] px-5 text-[14px] font-bold text-white">献立を作る</button></section> : null}
+
         <div className="border-t" style={{ borderColor: 'rgba(26, 26, 26, 0.08)' }}>
           {displayDishes.map((dish) => {
             const rank = rankForDish(state.made_records, dish.id)
@@ -146,7 +180,7 @@ export default function WeekSetScreen() {
           })}
         </div>
 
-        <section className="mt-[22px] border-t pt-[18px]" style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}>
+        {activeIds.length ? <section className="mt-[22px] border-t pt-[18px]" style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}>
           <div className="flex items-baseline gap-[7px]">
             <h2 className="text-[13.5px] font-bold" style={{ color: '#1A1A1A' }}>買うもの</h2>
             <span className="text-[13px]" style={{ color: '#7A7570' }}><b className="text-[15px]" style={{ color: '#DE5528' }}>{shopping.items.length}</b> 品</span>
@@ -205,13 +239,13 @@ export default function WeekSetScreen() {
               </button>
             )}
           </div>
-        </section>
+        </section> : null}
       </div>
 
       <div className="shrink-0 border-t bg-white px-[22px] pb-[30px] pt-[14px]" style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}>
-        <Link href="/shopping" className="flex w-full items-center justify-center gap-2 rounded-[12px] py-[15px] text-[15.5px] font-bold tracking-[.5px]" style={{ background: '#DE5528', color: '#FFFFFF', boxShadow: '0 6px 16px rgba(222, 85, 40, 0.28)' }}>
+        {activeIds.length ? <Link href="/shopping" className="flex w-full items-center justify-center gap-2 rounded-[12px] py-[15px] text-[15.5px] font-bold tracking-[.5px]" style={{ background: '#DE5528', color: '#FFFFFF', boxShadow: '0 6px 16px rgba(222, 85, 40, 0.28)' }}>
           このセットで買い物リストへ <ArrowRight color="#FFFFFF" />
-        </Link>
+        </Link> : <button type="button" onClick={rebuildWeekSet} className="flex min-h-12 w-full items-center justify-center rounded-[12px] text-[15px] font-bold text-white" style={{ background: '#DE5528' }}>献立を作る</button>}
       </div>
     </main>
   )
@@ -280,7 +314,7 @@ function SwapButton({ onClick, compact = false }: { onClick: () => void; compact
   return <button type="button" onClick={onClick} aria-label="入れ替え候補を開く" className="flex shrink-0 items-center justify-center rounded-full border bg-white" style={{ width: size, height: size, borderColor: 'rgba(26, 26, 26, 0.12)' }}><SwapIcon /></button>
 }
 
-function buildDraft(knownIds: Set<string>, customDishes: ReturnType<typeof useDishLibrary>['customDishes'], state: ReturnType<typeof useUserState>['state']) {
+function buildDraft(knownIds: Set<string>, customDishes: ReturnType<typeof useDishLibrary>['customDishes'], state: ReturnType<typeof useUserState>['state'], revision = 0) {
   const sourceIds = knownIds.size > 0 ? [...knownIds] : dishes.slice(0, 5).map((dish) => dish.id)
   const familiar = sourceIds.flatMap((id) => resolveDish(id, customDishes)).filter((dish): dish is DisplayDish => Boolean(dish))
   const byOldest = (left: DisplayDish, right: DisplayDish) => {
@@ -293,8 +327,8 @@ function buildDraft(knownIds: Set<string>, customDishes: ReturnType<typeof useDi
     return rank === 'regular' || rank === 'specialty'
   }).sort(byOldest)
   const bookmarks = familiar.filter((dish) => state.bookmarked.includes(dish.id)).sort(byOldest)
-  const normal = uniqueById([...regulars, ...bookmarks, ...familiar.sort(byOldest)])
-  const bridges = relations
+  const normal = rotate(uniqueById([...regulars, ...bookmarks, ...familiar.sort(byOldest)]), revision)
+  const bridges = rotate(relations
     .filter((relation) => sourceIds.includes(relation.source) && !knownIds.has(relation.target))
     .map((relation) => {
       const target = dishes.find((dish) => dish.id === relation.target)
@@ -307,7 +341,7 @@ function buildDraft(knownIds: Set<string>, customDishes: ReturnType<typeof useDi
         unlock: relation.new_ingredients[0] ? `${relation.new_ingredients[0]}があれば、この先にも近い一皿がひろがります。` : undefined,
       } : null
     })
-    .filter((dish): dish is NonNullable<typeof dish> => Boolean(dish))
+    .filter((dish): dish is NonNullable<typeof dish> => Boolean(dish)), revision)
 
   const bridgeCount = normal.length < 4 ? Math.min(2, 5 - normal.length, bridges.length) : Math.min(1, bridges.length)
   const selectedBridges = bridges.slice(0, bridgeCount)
@@ -335,6 +369,12 @@ function resolveDish(id: string, customDishes: ReturnType<typeof useDishLibrary>
 
 function uniqueById<T extends { id: string }>(items: readonly T[]) {
   return items.filter((item, index) => items.findIndex((candidate) => candidate.id === item.id) === index)
+}
+
+function rotate<T>(items: readonly T[], offset: number) {
+  if (!items.length) return []
+  const start = Math.abs(offset) % items.length
+  return [...items.slice(start), ...items.slice(0, start)]
 }
 
 function ingredientDiff(base: ReturnType<typeof shoppingDishesFromWeekSet>, candidate: ReturnType<typeof shoppingDishesFromWeekSet>) {

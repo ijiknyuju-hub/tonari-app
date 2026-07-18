@@ -10,9 +10,10 @@ export const WEEK_SET_SIZE = 5
 export type WeekSetState = {
   dishIds: string[]
   updatedAt: string
+  dismissed: boolean
 }
 
-const EMPTY_WEEK_SET: WeekSetState = { dishIds: [], updatedAt: '' }
+const EMPTY_WEEK_SET: WeekSetState = { dishIds: [], updatedAt: '', dismissed: false }
 const EMPTY_SNAPSHOT = JSON.stringify(EMPTY_WEEK_SET)
 
 export function useWeekSet() {
@@ -20,7 +21,7 @@ export function useWeekSet() {
   const state = useMemo(() => parseWeekSet(snapshot), [snapshot])
 
   const setWeekSet = useCallback((dishIds: readonly string[]) => {
-    writeWeekSet({ dishIds: normalizeDishIds(dishIds), updatedAt: new Date().toISOString() })
+    writeWeekSet({ dishIds: normalizeDishIds(dishIds), updatedAt: new Date().toISOString(), dismissed: false })
   }, [])
 
   // Mutators read the freshest stored state at call time: the React snapshot
@@ -28,14 +29,14 @@ export function useWeekSet() {
   const addDish = useCallback((dishId: string) => {
     const current = currentWeekSet()
     if (!dishId.trim() || current.dishIds.includes(dishId) || current.dishIds.length >= WEEK_SET_SIZE) return false
-    writeWeekSet({ dishIds: [...current.dishIds, dishId], updatedAt: new Date().toISOString() })
+    writeWeekSet({ dishIds: [...current.dishIds, dishId], updatedAt: new Date().toISOString(), dismissed: false })
     return true
   }, [])
 
   const removeDish = useCallback((dishId: string) => {
     const current = currentWeekSet()
     if (!current.dishIds.includes(dishId)) return
-    writeWeekSet({ dishIds: current.dishIds.filter((id) => id !== dishId), updatedAt: new Date().toISOString() })
+    writeWeekSet({ dishIds: current.dishIds.filter((id) => id !== dishId), updatedAt: new Date().toISOString(), dismissed: false })
   }, [])
 
   const replaceDish = useCallback((dishId: string, replacementDishId: string) => {
@@ -44,6 +45,7 @@ export function useWeekSet() {
     writeWeekSet({
       dishIds: current.dishIds.map((id) => (id === dishId ? replacementDishId : id)),
       updatedAt: new Date().toISOString(),
+      dismissed: false,
     })
   }, [])
 
@@ -56,12 +58,13 @@ export function useWeekSet() {
     [replaceDish],
   )
 
-  const clearWeekSet = useCallback(() => writeWeekSet(EMPTY_WEEK_SET), [])
+  const clearWeekSet = useCallback(() => writeWeekSet({ dishIds: [], updatedAt: new Date().toISOString(), dismissed: true }), [])
 
   return {
     state,
     dishIds: state.dishIds,
     hasWeekSet: state.dishIds.length > 0,
+    isDismissed: state.dismissed,
     isFull: state.dishIds.length === WEEK_SET_SIZE,
     setWeekSet,
     addDish,
@@ -108,6 +111,7 @@ function parseWeekSet(raw: string): WeekSetState {
       return {
         dishIds: normalizeDishIds(parsed.dishIds.filter((id): id is string => typeof id === 'string')),
         updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
+        dismissed: parsed.dismissed === true,
       }
     }
   } catch {}

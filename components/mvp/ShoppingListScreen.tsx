@@ -115,6 +115,7 @@ export default function ShoppingListScreen() {
       </div>
 
       <footer className="shrink-0 border-t bg-white px-[22px] pb-[30px] pt-[14px]" style={{ borderColor: 'rgba(26, 26, 26, 0.09)' }}>
+        {shopping.checkedCount > 0 ? <button type="button" onClick={shopping.clearChecks} className="mb-3 min-h-10 w-full text-center text-[12px] font-bold text-[#7A7570]">チェックをすべて外す</button> : null}
         {allDone ? (
           <div className="flex items-center justify-center gap-2 text-[14px] font-bold" style={{ color: '#3B8D4E' }}><DoneIcon />ぜんぶ買えました</div>
         ) : (

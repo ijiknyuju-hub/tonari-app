@@ -1,6 +1,6 @@
 'use client'
 
-import { track } from '@vercel/analytics'
+const ANALYTICS_EVENT = 'tonari:analytics'
 
 export type EventName =
   | 'page_view'
@@ -40,9 +40,7 @@ export function trackEvent(name: EventName, params?: EventParams) {
     console.debug('[tonari:event]', name, params ?? {})
   }
 
-  try {
-    track(name, params)
-  } catch {
-    // silently ignore in production
-  }
+  // Keep product code independent from a hosting vendor. A Cloudflare-compatible
+  // analytics adapter can subscribe to this event without changing every caller.
+  window.dispatchEvent(new CustomEvent(ANALYTICS_EVENT, { detail: { name, params: params ?? {} } }))
 }
