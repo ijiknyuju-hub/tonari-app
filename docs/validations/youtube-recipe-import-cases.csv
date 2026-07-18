@@ -1,1 +1,11 @@
 case_id,category,url,expected_dish_names,expected_dish_count,metadata_ok,dish_match_top1,dish_match_top3,ingredient_recall,quantity_hallucination,step_order_error,latency_seconds,estimated_cost_usd,outcome,failure_reason,notes
+YT001,家庭料理・長尺,https://www.youtube.com/watch?v=WAQqLTGnNrk,ビーフカレー,1,,,,,,,,,,,検索語「カレー レシピ」の代表ケース
+YT002,Shorts,https://www.youtube.com/watch?v=vUbb0u-oUu8,カレー,1,,,,,,,,,,,1分レシピ
+YT003,Shorts,https://www.youtube.com/watch?v=mfivl3W3Kt0,唐揚げ,1,,,,,,,,,,,短尺の基本料理
+YT004,Shorts,https://www.youtube.com/watch?v=pyuR674BEvg,親子丼,1,,,,,,,,,,,短尺の丼料理
+YT005,家庭料理・長尺,https://www.youtube.com/watch?v=Ej9YN76VLp4,ほうれん草のおひたし,1,,,,,,,,,,,副菜・プロのコツを含むケース
+YT006,複数料理候補,https://www.youtube.com/watch?v=PYv4aW43FD4,ピーマンと卵のおかず,1,,,,,,,,,,,検索語と実際のタイトルがずれるケース
+YT007,複数料理,https://www.youtube.com/watch?v=1qKAJhyV5Ns,冷凍麺ストック,3,,,,,,,,,,,1本から複数レシピを分割するケース
+YT008,日本語以外,https://www.youtube.com/watch?v=ZOApCQuv3Ec,豚の角煮,1,,,,,,,,,,,英語音声・日本料理
+YT009,非料理,https://www.youtube.com/watch?v=9hE5-98ZeCg,,0,,,,,,,,,,,Google公式のGemini技術動画
+YT010,取得不能,https://www.youtube.com/watch?v=PUP7U5vTMM0,,0,,,,,,,,,,,oEmbedが403を返す既知ケース

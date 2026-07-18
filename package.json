@@ -8,7 +8,9 @@
     "start": "wrangler pages dev out",
     "lint": "eslint",
     "preview": "next build && wrangler pages dev out",
-    "deploy": "next build && wrangler pages deploy out --project-name tonari-gohan"
+    "deploy": "next build && wrangler pages deploy out --project-name tonari-gohan",
+    "validate:youtube-import": "node scripts/validate-youtube-import.mjs",
+    "validate:gemini-illustrations": "node scripts/generate-gemini-dish-style-test.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

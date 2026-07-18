@@ -1,6 +1,6 @@
 # YouTubeレシピ取り込み限界テスト
 
-Status: planned (2026-07-18)
+Status: phase 1 measured / phase 2 waiting for API key (2026-07-18)
 
 ## 目的
 
@@ -11,6 +11,8 @@ YouTube取り込みを「標準レシピを持たないと使えない機能」�
 - YouTube Data APIはAPIキーまたはOAuth設定とクォータ管理が必要。公式の既定枠は1日10,000 unitsで、無効なリクエストにも最低1 unitかかる。
 - 公式`captions.download`はOAuthが必要で、動画を編集できる権限を持つユーザー向け。一般公開動画の字幕本文を任意に取得する正式な汎用APIとしては使えない。
 - YouTube APIを利用する製品は、YouTube利用規約への同意、プライバシーポリシーでのデータ利用説明、Googleプライバシーポリシーへのリンクなどが必要。
+- Gemini APIは公開YouTube URLを動画入力として直接処理できる。2026-07-18時点ではpreviewかつ追加料金なし。無料枠はYouTube動画入力が1日8時間まで、非公開・限定公開動画は対象外。映像は標準で1 FPSサンプリングされるため、素早い工程や一瞬だけ映る分量表示は欠落しうる。
+- そのため、正式な字幕本文取得を前提にせず、`oEmbedでリンク保存`と`Geminiで映像・音声解析`を分離して測る。Gemini解析が失敗してもリンクは残す。
 
 一次資料:
 
@@ -19,6 +21,23 @@ YouTube取り込みを「標準レシピを持たないと使えない機能」�
 - https://developers.google.com/youtube/v3/docs/captions/download
 - https://developers.google.com/youtube/terms/developer-policies
 - https://developers.google.com/youtube/terms/api-services-terms-of-service-apac
+- https://ai.google.dev/gemini-api/docs/video-understanding
+
+## 2026-07-18 phase 1実測
+
+- 公開動画の検索結果から、家庭料理、Shorts、複数料理、日本語以外、非料理、取得不能を含む10本を固定した。
+- 閲覧可能な9本はoEmbedでタイトル・チャンネル・サムネイルを9/9取得できた。成功時の平均応答は約87ms、最大240msだった。
+- 取得不能ケースではoEmbedがHTTP 403を返した。これは「URL形式は正しいがメタデータを取得できない」復帰導線の固定ケースとして残す。
+- 現在のローカル環境には`GEMINI_API_KEY`がないため、料理同定・材料・手順の実測は未実行。鍵の値をリポジトリへ保存せず、`.env.local`またはプロセス環境変数からだけ読む検証スクリプトを追加した。
+
+実行方法:
+
+```bash
+npm run validate:youtube-import
+npm run validate:youtube-import -- --case=YT001
+```
+
+出力は`youtube-recipe-import-results.json`（詳細）と`youtube-recipe-import-results.csv`（一覧）。APIキーがない場合もoEmbedだけを測り、Gemini列を`skipped_missing_key`として残す。
 
 ## 検証する三段階
 

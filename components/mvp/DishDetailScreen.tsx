@@ -9,7 +9,7 @@ import type { NearbyRelation } from '@/types/dish'
 import { deriveRank, madeCountForDish, type DishRank } from '@/lib/mvp/rank'
 import { useDishLibrary } from '@/lib/mvp/useDishLibrary'
 import { genreForDish } from '@/lib/mvp/genre'
-import { sourceHostname, useRecipeSources, type RecipeSource } from '@/lib/mvp/useRecipeSources'
+import { sourceHostname, useRecipeSources, youtubeVideoId, type RecipeSource } from '@/lib/mvp/useRecipeSources'
 import { useUserState } from '@/lib/mvp/useUserState'
 import CharTile from './CharTile'
 import DishArt from './DishArt'
@@ -29,7 +29,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
   const router = useRouter()
   const { state, recordMade } = useUserState()
   const { overrides, customDishes, saveDishOverride, resetDishOverride } = useDishLibrary()
-  const { sourcesByDish, addSource, removeSource } = useRecipeSources()
+  const { sourcesByDish, mainVideoIdsByDish, addSource, removeSource, setMainVideo } = useRecipeSources()
   const [showUrlForm, setShowUrlForm] = useState(false)
   const [draftUrl, setDraftUrl] = useState('')
   const [urlError, setUrlError] = useState('')
@@ -40,6 +40,8 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
   const override = overrides[dishId]
   const sources = sourcesByDish[dishId] ?? []
   const sites = sources.filter((source) => source.kind === 'site')
+  const videos = sources.filter((source) => source.kind === 'youtube')
+  const mainVideo = videos.find((source) => source.id === mainVideoIdsByDish[dishId]) ?? videos[0]
   const madeCount = madeCountForDish(state.made_records, dishId)
   const rank = deriveRank(madeCount)
   const ingredients = useMemo(() => recipeIngredients(dishId, relation, override?.ingredients_override, customDish?.ingredients), [customDish?.ingredients, dishId, override?.ingredients_override, relation])
@@ -65,7 +67,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
       </header>
 
       <div className="mx-auto max-w-[402px] px-5 pb-[106px] pt-1">
-        <PhotoHero name={displayName} source={sites[0]} />
+        <PhotoHero name={displayName} source={mainVideo ?? sites[0]} />
         <h1 className="mt-4 text-[25px] font-bold leading-snug tracking-[.3px] text-[#1A1A1A]" style={{ fontFamily: 'var(--font-heading)' }}>{displayName}</h1>
         <p className="mt-[9px] text-[14px] leading-[1.75] text-[#7A7570]">{relation?.description_line1 ?? 'いつもの材料で、気負わずつくれる一皿です。'}</p>
 
@@ -73,7 +75,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
           ingredients={ingredients}
           steps={steps}
           source={sites[0]}
-          showNotice={sources.length === 0}
+          showNotice={sites.length === 0}
           editing={editingDraft}
           hasOverride={Boolean(override)}
           onSave={(nextIngredients, nextSteps) => {
@@ -86,7 +88,7 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
           }}
         />
 
-        <SavedSourceSection sources={sources} onRemove={(source) => removeSource(dishId, source.id)} />
+        <SavedSourceSection sources={sources} mainVideoId={mainVideo?.id} onSetMain={(source) => setMainVideo(dishId, source.id)} onRemove={(source) => removeSource(dishId, source.id)} />
         <UrlForm open={showUrlForm} value={draftUrl} error={urlError} onOpen={() => setShowUrlForm(true)} onCancel={() => { setShowUrlForm(false); setUrlError('') }} onChange={setDraftUrl} onSubmit={saveUrl} />
 
         <SideDishes dishes={sideDishes} />
@@ -97,10 +99,12 @@ export default function DishDetailScreen({ relation, dishId, targetName }: DishD
 }
 
 function PhotoHero({ name, source }: { name: string; source?: RecipeSource }) {
+  const videoId = source?.kind === 'youtube' ? youtubeVideoId(source.url) : null
   return (
-    <div className="relative aspect-[16/10] overflow-hidden rounded-[12px]">
-      <DishArt dish={name} seed={name} radius={12} />
-      {source ? <a href={source.url} target="_blank" rel="noreferrer" className="absolute bottom-3 right-3 rounded-full bg-[#1A1A1A]/70 px-[10px] py-[5px] text-[11px] font-bold text-white">{sourceHostname(source.url)} を開く</a> : null}
+    <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-[#EEE9E3]">
+      {videoId ? <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${videoId}/hqdefault.jpg)` }} /> : <DishArt dish={name} seed={name} radius={12} />}
+      {videoId ? <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" /> : null}
+      {source ? <a href={source.url} target="_blank" rel="noreferrer" className="absolute inset-x-3 bottom-3 flex min-h-11 items-center justify-center rounded-full bg-[#1A1A1A]/78 px-[12px] text-[12px] font-bold text-white backdrop-blur-sm">{videoId ? '▶ YouTubeで作り方を見る' : `${sourceHostname(source.url)} を開く`}</a> : null}
     </div>
   )
 }
@@ -152,9 +156,16 @@ function RowControls({ index, count, label, onMove, onRemove }: { index: number;
   return <div className="mt-1 flex justify-end gap-1"><button type="button" disabled={index === 0} onClick={() => onMove(index, index - 1)} aria-label={`${label}${index + 1}を上へ`} className="h-9 w-9 rounded-full text-[14px] font-bold text-[#7A7570] disabled:opacity-25">↑</button><button type="button" disabled={index === count - 1} onClick={() => onMove(index, index + 1)} aria-label={`${label}${index + 1}を下へ`} className="h-9 w-9 rounded-full text-[14px] font-bold text-[#7A7570] disabled:opacity-25">↓</button><button type="button" onClick={onRemove} aria-label={`${label}${index + 1}を削除`} className="h-9 rounded-full px-3 text-[11px] font-bold text-[#7A7570]">削除</button></div>
 }
 
-function SavedSourceSection({ sources, onRemove }: { sources: RecipeSource[]; onRemove: (source: RecipeSource) => void }) {
+function SavedSourceSection({ sources, mainVideoId, onSetMain, onRemove }: { sources: RecipeSource[]; mainVideoId?: string; onSetMain: (source: RecipeSource) => void; onRemove: (source: RecipeSource) => void }) {
   return (
-    <section className="mt-[22px]"><SectionHeading>参考レシピ</SectionHeading>{sources.length ? <div className="mt-3 space-y-[9px]">{sources.map((source) => <div key={source.id} className="flex items-center gap-[11px] rounded-[11px] border p-[9px_11px]" style={{ borderColor: 'rgba(26,26,26,.12)' }}><CharTile name={sourceHostname(source.url)} size={38} radius={7} /><a href={source.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1"><div className="truncate text-[13px] font-bold text-[#1A1A1A]">{sourceHostname(source.url)}</div><div className="mt-0.5 truncate text-[11px] text-[#7A7570]">{source.kind === 'youtube' ? 'YouTubeで見る' : 'レシピサイトを開く'} ↗</div></a><span className="rounded-full bg-[#F1EEEA] px-2 py-1 text-[10px] font-bold text-[#7A7570]">{source.kind === 'youtube' ? '動画' : 'URL'}</span><button type="button" onClick={() => onRemove(source)} className="min-h-10 px-1 text-[11px] font-bold text-[#7A7570]">削除</button></div>)}</div> : <p className="mt-2 text-[11.5px] leading-[1.6] text-[#7A7570]">参考にしているレシピサイトやYouTubeを、この料理に残せます。</p>}</section>
+    <section className="mt-[22px]"><SectionHeading>参考レシピ</SectionHeading>{sources.length ? <div className="mt-3 space-y-[9px]">{sources.map((source) => {
+      const videoId = source.kind === 'youtube' ? youtubeVideoId(source.url) : null
+      return <div key={source.id} className="overflow-hidden rounded-[11px] border" style={{ borderColor: 'rgba(26,26,26,.12)' }}>
+        {videoId ? <a href={source.url} target="_blank" rel="noreferrer" className="relative block aspect-video bg-cover bg-center" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${videoId}/hqdefault.jpg)` }} aria-label="YouTubeで動画を見る"><span className="absolute inset-0 flex items-center justify-center bg-black/10"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#DE5528] pl-0.5 text-lg text-white shadow-lg">▶</span></span></a> : null}
+        <div className="flex items-center gap-[11px] p-[9px_11px]">{videoId ? null : <CharTile name={sourceHostname(source.url)} size={38} radius={7} />}<a href={source.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1"><div className="truncate text-[13px] font-bold text-[#1A1A1A]">{sourceHostname(source.url)}</div><div className="mt-0.5 truncate text-[11px] text-[#7A7570]">{source.kind === 'youtube' ? 'YouTubeで見る' : 'レシピサイトを開く'} ↗</div></a><span className="rounded-full bg-[#F1EEEA] px-2 py-1 text-[10px] font-bold text-[#7A7570]">{source.kind === 'youtube' ? '動画' : 'URL'}</span><button type="button" onClick={() => onRemove(source)} className="min-h-10 px-1 text-[11px] font-bold text-[#7A7570]">削除</button></div>
+        {source.kind === 'youtube' ? <button type="button" disabled={source.id === mainVideoId} onClick={() => onSetMain(source)} className="min-h-11 w-full border-t px-3 text-[11px] font-bold text-[#DE5528] disabled:text-[#7A7570]" style={{ borderColor: 'rgba(26,26,26,.09)' }}>{source.id === mainVideoId ? 'この動画を上に表示中' : 'この動画を上に表示'}</button> : null}
+      </div>
+    })}</div> : <p className="mt-2 text-[11.5px] leading-[1.6] text-[#7A7570]">参考にしているレシピサイトやYouTubeを、この料理に残せます。</p>}</section>
   )
 }
 

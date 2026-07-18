@@ -1,0 +1,11 @@
+case_id,category,url,expected_dish_names,oembed_status,oembed_http_status,oembed_latency_ms,oembed_title,oembed_author,gemini_status,gemini_model,gemini_latency_ms,detected_recipe,detected_dishes,failure_reason
+YT001,家庭料理・長尺,https://www.youtube.com/watch?v=WAQqLTGnNrk,ビーフカレー,ok,200,240,長時間煮込まなくても帝国ホテル並みに旨いビーフカレーは作れます,だれウマ【料理研究家】,skipped_missing_key,gemini-3.5-flash,0,,,
+YT002,Shorts,https://www.youtube.com/watch?v=vUbb0u-oUu8,カレー,ok,200,80,【カレーの作り方】簡単1分レシピ!大人気王道カレー!!#shorts #料理 #簡単レシピ,muuのおうちごはん,skipped_missing_key,gemini-3.5-flash,0,,,
+YT003,Shorts,https://www.youtube.com/watch?v=mfivl3W3Kt0,唐揚げ,ok,200,67,サクッとジューシー！これが正解！【基本の唐揚げ】#唐揚げ #鶏もも肉 #鶏肉 #鶏肉レシピ #からあげ #おかず#晩ご飯 #レシピ動画 #簡単レシピ,デリッシュキッチン,skipped_missing_key,gemini-3.5-flash,0,,,
+YT004,Shorts,https://www.youtube.com/watch?v=pyuR674BEvg,親子丼,ok,200,63,親子丼レシピはこれだけでいい！究極の親子丼レシピ　#簡単レシピ  #親子丼,ちぇる　ダイエット食堂,skipped_missing_key,gemini-3.5-flash,0,,,
+YT005,家庭料理・長尺,https://www.youtube.com/watch?v=Ej9YN76VLp4,ほうれん草のおひたし,ok,200,77,プロの技満載【ほうれん草のおひたし】,【賛否両論】笠原将弘の料理のほそ道,skipped_missing_key,gemini-3.5-flash,0,,,
+YT006,複数料理候補,https://www.youtube.com/watch?v=PYv4aW43FD4,ピーマンと卵のおかず,ok,200,67,500万回再生！ピーマンと卵のすげぇ旨い！簡単作り置きおかず 常備菜 副菜 主菜 人気レシピ,ちゃらりんこクック,skipped_missing_key,gemini-3.5-flash,0,,,
+YT007,複数料理,https://www.youtube.com/watch?v=1qKAJhyV5Ns,冷凍麺ストック,ok,200,65,平日のお昼は調理不要！味ぽんで作る冷凍麺ストック3選 #ミツカン #味ぽん #冷凍ストック #デリッシュキッチン,デリッシュキッチン,skipped_missing_key,gemini-3.5-flash,0,,,
+YT008,日本語以外,https://www.youtube.com/watch?v=ZOApCQuv3Ec,豚の角煮,ok,200,63,How to Make Japanese Braised Pork Belly Kakuni | Authentic & Easy Recipe for Beginners,[Haruma Recipe]Japanese Food Recipes in English,skipped_missing_key,gemini-3.5-flash,0,,,
+YT009,非料理,https://www.youtube.com/watch?v=9hE5-98ZeCg,,ok,200,65,Building with Gemini 2.0: Multimodal live streaming,Google for Developers,skipped_missing_key,gemini-3.5-flash,0,,,
+YT010,取得不能,https://www.youtube.com/watch?v=PUP7U5vTMM0,,failed,403,77,,,skipped_oembed_failed,gemini-3.5-flash,0,,,HTTP 403

@@ -89,6 +89,25 @@ export function sourceHostname(url: string) {
   }
 }
 
+export function youtubeVideoId(url: string) {
+  try {
+    const parsed = new URL(url)
+    const hostname = parsed.hostname.toLowerCase().replace(/^www\./, '')
+    let candidate = ''
+    if (hostname === 'youtu.be') candidate = parsed.pathname.split('/').filter(Boolean)[0] ?? ''
+    if (hostname === 'youtube.com' || hostname.endsWith('.youtube.com')) {
+      candidate = parsed.searchParams.get('v') ?? ''
+      if (!candidate) {
+        const [route, id] = parsed.pathname.split('/').filter(Boolean)
+        if (route === 'shorts' || route === 'embed' || route === 'live') candidate = id ?? ''
+      }
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(candidate) ? candidate : null
+  } catch {
+    return null
+  }
+}
+
 function normalizeUrl(value: string) {
   try {
     const url = new URL(value.trim())

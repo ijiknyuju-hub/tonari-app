@@ -1,6 +1,6 @@
 # Gemini料理イラスト・スタイル固定テスト
 
-Status: planned (2026-07-18)
+Status: prompt baseline and harness ready / waiting for API key (2026-07-18)
 
 ## 目的
 
@@ -36,6 +36,23 @@ Status: planned (2026-07-18)
 - 文字、人物、手、箸、パッケージ、ロゴを出さない
 - 料理名ごとに必須食材、禁止食材、器種、盛り付けを構造化して渡す
 - 同じseed相当の入力条件と生成パラメータを記録する
+
+## 最初の少数比較
+
+60枚を先に量産せず、性質の異なる3皿を1候補ずつ生成してプロンプトの大崩れを確認する。
+
+- ガパオライス: 過去検証で残った「ひき肉を粒ごとに囲む／逆にソースへ溶かす」問題
+- 鶏の唐揚げ: 小カード同定と過剰な照り・衣の均一化
+- ほうれん草のおひたし: 副菜の量感と緑の塊化、別料理化
+
+固定入力は`gemini-dish-prompt-cases.json`、実行スクリプトは`scripts/generate-gemini-dish-style-test.mjs`。APIキーは`.env.local`またはプロセス環境変数からだけ読み、リポジトリへ保存しない。
+
+```bash
+npm run validate:gemini-illustrations
+npm run validate:gemini-illustrations -- --dish=gapao --candidates=3
+```
+
+出力先は`design/gemini-dish-style-test/`。各画像と完全なプロンプト、モデル、生成時間、利用量を`manifest.json`へ記録する。
 
 ## 評価方法
 

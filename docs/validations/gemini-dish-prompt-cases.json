@@ -1,0 +1,27 @@
+{
+  "prompt_version": "tonari-gohan-v1",
+  "base_style": "A warm Japanese editorial food illustration for a mobile cooking app. Hand-painted gouache and watercolor with subtle dry-brush texture, soft irregular edges, and restrained colored-pencil detail. The food must remain immediately recognizable at small card size. Everyday home cooking, natural portion, appetizing but not glossy advertising photography. A single dish centered with generous quiet margin, viewed from the same slightly angled overhead camera at about 55 degrees. Warm off-white paper background, matte Japanese ceramic tableware, soft shadow falling to the lower right, muted warm palette with natural ingredient colors. Use broad color shapes and dry-brush texture instead of outlining every small ingredient. No text, letters, people, hands, chopsticks, cutlery, packaging, logos, decorative props, extreme steam, lens effects, photorealism, 3D render, anime style, thick black outlines, or bead-like highlights.",
+  "cases": [
+    {
+      "dish_id": "gapao",
+      "dish_name": "ガパオライス",
+      "must_include": "A mound of white rice, basil minced-meat stir-fry, and one sunny-side-up fried egg on one simple round plate. Show small red pepper accents and visible basil leaves.",
+      "must_avoid": "Do not draw each piece of minced meat as a separate outlined pebble or shiny bead. Do not melt the meat into a uniform curry sauce. No cucumber, tomato, lime, or restaurant garnish.",
+      "diagnostic": "ひき肉が粒の集合やソースではなく、掠れ筆でまとまった食材として見えるか"
+    },
+    {
+      "dish_id": "karaage",
+      "dish_name": "鶏の唐揚げ",
+      "must_include": "Five to six irregular bite-size boneless chicken pieces with a thin crisp golden-brown coating, piled naturally on a small matte oval plate. One modest lemon wedge may sit at the edge.",
+      "must_avoid": "No drumsticks, bones, nuggets, thick batter, sauce drizzle, parsley, shredded cabbage, or restaurant plating. Do not make every piece identical.",
+      "diagnostic": "小カードでも唐揚げと分かり、衣が広告的に光りすぎないか"
+    },
+    {
+      "dish_id": "spinach_ohitashi",
+      "dish_name": "ほうれん草のおひたし",
+      "must_include": "Neatly cut dark-green spinach stems and leaves in a small shallow blue-gray ceramic bowl, lightly moistened with clear dashi and topped with a small pinch of soft bonito flakes.",
+      "must_avoid": "No sesame dressing, sesame seeds, tofu, meat, egg, seaweed, soup bowl, or large garnish. Keep the portion small as a Japanese side dish.",
+      "diagnostic": "副菜の量感とおひたし固有の見た目を保ち、緑の塊にならないか"
+    }
+  ]
+}
